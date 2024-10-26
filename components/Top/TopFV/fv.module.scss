@@ -1,0 +1,90 @@
+@use "@/styles/mixin/mixins" as *;
+
+.fv {
+  padding-top: 38.5rem;
+  padding-inline: calc(var(--col) * 1 + var(--gap) * 1 + var(--margin) * 1);
+}
+
+.fv__inner {
+}
+
+.fv__content {
+  display: grid;
+  row-gap: 1rem;
+}
+
+.fv__subcopy {
+  justify-content: start;
+  display: grid;
+  grid-template-columns: repeat(4, auto);
+  align-items: start;
+  column-gap: 1.6rem;
+}
+
+.fv__subcopy__icon {
+  display: grid;
+}
+
+.fv__subcopy__icon svg {
+  --width: 4.3rem;
+  --height: 1.8rem;
+
+  width: var(--width);
+  height: var(--height);
+}
+
+.fv__subcopy__arrows {
+  display: grid;
+  grid-template-columns: repeat(3, auto);
+  justify-content: start;
+  padding-bottom: 0.2rem;
+  column-gap: 0.2rem;
+  align-items: center;
+}
+
+.fv__subcopy__arrow {
+  display: grid;
+}
+
+.fv__subcopy__arrow svg {
+  --width: 1.4rem;
+  --height: 2rem;
+
+  width: var(--width);
+  height: var(--height);
+}
+
+.fv__subcopy__textbox {
+  display: grid;
+  grid-template-columns: repeat(3, auto);
+  column-gap: 1rem;
+  align-items: center;
+}
+
+.fv__subcopy__text {
+  font-size: text(24);
+  font-weight: 700;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.fv__subcopy__text.fv__subcopy__text--lowercase {
+  text-transform: lowercase;
+}
+
+.fv__maincopy {
+}
+
+.fv__maincopy__textbox {
+  justify-content: start;
+  align-items: center;
+  display: grid;
+  grid-template-columns: repeat(3, auto);
+  column-gap: 1.6rem;
+}
+
+.fv__maincopy__text {
+  font-size: 9.6rem;
+  line-height: 1;
+  font-weight: 700;
+}
