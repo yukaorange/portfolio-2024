@@ -17,7 +17,7 @@ export const TopFv = () => {
                 <Arrow />
               </div>
             </div>
-            <div className={`${styles.fv__subcopy__textbox} _en`}>
+            <div className={`${styles.fv__subcopy__textbox} _en _shadow--blue`}>
               <span className={styles.fv__subcopy__text}>crafting</span>
               <span className={styles.fv__subcopy__text}>user</span>
               <span className={styles.fv__subcopy__text}>experience</span>
@@ -35,7 +35,7 @@ export const TopFv = () => {
             </div>
           </div>
           <div className={styles.fv__maincopy}>
-            <div className={`${styles.fv__maincopy__textbox} _en`}>
+            <div className={`${styles.fv__maincopy__textbox} _en _shadow--blue`}>
               <span className={styles.fv__maincopy__text}>FRONT</span>
               <span className={styles.fv__maincopy__text}>END</span>
               <span className={styles.fv__maincopy__text}>ENGINEER</span>

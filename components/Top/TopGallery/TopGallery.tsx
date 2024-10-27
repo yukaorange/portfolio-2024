@@ -5,10 +5,9 @@ export const Topgallery = () => {
   return (
     <section className={styles.gallery}>
       <div className={styles.gallery__inner}>
-        <div className={styles.gallery__content}>
-          <CanvasGallery />
-        </div>
+        <div className={styles.gallery__content}></div>
       </div>
+      <CanvasGallery />
     </section>
   );
 };

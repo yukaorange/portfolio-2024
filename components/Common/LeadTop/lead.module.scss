@@ -1,0 +1,32 @@
+@use "@/styles/mixin/mixins" as *;
+
+.lead {
+  display: grid;
+}
+
+.lead__text {
+  font-size: text(32);
+  text-transform: uppercase;
+  line-height: 1;
+  font-weight: 700;
+}
+
+.lead__bars {
+  display: grid;
+  row-gap: 0.2rem;
+}
+
+.lead__bar1 {
+  width: calc(var(--col) * 2 + var(--gap) * 2);
+  height: 0.2rem;
+  background-color: var(--white-1);
+}
+
+.lead__bar2 {
+  width: calc(var(--col) * 3 + var(--gap) * 3);
+  height: 0.2rem;
+  background-color: var(--white-1);
+}
+
+.lead {
+}

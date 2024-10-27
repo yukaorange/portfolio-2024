@@ -1,0 +1,30 @@
+@use "@/styles/mixin/mixins" as *;
+
+.works {
+  padding-top: 25rem;
+  padding-inline: calc(var(--col) * 1 + var(--gap) * 1 + var(--margin) * 1);
+}
+
+.works__inner {
+  display: grid;
+}
+
+.works__content {
+  display: grid;
+  row-gap: 3.2rem;
+}
+
+.works__lead {
+}
+
+.works__textbox {
+  max-width: cols(10);
+  font-size: text(16);
+}
+
+.works__text {
+}
+
+.works__archive {
+  justify-self: end;
+}

@@ -1,0 +1,101 @@
+@use "@/styles/mixin/mixins" as *;
+
+.archive {
+  display: grid;
+  row-gap: 3.2rem;
+}
+
+.item {
+  overflow: hidden;
+  display: grid;
+  position: relative;
+  z-index: 0;
+  width: calc(var(--col) * 12 + var(--gap) * 12);
+  min-height: 17.7rem;
+}
+
+.item__inner {
+  display: grid;
+  padding-inline: 2.4rem;
+  align-content: start;
+  grid-template-columns: auto auto;
+  align-items: start;
+  justify-content: space-between;
+}
+
+.item__header {
+  padding-top: 1.6rem;
+  display: grid;
+  row-gap: 1.6rem;
+}
+
+.item__heading {
+  display: grid;
+  grid-template-columns: auto auto;
+  column-gap: 1rem;
+  justify-content: start;
+  align-items: center;
+}
+
+.item__title {
+  font-size: 4.8rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--black-1);
+  letter-spacing: 0.01em;
+}
+
+.item__icon {
+  display: grid;
+}
+
+.item__icon svg {
+  --width: 4rem;
+  --height: 4rem;
+
+  width: var(--width);
+  height: var(--height);
+}
+
+.item__description {
+  color: var(--black-1);
+  font-size: text(16);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.01em;
+}
+
+.item__amount {
+  color: var(--black-1);
+  font-size: 18rem;
+  font-weight: 700;
+  line-height: 1;
+  margin-top: -2rem;
+}
+
+.item__bg {
+  display: grid;
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+}
+
+.item__bg svg {
+  width: 72rem;
+  height: 17.9rem;
+}
+
+.item__warning {
+  display: grid;
+  position: absolute;
+  z-index: 1;
+  opacity: 0.6;
+  width: 84rem;
+  top: 50%;
+  left: 50%;
+  rotate: -15deg;
+  translate: calc(-50% + 13rem) calc(-50% + 1rem);
+}
+
+.item__warning img {
+}

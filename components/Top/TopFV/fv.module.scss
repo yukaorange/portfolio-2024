@@ -1,8 +1,11 @@
 @use "@/styles/mixin/mixins" as *;
 
 .fv {
-  padding-top: 38.5rem;
+  height: 100vh;
+  display: grid;
+  align-items: end;
   padding-inline: calc(var(--col) * 1 + var(--gap) * 1 + var(--margin) * 1);
+  padding-bottom: 8rem;
 }
 
 .fv__inner {
@@ -44,14 +47,40 @@
 
 .fv__subcopy__arrow {
   display: grid;
+  overflow: hidden;
 }
 
 .fv__subcopy__arrow svg {
   --width: 1.4rem;
   --height: 2rem;
-
   width: var(--width);
   height: var(--height);
+  animation-name: arrow-twincle;
+  animation-iteration-count: infinite;
+  animation-duration: 1s;
+  animation-timing-function: linear;
+}
+
+.fv__subcopy__arrow:nth-child(2) svg {
+  animation-delay: 0.2s;
+}
+.fv__subcopy__arrow:nth-child(3) svg {
+  animation-delay: 0.4s;
+}
+
+@keyframes arrow-twincle {
+  0% {
+    opacity: 1;
+  }
+  20% {
+    opacity: 0.25;
+  }
+  60% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
 .fv__subcopy__textbox {
