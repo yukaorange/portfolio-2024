@@ -7,3 +7,13 @@
   padding-top: 4rem;
   padding-inline: calc(var(--col) * 1 + var(--gap) * 1 + var(--margin) * 1);
 }
+
+@include mq(sp) {
+  .header {
+    width: 100%;
+    position: fixed;
+    z-index: var(--z-index-header);
+    padding-top: 1.6rem;
+    padding-inline: calc(var(--margin) * 1);
+  }
+}

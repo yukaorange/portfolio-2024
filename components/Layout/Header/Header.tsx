@@ -9,7 +9,7 @@ import { Indicator } from '@/components/Layout/Header/Indicator/Indicator';
 
 export const Header = () => {
   return (
-    <header className={styles.header}>
+    <header className={styles.header} data-ui="header">
       <div className={styles.header__inner}>
         <Link href="/" className={styles.header__logo}>
           <Indicator />

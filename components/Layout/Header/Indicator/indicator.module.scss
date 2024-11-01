@@ -29,6 +29,43 @@
   height: var(--height);
 }
 
+.indicator__ellipse__ellipse01 {
+  animation-name: rotateY;
+  animation-fill-mode: forwards;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+  animation-duration: 10s;
+  transform-origin: center;
+}
+
+.indicator__ellipse__ellipse02 {
+  animation-name: rotateY;
+  animation-fill-mode: forwards;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+  animation-duration: 10s;
+  transform-origin: center;
+  animation-delay: 0s;
+}
+.indicator__ellipse__ellipse03 {
+  animation-name: rotateY;
+  animation-fill-mode: forwards;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+  animation-duration: 10s;
+  transform-origin: center;
+  animation-delay: 0s;
+}
+.indicator__ellipse__ellipse04 {
+  animation-name: rotateY;
+  animation-fill-mode: forwards;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+  animation-duration: 10s;
+  transform-origin: center;
+  animation-delay: 0s;
+}
+
 .indicator__content {
   padding-top: 0.4rem;
   display: grid;
@@ -39,5 +76,95 @@
   color: var(--black-1);
   font-weight: 600;
   line-height: 1;
-  letter-spacing: 0.07em;
+  letter-spacing: 0.01em;
+}
+
+@keyframes rotateY {
+  0% {
+    rotate: y 0deg;
+  }
+  100% {
+    rotate: y 360deg;
+  }
+}
+
+@include mq(sp) {
+  .indicator {
+    width: fit-content;
+    padding: 0.4rem;
+    background-color: var(--white-1);
+    border-radius: 0.4rem;
+  }
+
+  .indicator__inner {
+    display: grid;
+    grid-template-columns: repeat(2, auto);
+    align-items: center;
+    column-gap: 0.4rem;
+  }
+
+  .indicator__icon {
+    border-radius: 0.4rem;
+    padding: 0.3rem;
+    display: grid;
+    background-color: var(--black-1);
+  }
+
+  .indicator__icon svg {
+    --width: 1.6rem;
+    --height: 1.6rem;
+
+    width: var(--width);
+    height: var(--height);
+  }
+
+  .indicator__content {
+    padding-top: 0.2rem;
+    display: grid;
+  }
+
+  .indicator__text {
+    font-size: text(16);
+    color: var(--black-1);
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: 0.01em;
+  }
+
+  .indicator__ellipse__ellipse01 {
+    animation-name: rotateY;
+    animation-fill-mode: forwards;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+    animation-duration: 10s;
+    transform-origin: center;
+  }
+
+  .indicator__ellipse__ellipse02 {
+    animation-name: rotateY;
+    animation-fill-mode: forwards;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+    animation-duration: 10s;
+    transform-origin: center;
+    animation-delay: 0s;
+  }
+  .indicator__ellipse__ellipse03 {
+    animation-name: rotateY;
+    animation-fill-mode: forwards;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+    animation-duration: 10s;
+    transform-origin: center;
+    animation-delay: 0s;
+  }
+  .indicator__ellipse__ellipse04 {
+    animation-name: rotateY;
+    animation-fill-mode: forwards;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+    animation-duration: 10s;
+    transform-origin: center;
+    animation-delay: 0s;
+  }
 }

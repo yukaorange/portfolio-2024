@@ -1,7 +1,7 @@
 @use "@/styles/mixin/mixins" as *;
 
 .fv {
-  height: 100vh;
+  height: 100svh;
   display: grid;
   align-items: end;
   padding-inline: calc(var(--col) * 1 + var(--gap) * 1 + var(--margin) * 1);
@@ -97,7 +97,7 @@
   text-transform: uppercase;
 }
 
-.fv__subcopy__text.fv__subcopy__text--lowercase {
+.fv__subcopy__text.lowercase {
   text-transform: lowercase;
 }
 
@@ -116,4 +116,119 @@
   font-size: 9.6rem;
   line-height: 1;
   font-weight: 700;
+}
+
+@include mq(sp) {
+  .fv {
+    height: 100svh;
+    display: grid;
+    align-items: end;
+    padding-inline: calc(var(--margin) * 1);
+    padding-bottom: 4rem;
+  }
+
+  .fv__inner {
+  }
+
+  .fv__content {
+    display: grid;
+    row-gap: 1rem;
+  }
+
+  .fv__subcopy {
+    justify-content: start;
+    display: grid;
+    grid-template-columns: repeat(4, auto);
+    align-items: start;
+    column-gap: 0.8rem;
+  }
+
+  .fv__subcopy__icon {
+    display: grid;
+  }
+
+  .fv__subcopy__icon svg {
+    --width: 2.4rem;
+    --height: 0.94rem;
+
+    width: var(--width);
+    height: var(--height);
+  }
+
+  .fv__subcopy__arrows {
+    display: grid;
+    grid-template-columns: repeat(3, auto);
+    justify-content: start;
+    padding-bottom: 0rem;
+    padding-top: 0rem;
+    column-gap: 0rem;
+    align-items: center;
+  }
+
+  .fv__subcopy__arrow {
+    display: grid;
+    overflow: hidden;
+  }
+
+  .fv__subcopy__arrow svg {
+    --width: 0.8rem;
+    --height: 1.2rem;
+
+    width: var(--width);
+    height: var(--height);
+    animation-name: arrow-twincle;
+    animation-iteration-count: infinite;
+    animation-duration: 1s;
+    animation-timing-function: linear;
+  }
+
+  .fv__subcopy__arrow:nth-child(2) svg {
+    animation-delay: 0.2s;
+  }
+  .fv__subcopy__arrow:nth-child(3) svg {
+    animation-delay: 0.4s;
+  }
+
+  .fv__subcopy__textbox {
+    display: grid;
+    grid-template-columns: repeat(3, auto);
+    column-gap: 0.8rem;
+    align-items: center;
+  }
+
+  .fv__subcopy__text {
+    font-size: text(14);
+    font-weight: 700;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+
+  .fv__subcopy__text.mobile__hidden {
+    display: none;
+  }
+
+  .fv__subcopy__text.lowercase {
+    text-transform: lowercase;
+  }
+
+  .fv__maincopy {
+  }
+
+  .fv__maincopy__textbox {
+    justify-content: start;
+    align-items: center;
+    display: grid;
+    grid-template-columns: repeat(2, auto);
+    column-gap: 1.2rem;
+  }
+
+  .fv__maincopy__text {
+    font-size: 4.8rem;
+    line-height: 1;
+    font-weight: 700;
+  }
+
+  .fv__maincopy__text.lastword {
+    grid-column: span 2;
+  }
 }

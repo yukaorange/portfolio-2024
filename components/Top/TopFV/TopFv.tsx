@@ -26,9 +26,9 @@ export const TopFv = () => {
               <Icon />
             </div>
             <div className={`${styles.fv__subcopy__textbox} _en`}>
-              <span className={styles.fv__subcopy__text}>I</span>
+              <span className={`${styles.fv__subcopy__text} ${styles.mobile__hidden}`}>I</span>
               <span
-                className={`${styles.fv__subcopy__text} ${styles['fv__subcopy__text--lowercase']}`}
+                className={`${styles.fv__subcopy__text} ${styles.lowercase} ${styles.mobile__hidden}`}
               >
                 am
               </span>
@@ -38,7 +38,7 @@ export const TopFv = () => {
             <div className={`${styles.fv__maincopy__textbox} _en _shadow--blue`}>
               <span className={styles.fv__maincopy__text}>FRONT</span>
               <span className={styles.fv__maincopy__text}>END</span>
-              <span className={styles.fv__maincopy__text}>ENGINEER</span>
+              <span className={`${styles.fv__maincopy__text} ${styles.lastword}`}>ENGINEER</span>
             </div>
           </div>
           <h1 className="reader-only">I an FrontEnd Engineer in Japan</h1>

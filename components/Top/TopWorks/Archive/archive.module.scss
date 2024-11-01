@@ -14,6 +14,9 @@
   min-height: 17.7rem;
 }
 
+.item.unavailable {
+}
+
 .item__inner {
   display: grid;
   padding-inline: 2.4rem;
@@ -47,6 +50,7 @@
 
 .item__icon {
   display: grid;
+  transition: 0.2s;
 }
 
 .item__icon svg {
@@ -85,6 +89,10 @@
   height: 17.9rem;
 }
 
+.item__bg svg path {
+  transition: 0.2s;
+}
+
 .item__warning {
   display: grid;
   position: absolute;
@@ -98,4 +106,136 @@
 }
 
 .item__warning img {
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .item:hover .item__icon {
+    translate: 0.5rem -0.5rem;
+  }
+
+  .item:hover .item__bg svg path {
+    fill: var(--danger);
+  }
+
+  .item.unavailable:hover .item__icon {
+    translate: 0 0;
+  }
+
+  .item.unavailable:hover .item__bg svg path {
+    fill: var(--white-1);
+  }
+}
+
+@include mq(sp) {
+  .archive {
+    width: 32rem;
+    display: grid;
+    row-gap: 1.4rem;
+  }
+
+  .item {
+    overflow: hidden;
+    display: grid;
+    position: relative;
+    z-index: 0;
+    width: 100%;
+    min-height: 7.776rem;
+  }
+
+  .item.unavailable {
+  }
+
+  .item__inner {
+    display: grid;
+    padding-inline: 2.4rem;
+    align-content: start;
+    grid-template-columns: auto auto;
+    align-items: start;
+    justify-content: space-between;
+  }
+
+  .item__header {
+    padding-top: 0.8rem;
+    display: grid;
+    row-gap: 0.8rem;
+  }
+
+  .item__heading {
+    display: grid;
+    grid-template-columns: auto auto;
+    column-gap: 0.4rem;
+    justify-content: start;
+    align-items: center;
+  }
+
+  .item__title {
+    font-size: 2.4rem;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--black-1);
+    letter-spacing: 0.01em;
+  }
+
+  .item__icon {
+    display: grid;
+    transition: 0.2s;
+  }
+
+  .item__icon svg {
+    --width: 1.6rem;
+    --height: 1.6rem;
+
+    width: var(--width);
+    height: var(--height);
+  }
+
+  .item__description {
+    color: var(--black-1);
+    font-size: text(14);
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: 0.01em;
+  }
+
+  .item__amount {
+    position: absolute;
+    right: 0.4rem;
+    top: 1.2rem;
+    color: var(--black-1);
+    font-size: 6.4rem;
+    font-weight: 700;
+    line-height: 1;
+    margin-top: -2rem;
+  }
+
+  .item__bg {
+    display: grid;
+    position: absolute;
+    z-index: -1;
+    inset: 0;
+  }
+
+  .item__bg svg {
+    width: 32rem;
+    height: 7.776rem;
+  }
+
+  .item__bg svg path {
+    transition: 0.2s;
+  }
+
+  .item__warning {
+    display: grid;
+    position: absolute;
+    z-index: 1;
+    opacity: 0.6;
+    width: 40rem;
+    top: 50%;
+    left: 50%;
+    rotate: -15deg;
+    translate: calc(-50% + 11rem) calc(-50% - 0rem);
+  }
+
+  .item__warning img {
+  }
 }

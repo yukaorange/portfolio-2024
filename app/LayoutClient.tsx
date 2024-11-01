@@ -6,11 +6,13 @@ import { RecoilRoot } from 'recoil';
 
 import { Header } from '@/components/Layout/Header/Header';
 import { Loading } from '@/components/Layout/Loading/Loading';
+// import { GlitchFilters } from '@/components/Layout/SVG/Glitch/Glictch';
 import { ViewPortCalculator } from '@/components/Utility/ViewportCalculator';
 
 export const LayoutClient = ({ children }: Readonly<{ children: React.ReactNode }>) => {
   const loadingRef = useRef<HTMLDivElement>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
     const loadData = async () => {
@@ -25,6 +27,7 @@ export const LayoutClient = ({ children }: Readonly<{ children: React.ReactNode 
             duration: 0.5,
             onComplete: () => {
               setIsLoading(false);
+              setIsMounted(true);
             },
           });
         }
@@ -36,13 +39,14 @@ export const LayoutClient = ({ children }: Readonly<{ children: React.ReactNode 
 
   return (
     <>
-      <ViewPortCalculator />
       <RecoilRoot>
         {isLoading ? (
           <Loading ref={loadingRef} />
         ) : (
           <div className="layout">
+            {isMounted && <ViewPortCalculator />}
             <Header />
+            {/* <GlitchFilters /> */}
             {children}
           </div>
         )}

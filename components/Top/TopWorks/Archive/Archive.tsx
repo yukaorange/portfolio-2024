@@ -1,6 +1,6 @@
-import styles from '@/components/Top/TopWorks/Archive/archive.module.scss';
-
 import Image from 'next/image';
+
+import styles from '@/components/Top/TopWorks/Archive/archive.module.scss';
 
 export const Archive = () => {
   const archive = [
@@ -13,7 +13,10 @@ export const Archive = () => {
     <div className={styles.archive}>
       {archive.map((item, index) => {
         return (
-          <div className={styles.item} key={index}>
+          <div
+            className={`${styles.item} ${item.available == false && styles.unavailable}`}
+            key={index}
+          >
             <div className={styles.item__inner}>
               <div className={styles.item__header}>
                 <div className={styles.item__heading}>

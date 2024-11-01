@@ -6,8 +6,6 @@
   position: relative;
   z-index: 0;
   clip-path: url(#svgClip);
-  mask-size: 100% 100%;
-  mask-repeat: no-repeat;
 }
 
 .ticket::after {
@@ -55,27 +53,6 @@
   animation-iteration-count: infinite;
   animation-timing-function: linear;
   animation-duration: 0.8s;
-}
-
-@keyframes twincle {
-  0% {
-    opacity: 0.05;
-  }
-  20% {
-    opacity: 0;
-  }
-  40% {
-    opacity: 0.02;
-  }
-  60% {
-    opacity: 0;
-  }
-  80% {
-    opacity: 0.08;
-  }
-  100% {
-    opacity: 0;
-  }
 }
 
 .ticket__bg__image {
@@ -147,34 +124,6 @@
     hueRotate 2s infinite linear;
 }
 
-@keyframes shimmer {
-  0%,
-  100% {
-    background-position:
-      0% 0%,
-      0% 0%,
-      calc(50% + (var(--scroll-ratio) - 0.5) * 10%) calc(50% + (var(--scroll-ratio) - 0.5) * 30%),
-      0% 0%;
-  }
-  50% {
-    background-position:
-      100% 100%,
-      100% 100%,
-      calc(50% + (var(--scroll-ratio) - 0.5) * 10%) calc(50% + (var(--scroll-ratio) - 0.5) * 30%),
-      100% 100%;
-  }
-}
-
-@keyframes hueRotate {
-  0%,
-  100% {
-    filter: hue-rotate(0deg);
-  }
-  50% {
-    filter: hue-rotate(180deg);
-  }
-}
-
 .ticket__arrows {
   display: grid;
   position: absolute;
@@ -204,6 +153,61 @@
   animation-delay: 0.4s;
 }
 
+.ticket__mask {
+  position: absolute;
+  height: 0;
+  width: 0;
+}
+
+@keyframes twincle {
+  0% {
+    opacity: 0.05;
+  }
+  20% {
+    opacity: 0;
+  }
+  40% {
+    opacity: 0.02;
+  }
+  60% {
+    opacity: 0;
+  }
+  80% {
+    opacity: 0.01;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes shimmer {
+  0%,
+  100% {
+    background-position:
+      0% 0%,
+      0% 0%,
+      calc(50% + (var(--scroll-ratio) - 0.5) * 10%) calc(50% + (var(--scroll-ratio) - 0.5) * 30%),
+      0% 0%;
+  }
+  50% {
+    background-position:
+      100% 100%,
+      100% 100%,
+      calc(50% + (var(--scroll-ratio) - 0.5) * 10%) calc(50% + (var(--scroll-ratio) - 0.5) * 30%),
+      100% 100%;
+  }
+}
+
+@keyframes hueRotate {
+  0%,
+  100% {
+    filter: hue-rotate(0deg);
+  }
+  50% {
+    filter: hue-rotate(180deg);
+  }
+}
+
 @keyframes color-change {
   0%,
   100% {
@@ -219,37 +223,200 @@
   }
 }
 
-.ticket__mask {
-  position: absolute;
-  height: 0;
-  width: 0;
-}
-
 @media (hover: hover) and (pointer: fine) {
   .ticket:hover .ticket__arrows svg polygon {
     animation-name: color-stop;
     animation-iteration-count: initial;
-    animation-duration: 0.2s;
+    animation-iteration-count: infinite;
+    // animation-fill-mode: forwards;
+    animation-duration: 0.01s;
+    filter: drop-shadow(0 0 0.2rem #c9ff36);
   }
 
   .ticket:hover .ticket__arrows svg polygon:nth-child(2) {
-    animation-delay: 0.05s;
+    animation-delay: 0s;
   }
   .ticket:hover .ticket__arrows svg polygon:nth-child(3) {
-    animation-delay: 0.1s;
+    animation-delay: 0s;
   }
 
   @keyframes color-stop {
-    0% {
-      stroke: #c9ff3400;
+    20% {
+      stroke: #c9ff3680;
     }
-
-    50% {
-      stroke: #c9ff3650;
-    }
-
-    100% {
+    40% {
       stroke: #c9ff36;
     }
+    60% {
+      stroke: #c9ff3680;
+    }
+    80% {
+      stroke: #c9ff36;
+    }
+    100% {
+      stroke: #c9ff3680;
+    }
+  }
+}
+
+@include mq(sp) {
+  .ticket {
+    --scroll-ratio: 0;
+    overflow: hidden;
+    position: relative;
+    z-index: 0;
+    clip-path: url(#svgClip2);
+  }
+
+  .ticket::after {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    inset: 0;
+    opacity: 0.3;
+    background-color: #ffffff;
+  }
+
+  .ticket__bg {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    translate: -50% -50%;
+    width: 100%;
+    aspect-ratio: 1/1;
+    display: grid;
+    z-index: -1;
+  }
+
+  .ticket__bg::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background-image: url("/images/top/lenzfrare.webp");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    opacity: 0.26;
+  }
+
+  .ticket__bg::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background-image: url("/images/top/glitch.webp");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 100% 50%;
+    animation-name: twincle;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+    animation-duration: 0.8s;
+  }
+
+  .ticket__bg__image {
+    position: absolute;
+    z-index: -1;
+    width: 100%;
+    aspect-ratio: 1/1;
+    top: 50%;
+    left: 50%;
+    translate: -50% -50%;
+    transition: 0.7s;
+    opacity: 1;
+    background-image: repeating-linear-gradient(
+        82deg,
+        rgba(219, 204, 86, 0.08) 4%,
+        rgba(121, 199, 58, 0.08) 8%,
+        rgba(58, 192, 183, 0.08) 12%,
+        rgba(71, 98, 207, 0.08) 16%,
+        rgba(170, 69, 209, 0.08) 20%,
+        rgba(255, 90, 180, 0.08) 24%,
+        rgba(255, 90, 180, 0.08) 28%,
+        rgba(170, 69, 209, 0.08) 32%,
+        rgba(71, 98, 207, 0.08) 36%,
+        rgba(58, 192, 183, 0.08) 40%,
+        rgba(121, 199, 58, 0.08) 44%,
+        rgba(219, 204, 86, 0.08) 48%
+      ),
+      repeating-linear-gradient(
+        133deg,
+        rgba(255, 255, 255, 0.1) 0%,
+        rgba(255, 255, 255, 0.1) 7.5%,
+        rgba(255, 255, 255, 0.3) 10%,
+        rgba(255, 255, 255, 0.1) 12.5%,
+        rgba(255, 255, 255, 0.1) 20%,
+        rgba(255, 255, 255, 0.1) 30%,
+        rgba(255, 255, 255, 0.1) 40%
+      ),
+      radial-gradient(
+        farthest-corner circle at calc(50% + (var(--scroll-ratio) - 0.5) * 30%)
+          calc(50% + (var(--scroll-ratio) - 0.5) * 30%),
+        rgba(255, 255, 255, 0.1) 0%,
+        rgba(255, 255, 255, 0.1) 20%,
+        rgba(255, 255, 255, 0.4) 40%,
+        rgba(255, 255, 255, 0.1) 60%,
+        rgba(0, 0, 0, 0.1) 80%,
+        rgba(0, 0, 0, 0.1) 100%
+      ),
+      linear-gradient(
+        45deg,
+        rgba(190, 38, 38, 0.2) 0%,
+        rgba(255, 165, 0, 0.2) 20%,
+        rgba(255, 255, 0, 0.2) 40%,
+        rgba(0, 255, 0, 0.2) 60%,
+        rgba(0, 0, 255, 0.2) 80%,
+        rgba(255, 0, 255, 0.2) 100%
+      );
+    background-size:
+      200% 200%,
+      200% 200%,
+      100% 100%,
+      200% 200%;
+    background-position:
+      calc(50% + (var(--scroll-ratio) - 0.5) * 30%) calc(50% + (var(--scroll-ratio) - 0.5) * 30%),
+      calc(50% + (var(--scroll-ratio) - 0.5) * 30%) calc(50% + (var(--scroll-ratio) - 0.5) * 30%),
+      50% 50%,
+      0% 0%;
+    animation:
+      shimmer 120s infinite linear,
+      hueRotate 2s infinite linear;
+  }
+
+  .ticket__arrows {
+    display: grid;
+    position: absolute;
+    z-index: 1;
+    top: 50%;
+    left: calc(50% - 0rem);
+    translate: -50% -50%;
+  }
+
+  .ticket__arrows svg {
+    --width: calc(64.9rem * 0.33);
+    --height: calc(22.7rem * 0.33);
+
+    width: var(--width);
+    height: var(--height);
+  }
+
+  .ticket__arrows svg polygon {
+    animation-name: color-change;
+    animation-iteration-count: infinite;
+    animation-duration: 1.2s;
+  }
+
+  .ticket__arrows svg polygon:nth-child(2) {
+    animation-delay: 0.2s;
+  }
+  .ticket__arrows svg polygon:nth-child(3) {
+    animation-delay: 0.4s;
+  }
+
+  .ticket__mask {
+    position: absolute;
+    height: 0;
+    width: 0;
   }
 }

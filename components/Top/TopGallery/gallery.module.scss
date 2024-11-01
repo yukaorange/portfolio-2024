@@ -1,7 +1,35 @@
 @use "@/styles/mixin/mixins" as *;
 
 .gallery {
-  padding-top: 25rem;
+  margin-top: calc(var(--section-space) * 0.5);
   padding-inline: calc(var(--col) * 1 + var(--gap) * 1 + var(--margin) * 1);
-  height: 300vh;
+  height: calc(var(--vh) * 3);
+}
+
+.gallery__inner {
+  height: calc(var(--vh) * 1);
+  position: sticky;
+  top: 0;
+
+  display: grid;
+  align-items: center;
+}
+
+.gallery__drumroll {
+}
+
+.gallery__canvas {
+  position: absolute;
+  z-index: -1;
+  bottom: 5vh;
+  left: 50%;
+  translate: -50% 0;
+}
+
+@include mq(sp) {
+  .gallery {
+    margin-top: var(--section-space);
+    padding-inline: calc(var(--margin) * 1);
+    height: calc(var(--vh) * 3);
+  }
 }

@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   description: 'created by takaoka',
   icons: {
     icon: '/favicon/logo.svg',
-  }
+  },
 };
 
 export const viewport: Viewport = {
@@ -18,6 +18,7 @@ export const viewport: Viewport = {
   maximumScale: 1,
   userScalable: false,
   themeColor: '#151515',
+  viewportFit: 'cover',
 };
 
 export default function RootLayout({

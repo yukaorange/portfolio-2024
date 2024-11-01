@@ -1,0 +1,144 @@
+@use "@/styles/mixin/mixins" as *;
+
+.glitch {
+  position: absolute;
+  z-index: -10000;
+  width: 0;
+  height: 0;
+}
+
+.topE1,
+.botE2,
+.topE2,
+.botE2 {
+  stroke: #151515;
+  scale: 1 1;
+}
+
+.topE1 {
+  animation-name: topAnimation1;
+  animation-duration: 3s;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  animation-delay: 1s;
+}
+
+.botE2 {
+  // animation-name: bottomAnimation1;
+  animation-duration: 4s;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  animation-delay: 0s;
+}
+
+.topE2 {
+  // animation-name: topAnimation1;
+  animation-duration: 4s;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  animation-delay: 0s;
+}
+
+.botE2 {
+  // animation-name: bottomAnimation1;
+  animation-duration: 4s;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  animation-delay: 1s;
+}
+
+@keyframes topAnimation1 {
+  0% {
+    stroke-width: 5rem;
+  }
+  50% {
+    stroke-width: 0rem;
+  }
+  100% {
+    stroke-width: 5rem;
+  }
+}
+@keyframes topAnimation2 {
+  0% {
+  }
+  10% {
+    stroke-width: 15rem;
+  }
+  20% {
+    stroke-width: 5rem;
+  }
+  30% {
+    stroke-width: 18rem;
+  }
+  40% {
+    stroke-width: 3rem;
+  }
+  50% {
+    stroke-width: 12rem;
+  }
+  60% {
+    stroke-width: 7rem;
+  }
+  70% {
+    stroke-width: 20rem;
+  }
+  80% {
+    stroke-width: 9rem;
+  }
+  90% {
+    stroke-width: 16rem;
+  }
+  100% {
+    stroke-width: 10rem;
+  }
+}
+
+@keyframes bottomAnimation1 {
+  0% {
+    stroke-width: 5rem;
+  }
+
+  50% {
+    stroke-width: 0rem;
+  }
+
+  100% {
+    stroke-width: 5rem;
+  }
+}
+
+@keyframes bottomAnimation2 {
+  0% {
+    stroke-width: 10rem;
+  }
+  10% {
+    stroke-width: 19rem;
+  }
+  20% {
+    stroke-width: 6rem;
+  }
+  30% {
+    stroke-width: 14rem;
+  }
+  40% {
+    stroke-width: 8rem;
+  }
+  50% {
+    stroke-width: 17rem;
+  }
+  60% {
+    stroke-width: 0rem;
+  }
+  70% {
+    stroke-width: 10rem;
+  }
+  80% {
+    stroke-width: 13rem;
+  }
+  90% {
+    stroke-width: 2rem;
+  }
+  100% {
+    stroke-width: 0rem;
+  }
+}

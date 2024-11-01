@@ -1,5 +1,6 @@
 import { LeadTop } from '@/components/Common/LeadTop/LeadTop';
 import { Archive } from '@/components/Top/TopWorks/Archive/Archive';
+import { Marquee } from '@/components/Top/TopWorks/Marquee/Marquee';
 import styles from '@/components/Top/TopWorks/works.module.scss';
 
 export const TopWorks = () => {
@@ -19,6 +20,9 @@ export const TopWorks = () => {
             <Archive />
           </div>
         </div>
+      </div>
+      <div className={styles.works__marquee}>
+        <Marquee />
       </div>
     </div>
   );

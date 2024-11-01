@@ -17,32 +17,24 @@ interface GradientLineProps {
   endY: number;
 }
 
-export const CanvasGallery = () => {
+interface CanvasGalleryProps {
+  currentProgressRef: React.MutableRefObject<number>;
+  targetProgressRef: React.MutableRefObject<number>;
+}
+
+export const CanvasGallery = ({ currentProgressRef, targetProgressRef }: CanvasGalleryProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const currentProgressRef = useRef(0);
-  const targetProgressRef = useRef(0);
   const animationRef = useRef<number>();
   const imageRef = useRef<HTMLImageElement | null>(null);
-
-  const iconPositions: Point[] = [
-    { x: 12.5, y: 106.71 },
-    { x: 187.3, y: 34.77 },
-    { x: 318.9, y: 69.57 },
-    { x: 389.3, y: 12.5 },
-    { x: 542.9, y: 37.17 },
-  ];
 
   const drawGradientLine = useCallback(({ ctx, startX, startY, endX, endY }: GradientLineProps) => {
     const gradient = ctx.createLinearGradient(startX, startY, endX, endY);
 
     const animationOffset = (Date.now() % 1000) / 1000;
 
-    gradient.addColorStop(0, 'rgb(216, 216, 216)');
-    gradient.addColorStop(
-      0.5 + Math.sin(animationOffset * Math.PI * 2) * 0.5,
-      'rgba(231, 46, 33, 0.8)'
-    );
-    gradient.addColorStop(1, 'rgba(226, 48, 48, 0.1)');
+    gradient.addColorStop(0, 'rgba(216, 216, 216,1)');
+    gradient.addColorStop(0.5 + Math.sin(animationOffset * Math.PI * 2) * 0.5, '#E3E619'); //-1 -> 1 -> -1 ...
+    gradient.addColorStop(1, 'rgba(216, 216, 216,1)');
 
     ctx.strokeStyle = gradient;
     ctx.lineWidth = 2;
@@ -79,7 +71,7 @@ export const CanvasGallery = () => {
     (ctx: CanvasRenderingContext2D, progress: number) => {
       // console.log('progress', progress, '\n', 'roundedProgress', Math.round(progress), '\n');
       const dashPattern = [5, 5];
-      const passedPointColor = '#E23030';
+      const passedPointColor = '#E3E619';
       const baseColor = '#f1f1f1';
 
       ctx.lineWidth = 1;
@@ -196,11 +188,19 @@ export const CanvasGallery = () => {
         });
       }
     },
-    [drawCircle]
+    [drawCircle, drawGradientLine]
   );
 
   const animate = useCallback(() => {
     const canvas = canvasRef.current;
+
+    const iconPositions: Point[] = [
+      { x: 12.5, y: 106.71 },
+      { x: 187.3, y: 34.77 },
+      { x: 318.9, y: 69.57 },
+      { x: 389.3, y: 12.5 },
+      { x: 542.9, y: 37.17 },
+    ];
 
     if (!canvas) {
       throw new Error('Canvas is not supported.');
@@ -227,8 +227,8 @@ export const CanvasGallery = () => {
     ctx.lineWidth = 1;
 
     if (imageRef.current) {
-      currentProgressRef.current += (targetProgressRef.current - currentProgressRef.current) * 0.1;
       const segmentIndex = Math.floor(currentProgressRef.current); //1,2,3,4,5
+
       const segmentProgress = currentProgressRef.current - segmentIndex; //0 -> 1
 
       const currentPos = iconPositions[segmentIndex];
@@ -273,7 +273,7 @@ export const CanvasGallery = () => {
     }
 
     animationRef.current = requestAnimationFrame(animate);
-  }, [drawProgress]);
+  }, [drawProgress, currentProgressRef, targetProgressRef]);
 
   useEffect(() => {
     const img = new Image();
@@ -293,31 +293,6 @@ export const CanvasGallery = () => {
       }
     };
   }, [animate]);
-
-  useEffect(() => {
-    let ticking = false;
-
-    const handleScroll = () => {
-      const currentScrollPosition = window.scrollY;
-      if (!ticking) {
-        window.requestAnimationFrame(() => {
-          const scrollPosition = Math.max(0, currentScrollPosition - window.innerHeight);
-
-          const pageHeight = document.documentElement.scrollHeight - window.innerHeight * 2;
-
-          const rawProgress = Math.min(Math.max((scrollPosition / pageHeight) * 4, 0), 4);
-
-          targetProgressRef.current = rawProgress;
-
-          ticking = false;
-        });
-        ticking = true;
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   return (
     <canvas

@@ -3,8 +3,8 @@
 .bg-application {
   position: absolute;
   z-index: -1;
-  width: calc(100vw - var(--margin) * 2);
-  left: var(--margin);
+  width: calc(100vw - var(--margin) * 4);
+  left: calc(var(--margin) * 1.5);
   top: -10rem;
   margin-right: calc(50% - 50vw);
   margin-left: calc(50% - 50vw);
@@ -15,7 +15,7 @@ $total-applications: 7;
 $max-translate: 30%;
 
 .application {
-  width: calc(100vw - var(--margin) * 2);
+  width: 100%;
   position: absolute;
   display: grid;
   z-index: 0;
@@ -65,4 +65,73 @@ $max-translate: 30%;
 }
 
 .application svg {
+}
+
+@include mq(sp) {
+  .bg-application {
+    position: absolute;
+    z-index: -1;
+    width: calc(100vw - 2rem);
+    left: calc(1rem);
+    top: 5rem;
+    margin-right: calc(50% - 50vw);
+    margin-left: calc(50% - 50vw);
+    opacity: 0.3;
+  }
+
+  $total-applications: 7;
+  $max-translate: 30%;
+
+  .application {
+    width: 100%;
+    position: absolute;
+    display: grid;
+    z-index: 0;
+    animation-duration: 1.5s;
+    animation-timing-function: var(--easeInCubic);
+    animation-fill-mode: forwards;
+  }
+
+  @for $i from 1 through $total-applications {
+    $translate: ($i - ceil($total-applications / 2)) * 10%;
+    $opacity: if($i == ceil($total-applications / 2), 0.3, if($i == 1 or $i == $total-applications, 0.1, 0.2));
+
+    .application:nth-child(#{$i}) {
+      translate: 0% $translate;
+      opacity: $opacity;
+    }
+
+    .bg-application.active .application:nth-child(#{$i}) {
+      animation-name: application-active-#{$i};
+    }
+
+    @keyframes application-active-#{$i} {
+      0% {
+        translate: 0% $translate;
+        opacity: $opacity;
+      }
+      100% {
+        translate: 0% 0%;
+        opacity: $opacity;
+      }
+    }
+
+    .bg-application.inactive .application:nth-child(#{$i}) {
+      animation-name: application-inactive-#{$i};
+    }
+
+    @keyframes application-inactive-#{$i} {
+      0% {
+        translate: 0% 0%;
+        opacity: $opacity;
+      }
+      100% {
+        translate: 0% $translate;
+        opacity: $opacity;
+      }
+    }
+  }
+
+  .application svg {
+  }
 }

@@ -43,6 +43,18 @@ const Earth = ({ width = '214', height = '215' }: EarthProps) => {
             stroke="#f1f1f1"
             strokeMiterlimit="10"
             strokeWidth={2}
+            className={styles.indicator__ellipse__ellipse00}
+          />
+          <ellipse
+            cx="107.08"
+            cy="107.64"
+            rx="106.58"
+            ry="107.14"
+            fill="none"
+            stroke="#f1f1f1"
+            strokeMiterlimit="10"
+            strokeWidth={2}
+            className={styles.indicator__ellipse__ellipse01}
           />
           <ellipse
             cx="107.08"
@@ -53,6 +65,7 @@ const Earth = ({ width = '214', height = '215' }: EarthProps) => {
             stroke="#f1f1f1"
             strokeMiterlimit="10"
             strokeWidth={2}
+            className={styles.indicator__ellipse__ellipse02}
           />
           <ellipse
             cx="107.08"
@@ -63,6 +76,7 @@ const Earth = ({ width = '214', height = '215' }: EarthProps) => {
             stroke="#f1f1f1"
             strokeMiterlimit="10"
             strokeWidth={2}
+            className={styles.indicator__ellipse__ellipse03}
           />
           <ellipse
             cx="107.08"
@@ -73,6 +87,7 @@ const Earth = ({ width = '214', height = '215' }: EarthProps) => {
             stroke="#f1f1f1"
             strokeMiterlimit="10"
             strokeWidth={2}
+            className={styles.indicator__ellipse__ellipse04}
           />
           <path
             d="M186.66,179.07c16.79-18.93,27-43.89,27-71.24s-10.22-52.31-27-71.24c-22.21,11.1-49.75,17.67-79.58,17.67s-57.37-6.57-79.58-17.67C10.72,55.51.5,80.46.5,107.82s10.22,52.31,27,71.24c22.21-11.1,49.75-17.67,79.58-17.67s57.37,6.57,79.58,17.67Z"

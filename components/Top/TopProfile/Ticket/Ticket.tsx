@@ -1,8 +1,6 @@
 'use client';
 
-import Image from 'next/image';
-import Link from 'next/link';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { ResponsiveImage } from '@/components/Common/ResponsiveImage/ResponsiveImage';
 import styles from '@/components/Top/TopProfile/Ticket/ticket.module.scss';
@@ -63,6 +61,9 @@ export const Ticket = () => {
           <defs>
             <clipPath id="svgClip" clipPathUnits="objectBoundingBox">
               <path d="M0.9841 0 L0.7127 0 L0.016 0 L0 0.0411 L0 0.9589 L0.016 1 L0.7127 1 L0.9841 1 L1 0.9589 L1 0.0411 L0.9841 0" />
+            </clipPath>
+            <clipPath id="svgClip2" clipPathUnits="objectBoundingBox">
+              <path d="M0.98 0 L0.72 0 L0.025 0 L0 0.05 L0 0.96 L0.02 1 L0.72 1 L0.98 1 L1 0.96 L1 0.045 L0.975 0" />
             </clipPath>
           </defs>
         </svg>

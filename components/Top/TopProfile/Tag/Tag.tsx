@@ -8,7 +8,7 @@ export const Tag = () => {
         <dd className={styles.tag__desc}>takaoka</dd>
       </div>
       <div className={`${styles.tag__row} _en`}>
-        <dt className={styles.tag__term}>resident</dt>
+        <dt className={styles.tag__term}>residence</dt>
         <dd className={styles.tag__desc}>kansai</dd>
       </div>
     </dl>
