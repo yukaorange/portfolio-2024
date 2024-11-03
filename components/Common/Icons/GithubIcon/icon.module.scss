@@ -1,0 +1,17 @@
+@use "@/styles/mixin/mixins" as *;
+
+svg.githubIcon {
+  --width: 5.6rem;
+  --height: 5.7rem;
+  width: var(--width);
+  height: var(--height);
+}
+@include mq(sp) {
+  svg.githubIcon {
+    --width: 5.6rem;
+    --height: 5.7rem;
+    --coefficient: 0.4;
+    width: calc(var(--width) * var(--coefficient));
+    height: calc(var(--height) * var(--coefficient));
+  }
+}

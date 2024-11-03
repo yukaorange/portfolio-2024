@@ -1,0 +1,92 @@
+@use "@/styles/mixin/mixins" as *;
+
+@mixin jitter($steps: 10, $strX: 10, $strY: 10) {
+  @keyframes jitter-#{$steps}-#{$strX}-#{$strY} {
+    $i: $steps;
+    @while $i > 0 {
+      #{percentage($i/$steps)} {
+        $effectFalloff: 1-$i/$steps; //0 -> 0.5
+        $x: (random($strX) - $strX/2) * $effectFalloff * 1px;
+        $y: (random($strY) - $strY/2) * $effectFalloff * 1px;
+        transform: translate($x, $y);
+      }
+      $i: $i - 1;
+    }
+  }
+}
+
+@include jitter(30, 20, 8);
+@include jitter(30, 21, 8);
+@include jitter(30, 22, 8);
+@include jitter(30, 23, 8);
+@include jitter(30, 24, 8);
+// @include jitter(20, 20, 8);
+// @include jitter(20, 21, 8);
+// @include jitter(20, 22, 8);
+// @include jitter(20, 23, 8);
+// @include jitter(20, 24, 8);
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.glitch {
+  position: relative;
+  color: var(--black-1);
+  z-index: 1;
+}
+
+.glitch__base {
+  position: relative;
+  z-index: 1;
+}
+
+.glitch__layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: calc(20% + 0px);
+  overflow: hidden;
+  opacity: 0;
+}
+
+.glitch__layer span {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+}
+
+@for $i from 1 through 5 {
+  .glitch__layer:nth-child(#{$i + 1}) {
+    top: ($i - 1) * 20%;
+    span {
+      top: -($i - 1) * 100%;
+    }
+  }
+}
+
+.glitch.active .glitch__layer {
+  opacity: 1;
+}
+
+@for $i from 1 through 5 {
+  .glitch.active .glitch__layer:nth-child(#{$i + 1}) {
+    animation-name: jitter-30-#{19 + $i}-8;
+    animation-duration: 0.4s;
+    animation-fill-mode: both;
+    animation-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
+    // animation-iteration-count: infinite;
+    animation-delay: 0.1s;
+  }
+}
+
+.label {
+  opacity: 0;
+}

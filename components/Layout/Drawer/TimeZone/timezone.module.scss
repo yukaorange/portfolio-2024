@@ -1,0 +1,89 @@
+@use "@/styles/mixin/mixins" as *;
+
+.timezone {
+}
+
+.timezone__list {
+  display: grid;
+  font-weight: 500;
+  font-size: text(20);
+  color: var(--black-1);
+  line-height: 1;
+  row-gap: 0.8rem;
+}
+
+.timezone_list__item {
+  width: cols(5);
+  display: grid;
+  grid-template-columns: auto auto;
+  justify-content: space-between;
+}
+
+.timezone__city {
+}
+
+.timezone__time {
+  display: grid;
+  grid-template-columns: auto auto auto;
+  align-items: center;
+}
+
+.timezone__time__coron {
+  line-height: 1;
+  animation-name: twincle;
+  animation-duration: 1.6s;
+  animation-iteration-count: infinite;
+}
+
+@keyframes twincle {
+  0% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 1;
+  }
+  51% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@include mq(sp) {
+  .timezone {
+  }
+
+  .timezone__list {
+    display: grid;
+    font-weight: 500;
+    font-size: text(14);
+    color: var(--black-1);
+    line-height: 1;
+    row-gap: 0.8rem;
+  }
+
+  .timezone_list__item {
+    width: cols(4.5);
+    display: grid;
+    grid-template-columns: auto auto;
+    justify-content: space-between;
+  }
+
+  .timezone__city {
+  }
+
+  .timezone__time {
+    display: grid;
+    grid-template-columns: auto auto auto;
+    align-items: center;
+  }
+
+  .timezone__time__coron {
+    line-height: 1;
+    animation-name: twincle;
+    animation-duration: 1.6s;
+    animation-iteration-count: infinite;
+  }
+}

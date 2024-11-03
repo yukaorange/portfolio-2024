@@ -1,0 +1,74 @@
+@use "@/styles/mixin/mixins" as *;
+
+.marquee {
+  position: absolute;
+  z-index: -1;
+  opacity: 0.2;
+  rotate: -11.5deg;
+  top: 50%;
+  left: 50%;
+  translate: calc(-50%) calc(-50% + 25rem);
+}
+
+.marquee__inner {
+  display: grid;
+  grid-template-columns: repeat(4, auto);
+  animation-name: marquee;
+  animation-duration: 30s;
+  animation-fill-mode: forwards;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+}
+
+.marquee__content {
+  font-size: 25.6rem;
+  font-weight: 700;
+  line-height: 1;
+  display: grid;
+  width: fit-content;
+  white-space: nowrap;
+  color: var(--black-1);
+  letter-spacing: 0.01em;
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-25%);
+  }
+}
+
+@include mq(sp) {
+  .marquee {
+    position: absolute;
+    z-index: 0;
+    opacity: 0.2;
+    rotate: -11.5deg;
+    top: 50%;
+    left: 50%;
+    translate: calc(-50%) calc(-50% + 5rem);
+  }
+  .marquee__inner {
+    display: grid;
+    grid-template-columns: repeat(4, auto);
+    animation-name: marquee;
+    animation-duration: 24s;
+    animation-fill-mode: forwards;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+  }
+
+  .marquee__content {
+    font-size: 9.6rem;
+    font-weight: 700;
+    line-height: 1;
+    display: grid;
+    width: fit-content;
+    white-space: nowrap;
+    color: var(--black-1);
+    letter-spacing: 0.01em;
+  }
+}

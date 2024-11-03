@@ -1,0 +1,39 @@
+@use "@/styles/mixin/mixins" as *;
+
+.speedmeter {
+  display: grid;
+}
+
+.speedmeter svg {
+  --width: 83rem;
+  --height: 57rem;
+  --coefficient: 0.15;
+
+  width: calc(var(--width) * var(--coefficient));
+  height: calc(var(--height) * var(--coefficient));
+}
+
+.speedmeter__needle {
+  transform-origin: 67% 95%;
+  rotate: calc(var(--velocity) * 100deg + 10deg);
+}
+
+@include mq(sp) {
+  .speedmeter {
+    display: grid;
+  }
+
+  .speedmeter svg {
+    --width: 83rem;
+    --height: 57rem;
+    --coefficient: 0.05;
+
+    width: calc(var(--width) * var(--coefficient));
+    height: calc(var(--height) * var(--coefficient));
+  }
+
+  .speedmeter__needle {
+    transform-origin: 67% 95%;
+    rotate: calc(var(--velocity) * 100deg + 10deg);
+  }
+}

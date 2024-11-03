@@ -1,0 +1,91 @@
+@use "@/styles/mixin/mixins" as *;
+
+.footer {
+  height: calc(100svh * 1);
+  margin-top: calc(var(--section-space) * 1);
+  padding-inline: calc(var(--col) * 1 + var(--gap) * 1 + var(--margin) * 1);
+
+  display: grid;
+  align-items: end;
+  justify-items: end;
+}
+
+.footer__inner {
+}
+
+.footer__nav {
+}
+
+.footer__copyright {
+  padding-top: 5rem;
+  padding-bottom: 8rem;
+  display: grid;
+  grid-template-columns: auto auto;
+  justify-content: end;
+  column-gap: 1rem;
+  align-items: center;
+}
+
+.footer__copyright__text {
+  font-weight: 400;
+  font-size: text(14);
+}
+
+.footer__copyright__icon {
+  display: grid;
+}
+
+.footer__copyright__icon svg {
+  --width: 2.4rem;
+  --height: 1.1rem;
+  --coefficient: 1;
+  width: calc(var(--width) * var(--coefficient));
+  height: calc(var(--height) * var(--coefficient));
+}
+
+@include mq(sp) {
+  .footer {
+    height: calc(100svh * 1);
+    margin-top: calc(var(--section-space) * 1);
+    padding-inline: calc(var(--margin) * 1);
+
+    display: grid;
+    align-items: end;
+    justify-items: end;
+  }
+
+  .footer__inner {
+  }
+
+  .footer__nav {
+  }
+
+  .footer__copyright {
+    padding-top: 2.4rem;
+    padding-bottom: 8rem;
+
+    display: grid;
+    grid-template-columns: auto auto;
+    justify-content: end;
+    column-gap: 1rem;
+    align-items: center;
+  }
+
+  .footer__copyright__text {
+    font-weight: 400;
+    font-size: text(12);
+    letter-spacing: 0.01em;
+  }
+
+  .footer__copyright__icon {
+    display: grid;
+  }
+
+  .footer__copyright__icon svg {
+    --width: 2.4rem;
+    --height: 1.1rem;
+    --coefficient: 0.85;
+    width: calc(var(--width) * var(--coefficient));
+    height: calc(var(--height) * var(--coefficient));
+  }
+}

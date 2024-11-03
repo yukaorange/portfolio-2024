@@ -37,7 +37,7 @@ export const CanvasGallery = ({ currentProgressRef, targetProgressRef }: CanvasG
     gradient.addColorStop(1, 'rgba(216, 216, 216,1)');
 
     ctx.strokeStyle = gradient;
-    ctx.lineWidth = 2;
+    ctx.lineWidth = 1;
     ctx.setLineDash([5, 5]);
     ctx.beginPath();
     ctx.moveTo(startX, startY);
@@ -215,7 +215,7 @@ export const CanvasGallery = ({ currentProgressRef, targetProgressRef }: CanvasG
 
     const viewBox = [0, 0, 555.4, 119.21];
     canvas.width = 555.4 * 2;
-    canvas.height = 120 * 2;
+    canvas.height = 119.2 * 2;
 
     const scaleX = canvas.width / viewBox[2];
     const scaleY = canvas.height / viewBox[3];
@@ -227,7 +227,9 @@ export const CanvasGallery = ({ currentProgressRef, targetProgressRef }: CanvasG
     ctx.lineWidth = 1;
 
     if (imageRef.current) {
-      const segmentIndex = Math.floor(currentProgressRef.current); //1,2,3,4,5
+      const segmentIndex = Math.floor(currentProgressRef.current); //0,1,2,3,4
+
+      // const roundedIndex = Math.round(currentProgressRef.current);
 
       const segmentProgress = currentProgressRef.current - segmentIndex; //0 -> 1
 

@@ -1,0 +1,52 @@
+@use "@/styles/mixin/mixins" as *;
+
+.nav {
+  display: grid;
+  align-items: center;
+  column-gap: 2.4rem;
+  justify-content: start;
+  row-gap: 2.4rem;
+}
+
+.nav__item {
+  display: grid;
+  color: var(--black-1);
+}
+
+.nav__link {
+  line-height: 1;
+  font-size: text(64);
+}
+
+.nav__link.icon {
+  display: grid;
+}
+
+.glictch{
+  position: relative;
+}
+
+.nav__link.icon svg {
+}
+
+@include mq(sp) {
+  .nav {
+    display: grid;
+    grid-template-columns: auto;
+    align-items: center;
+    column-gap: 0;
+    row-gap: 1.6rem;
+  }
+
+  .nav__item {
+  }
+
+  .nav__link {
+    display: grid;
+    font-size: text(24);
+  }
+
+  .nav__link.icon {
+    display: grid;
+  }
+}

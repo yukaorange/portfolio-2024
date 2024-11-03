@@ -11,15 +11,15 @@
   //z-index
   --z-index-header: 10000;
   --z-index-overlay: 500;
-  --z-index-drawer: 1000;
+  --z-index-menuarea: 1000;
+  --z-index-drawer: 1500;
   --z-index-bg: -1000;
   --margin: 0.6rem;
   --gap: 1.2rem;
   --col: calc((var(--vw) - var(--margin) * 2 - var(--gap) * 23) / 24);
   --section-space: 35rem;
-
   --delay: 0.2s;
-  --duration: 0.4s;
+  --duration: 0.2s;
 }
 
 @include mq(sp) {
@@ -59,8 +59,8 @@ html {
 }
 
 body {
-  color: var(--white-1);
   background-color: var(--black-1);
+  color: var(--white-1);
   font-family: "Noto Sans JP", "Open Sans", sans-serif;
   font-size: var(--font-size-base);
   letter-spacing: 0.1em;

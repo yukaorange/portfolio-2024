@@ -1,68 +1,71 @@
 @use "@/styles/mixin/mixins" as *;
 
 .marquee {
-  width: 100%;
-  position: relative;
-  z-index: 0;
-  background-image: url(/images/texture/noise.png);
-  background-repeat: repeat;
-  background-position: center;
-  background-size: 5% 5%;
-  // animation-name: twincle;
-  animation-iteration-count: infinite;
   animation-duration: 0.001s;
-}
-.marquee__bg {
-  position: absolute;
-  background-color: var(--lemon-1);
+
+  // animation-name: twincle;
+  // animation-iteration-count: infinite;
+  // background-image: url("/images/texture/noise.png");
+  // background-position: center;
+  // background-repeat: repeat;
+  // background-size: 5% 5%;
+  position: relative;
+  width: 100%;
   z-index: 0;
+}
+
+.marquee__bg {
+  background-color: var(--lemon-1);
   inset: 0;
   opacity: 1;
-  z-index: -1;
+  scale: 0.99; //境界にすじができるのを防ぐ
   overflow: hidden;
+  position: absolute;
+  z-index: -1;
 }
 
 .marquee__bg__banner {
-  position: absolute;
-  width: 200%;
-  height: 50%;
-  left: 50%;
-  z-index: 2;
-  opacity: 0.2;
-  translate: calc(-50%) -50%;
   background-image: url("/images/top/skills.svg");
   background-repeat: repeat;
   background-size: 2000% 100%;
+  height: 50%;
+  left: 50%;
+  opacity: 0.2;
+  position: absolute;
   rotate: z -30deg;
+  translate: calc(-50%) -50%;
+  width: 200%;
+  z-index: 2;
 }
 
 .marquee__bg__banner {
   @for $i from 1 through 10 {
     &:nth-child(#{$i}) {
-      top: calc(($i - 5) * calc(50% + 3.2rem));
       background-position: calc(50% + (($i - 5) * 20rem)) 50%;
+      top: calc(($i - 5) * calc(50% + 3.2rem));
     }
   }
 }
 
 .marquee__inner {
-  font-size: 25.6rem;
-  line-height: 1;
-  display: grid;
-  grid-auto-flow: column;
-  animation-name: marquee-move;
   animation-duration: 60s;
-  animation-timing-function: linear;
   animation-iteration-count: infinite;
+  animation-name: marquee-move;
+  animation-timing-function: linear;
+  display: grid;
+  font-size: 25.6rem;
+  grid-auto-flow: column;
+  line-height: 1;
 }
 
 .marquee__content {
+  border: 0.1rem solid var(--black-1);
   background-color: #151515;
-  mask-image: url(/images/top/gateway_alt.svg);
-  mask-size: 100% 100%;
+  height: calc(22.3rem * 1);
+  mask-image: url("/images/top/gateway_alt.svg");
+  mask-position: 50% calc(50% + 0px);
   mask-repeat: no-repeat;
-  mask-position: center;
-  height: calc(22.328rem * 1);
+  mask-size: calc(100% + 1px) calc(125% + 1px);
   width: calc(352.8rem * 1);
 }
 
@@ -70,6 +73,7 @@
   0% {
     translate: 0;
   }
+
   100% {
     translate: calc(-352.8rem * 1);
   }
@@ -77,74 +81,70 @@
 
 @include mq(sp) {
   .marquee {
-    width: 100%;
     position: relative;
+    width: 100%;
     z-index: 0;
-    background-image: url(/images/texture/noise.png);
-    background-repeat: repeat;
-    background-position: center;
-    background-size: 5% 5%;
-    // animation-name: twincle;
-    animation-iteration-count: infinite;
-    animation-duration: 0.001s;
   }
+
   .marquee__bg {
-    position: absolute;
     background-color: var(--lemon-1);
-    z-index: 0;
     inset: 0;
+    scale: 0.99;
     opacity: 1;
+    position: absolute;
     z-index: -1;
   }
 
   .marquee__bg__banner {
-    position: absolute;
-    width: 200%;
-    height: 50%;
-    left: 50%;
-    z-index: 2;
-    opacity: 0.2;
-    translate: calc(-50%) -50%;
     background-image: url("/images/top/skills.svg");
     background-repeat: repeat;
     background-size: 2000% 100%;
+    height: 50%;
+    left: 50%;
+    opacity: 0.2;
+    position: absolute;
     rotate: z -30deg;
+    translate: calc(-50%) -50%;
+    width: 200%;
+    z-index: 2;
   }
 
   .marquee__bg__banner {
     @for $i from 1 through 10 {
       &:nth-child(#{$i}) {
-        top: calc(($i - 5) * calc(50% + 0.8rem));
         background-position: calc(50% + (($i - 5) * 10rem)) 50%;
+        top: calc(($i - 5) * calc(50% + 0.8rem));
       }
     }
   }
 
   .marquee__inner {
-    font-size: 9.6rem;
-    line-height: 1;
-    display: grid;
-    grid-auto-flow: column;
-    animation-name: marquee-move;
     animation-duration: 120s;
-    animation-timing-function: linear;
     animation-iteration-count: infinite;
+    animation-name: marquee-move;
+    animation-timing-function: linear;
+    display: grid;
+    font-size: 9.6rem;
+    grid-auto-flow: column;
+    line-height: 1;
   }
 
   .marquee__content {
+    --coefficient: 0.4;
     background-color: #151515;
-    mask-image: url(/images/top/gateway_alt.svg);
-    mask-size: calc(100% + 1px) calc(150%);
+    height: calc(22.3rem * var(--coefficient));
+    mask-image: url("/images/top/gateway_alt.svg");
+    mask-position: 50% calc(50% + 0px);
     mask-repeat: no-repeat;
-    mask-position: center;
-    height: calc(22.328rem * 0.3);
-    width: calc(352.8rem * 0.3);
+    mask-size: calc(100% + 1px) calc(150% + 1px);
+    width: calc(352.8rem * var(--coefficient));
   }
 
   @keyframes marquee-move {
     0% {
       translate: 0;
     }
+
     100% {
       translate: calc(-352.8rem * 0.3);
     }

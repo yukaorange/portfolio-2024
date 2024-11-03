@@ -1,8 +1,8 @@
 @use "@/styles/mixin/mixins" as *;
 
 .profile {
-  padding-top: var(--section-space);
   padding-inline: calc(var(--col) * 1 + var(--gap) * 1 + var(--margin) * 1);
+  padding-top: var(--section-space);
 }
 
 .profile__inner {
@@ -12,8 +12,8 @@
 
 .profile__content {
   display: grid;
-  row-gap: 3.2rem;
   position: relative;
+  row-gap: 3.2rem;
   z-index: 0;
 }
 
@@ -21,15 +21,15 @@
 }
 
 .profile__textbox {
-  width: cols(10);
   display: grid;
   row-gap: 2.4rem;
+  width: cols(10);
 }
 
 .profile__text {
-  text-align: justify;
   font-size: text(16);
   line-height: 1.5;
+  text-align: justify;
 }
 
 .profile__text.kerning {
@@ -37,12 +37,13 @@
 }
 
 .profile__status {
-  width: cols(10);
+  align-items: end;
   display: grid;
-  row-gap: 2.4rem;
+
   // grid-template-columns: auto auto;
   grid-template-areas: "tag tag" "stats photo";
-  align-items: end;
+  row-gap: 2.4rem;
+  width: cols(10);
 }
 
 .profile__tag {
@@ -54,10 +55,10 @@
 }
 
 .profile__photo {
+  aspect-ratio: 1/1;
   grid-area: photo;
   justify-self: end;
   width: 19rem;
-  aspect-ratio: 1/1;
 }
 
 .profile__link {
@@ -67,8 +68,8 @@
 
 @include mq(sp) {
   .profile {
-    padding-top: var(--section-space);
     padding-inline: calc(var(--margin) * 1);
+    padding-top: var(--section-space);
   }
 
   .profile__inner {
@@ -78,8 +79,8 @@
 
   .profile__content {
     display: grid;
-    row-gap: 3.2rem;
     position: relative;
+    row-gap: 3.2rem;
     z-index: 0;
   }
 
@@ -87,23 +88,23 @@
   }
 
   .profile__textbox {
-    width: cols(8);
     display: grid;
     row-gap: 2.4rem;
+    width: cols(8);
   }
 
   .profile__text {
-    text-align: justify;
     font-size: text(14);
     line-height: 1.5;
+    text-align: justify;
   }
 
   .profile__status {
-    width: cols(8);
-    display: grid;
-    row-gap: 2.4rem;
-    grid-template-areas: "tag photo" "stats stats";
     align-items: center;
+    display: grid;
+    grid-template-areas: "tag photo" "stats stats";
+    row-gap: 2.4rem;
+    width: cols(8);
   }
 
   .profile__tag {
@@ -115,10 +116,10 @@
   }
 
   .profile__photo {
+    aspect-ratio: 1/1;
     grid-area: photo;
     justify-self: end;
     width: 8.2rem;
-    aspect-ratio: 1/1;
   }
 
   .profile__link {

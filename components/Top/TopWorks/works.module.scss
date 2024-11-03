@@ -1,11 +1,11 @@
 @use "@/styles/mixin/mixins" as *;
 
 .works {
-  padding-top: var(--section-space);
+  overflow: hidden;
   padding-inline: calc(var(--col) * 1 + var(--gap) * 1 + var(--margin) * 1);
+  padding-top: var(--section-space);
   position: relative;
   z-index: 0;
-  overflow: hidden;
 }
 
 .works__inner {
@@ -21,8 +21,8 @@
 }
 
 .works__textbox {
-  max-width: cols(10);
   font-size: text(16);
+  max-width: cols(10);
 }
 
 .works__text {
@@ -33,17 +33,38 @@
 }
 
 .works__marquee {
-  position: absolute;
-  z-index: -1;
-  width: 100%;
-  top: calc(18rem + var(--section-space));
   left: 0;
+  position: absolute;
+  top: calc(18rem + var(--section-space));
+  width: 100%;
+  z-index: -1;
+}
+
+.works__arrows {
+  margin-top: 15rem;
+  display: grid;
+  justify-content: center;
+}
+
+.works__arrow {
+  display: grid;
+}
+
+.works__arrow svg {
+  --width: 1.4rem;
+  --height: 2rem;
+  --coefficient: 5;
+
+  rotate: 90deg;
+
+  width: calc(var(--width) * var(--coefficient));
+  height: calc(var(--height) * var(--coefficient));
 }
 
 @include mq(sp) {
   .works {
-    padding-top: var(--section-space);
     padding-inline: calc(var(--margin) * 1);
+    padding-top: var(--section-space);
   }
 
   .works__inner {
@@ -59,8 +80,8 @@
   }
 
   .works__textbox {
-    max-width: cols(8);
     font-size: text(14);
+    max-width: cols(8);
   }
 
   .works__text {
@@ -71,9 +92,9 @@
   }
 
   .works__marquee {
-    position: absolute;
-    z-index: -1;
-    top: calc(-8rem + var(--section-space));
     left: 0;
+    position: absolute;
+    top: calc(-8rem + var(--section-space));
+    z-index: -1;
   }
 }

@@ -1,0 +1,16 @@
+@use "@/styles/mixin/mixins" as *;
+svg.xIcon {
+  --width: 4.6rem;
+  --height: 4.8rem;
+  width: var(--width);
+  height: var(--height);
+}
+@include mq(sp) {
+  svg.xIcon {
+    --width: 4.6rem;
+    --height: 4.8rem;
+    --coefficient: 0.4;
+    width: calc(var(--width) * var(--coefficient));
+    height: calc(var(--height) * var(--coefficient));
+  }
+}

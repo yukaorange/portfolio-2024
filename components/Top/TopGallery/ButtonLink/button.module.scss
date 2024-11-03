@@ -1,0 +1,120 @@
+@use "@/styles/mixin/mixins" as *;
+
+.button {
+  display: grid;
+  font-size: text(24);
+  line-height: 1;
+  padding: 2rem 2.4rem 1.8rem;
+  width: fit-content;
+  position: relative;
+  z-index: 0;
+}
+
+.button__text {
+}
+
+.button__frames {
+}
+
+.button__frame {
+  --width: 3.5rem;
+  --height: 3.2rem;
+  --coefficient: 0.4;
+  width: calc(var(--width) * var(--coefficient));
+  height: calc(var(--height) * var(--coefficient));
+  display: grid;
+  position: absolute;
+  z-index: -1;
+}
+
+.button__frame__upperLeft {
+  top: 0;
+  left: 0;
+}
+
+.button__frame__upperRight {
+  top: 0;
+  right: 0;
+}
+
+.button__frame__lowerLeft {
+  bottom: 0;
+  left: 0;
+}
+
+.button__frame__lowerRight {
+  bottom: 0;
+  right: 0;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .button:hover .button__frame {
+    animation-name: twincle;
+    animation-duration: 0.01s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+  }
+}
+
+@keyframes twincle {
+  0% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+@include mq(sp) {
+  .button {
+    display: grid;
+    font-size: text(14);
+    line-height: 1;
+    padding: 1rem 1.6rem 0.8rem;
+    width: fit-content;
+    position: relative;
+    z-index: 0;
+  }
+
+  .button__text {
+  }
+
+  .button__frames {
+  }
+
+  .button__frame {
+    --width: 3.5rem;
+    --height: 3.2rem;
+    --coefficient: 0.3;
+    width: calc(var(--width) * var(--coefficient));
+    height: calc(var(--height) * var(--coefficient));
+    display: grid;
+    position: absolute;
+    z-index: -1;
+  }
+
+  .button__frame__upperLeft {
+    top: 0;
+    left: 0;
+  }
+
+  .button__frame__upperRight {
+    top: 0;
+    right: 0;
+  }
+
+  .button__frame__lowerLeft {
+    bottom: 0;
+    left: 0;
+  }
+
+  .button__frame__lowerRight {
+    bottom: 0;
+    right: 0;
+  }
+}

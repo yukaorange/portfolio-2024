@@ -4,6 +4,9 @@ import GSAP from 'gsap';
 import { useState, useRef, useEffect } from 'react';
 import { RecoilRoot } from 'recoil';
 
+import styles from '@/app/layout.module.scss';
+import { Drawer } from '@/components/Layout/Drawer/Drawer';
+import { Footer } from '@/components/Layout/Footer/Footer';
 import { Header } from '@/components/Layout/Header/Header';
 import { Loading } from '@/components/Layout/Loading/Loading';
 // import { GlitchFilters } from '@/components/Layout/SVG/Glitch/Glictch';
@@ -43,11 +46,13 @@ export const LayoutClient = ({ children }: Readonly<{ children: React.ReactNode 
         {isLoading ? (
           <Loading ref={loadingRef} />
         ) : (
-          <div className="layout">
+          <div className={styles.layout}>
             {isMounted && <ViewPortCalculator />}
             <Header />
+            <Drawer />
             {/* <GlitchFilters /> */}
             {children}
+            <Footer />
           </div>
         )}
       </RecoilRoot>

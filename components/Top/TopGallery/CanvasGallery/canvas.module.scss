@@ -1,17 +1,11 @@
 @use "@/styles/mixin/mixins" as *;
 
 .canvas {
-  // position: sticky;
-  // top: calc(50%);
-  // translate: 0% -50%;
   width: 90rem;
 }
 
 @include mq(sp) {
   .canvas {
-    // position: sticky;
-    // top: calc(50%);
-    // translate: 0% -50%;
     width: 32rem;
   }
 }

@@ -1,11 +1,11 @@
 @use "@/styles/mixin/mixins" as *;
 
 .fv {
-  height: 100svh;
-  display: grid;
   align-items: end;
-  padding-inline: calc(var(--col) * 1 + var(--gap) * 1 + var(--margin) * 1);
+  display: grid;
+  height: 100svh;
   padding-bottom: 8rem;
+  padding-inline: calc(var(--col) * 1 + var(--gap) * 1 + var(--margin) * 1);
 }
 
 .fv__inner {
@@ -17,11 +17,11 @@
 }
 
 .fv__subcopy {
-  justify-content: start;
-  display: grid;
-  grid-template-columns: repeat(4, auto);
   align-items: start;
   column-gap: 1.6rem;
+  display: grid;
+  grid-template-columns: repeat(4, auto);
+  justify-content: start;
 }
 
 .fv__subcopy__icon {
@@ -32,17 +32,17 @@
   --width: 4.3rem;
   --height: 1.8rem;
 
-  width: var(--width);
   height: var(--height);
+  width: var(--width);
 }
 
 .fv__subcopy__arrows {
+  align-items: center;
+  column-gap: 0.2rem;
   display: grid;
   grid-template-columns: repeat(3, auto);
   justify-content: start;
   padding-bottom: 0.2rem;
-  column-gap: 0.2rem;
-  align-items: center;
 }
 
 .fv__subcopy__arrow {
@@ -53,17 +53,19 @@
 .fv__subcopy__arrow svg {
   --width: 1.4rem;
   --height: 2rem;
-  width: var(--width);
-  height: var(--height);
-  animation-name: arrow-twincle;
-  animation-iteration-count: infinite;
+
   animation-duration: 1s;
+  animation-iteration-count: infinite;
+  animation-name: arrow-twincle;
   animation-timing-function: linear;
+  height: var(--height);
+  width: var(--width);
 }
 
 .fv__subcopy__arrow:nth-child(2) svg {
   animation-delay: 0.2s;
 }
+
 .fv__subcopy__arrow:nth-child(3) svg {
   animation-delay: 0.4s;
 }
@@ -72,22 +74,25 @@
   0% {
     opacity: 1;
   }
+
   20% {
     opacity: 0.25;
   }
+
   60% {
     opacity: 1;
   }
+
   100% {
     opacity: 1;
   }
 }
 
 .fv__subcopy__textbox {
+  align-items: center;
+  column-gap: 1rem;
   display: grid;
   grid-template-columns: repeat(3, auto);
-  column-gap: 1rem;
-  align-items: center;
 }
 
 .fv__subcopy__text {
@@ -105,26 +110,26 @@
 }
 
 .fv__maincopy__textbox {
-  justify-content: start;
   align-items: center;
+  column-gap: 1.6rem;
   display: grid;
   grid-template-columns: repeat(3, auto);
-  column-gap: 1.6rem;
+  justify-content: start;
 }
 
 .fv__maincopy__text {
   font-size: 9.6rem;
-  line-height: 1;
   font-weight: 700;
+  line-height: 1;
 }
 
 @include mq(sp) {
   .fv {
-    height: 100svh;
-    display: grid;
     align-items: end;
-    padding-inline: calc(var(--margin) * 1);
+    display: grid;
+    height: 100svh;
     padding-bottom: 4rem;
+    padding-inline: calc(var(--margin) * 1);
   }
 
   .fv__inner {
@@ -136,11 +141,11 @@
   }
 
   .fv__subcopy {
-    justify-content: start;
-    display: grid;
-    grid-template-columns: repeat(4, auto);
     align-items: start;
     column-gap: 0.8rem;
+    display: grid;
+    grid-template-columns: repeat(4, auto);
+    justify-content: start;
   }
 
   .fv__subcopy__icon {
@@ -151,18 +156,18 @@
     --width: 2.4rem;
     --height: 0.94rem;
 
-    width: var(--width);
     height: var(--height);
+    width: var(--width);
   }
 
   .fv__subcopy__arrows {
+    align-items: center;
+    column-gap: 0;
     display: grid;
     grid-template-columns: repeat(3, auto);
     justify-content: start;
-    padding-bottom: 0rem;
-    padding-top: 0rem;
-    column-gap: 0rem;
-    align-items: center;
+    padding-bottom: 0;
+    padding-top: 0;
   }
 
   .fv__subcopy__arrow {
@@ -174,26 +179,27 @@
     --width: 0.8rem;
     --height: 1.2rem;
 
-    width: var(--width);
-    height: var(--height);
-    animation-name: arrow-twincle;
-    animation-iteration-count: infinite;
     animation-duration: 1s;
+    animation-iteration-count: infinite;
+    animation-name: arrow-twincle;
     animation-timing-function: linear;
+    height: var(--height);
+    width: var(--width);
   }
 
   .fv__subcopy__arrow:nth-child(2) svg {
     animation-delay: 0.2s;
   }
+
   .fv__subcopy__arrow:nth-child(3) svg {
     animation-delay: 0.4s;
   }
 
   .fv__subcopy__textbox {
+    align-items: center;
+    column-gap: 0.8rem;
     display: grid;
     grid-template-columns: repeat(3, auto);
-    column-gap: 0.8rem;
-    align-items: center;
   }
 
   .fv__subcopy__text {
@@ -215,17 +221,17 @@
   }
 
   .fv__maincopy__textbox {
-    justify-content: start;
     align-items: center;
+    column-gap: 1.2rem;
     display: grid;
     grid-template-columns: repeat(2, auto);
-    column-gap: 1.2rem;
+    justify-content: start;
   }
 
   .fv__maincopy__text {
     font-size: 4.8rem;
-    line-height: 1;
     font-weight: 700;
+    line-height: 1;
   }
 
   .fv__maincopy__text.lastword {

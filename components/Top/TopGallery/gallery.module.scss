@@ -1,35 +1,72 @@
 @use "@/styles/mixin/mixins" as *;
 
 .gallery {
-  margin-top: calc(var(--section-space) * 0.5);
+  height: calc(100svh * 2.75);
+  margin-top: calc(var(--section-space) * 0);
   padding-inline: calc(var(--col) * 1 + var(--gap) * 1 + var(--margin) * 1);
-  height: calc(var(--vh) * 3);
 }
 
 .gallery__inner {
-  height: calc(var(--vh) * 1);
+  height: calc(100svh * 1);
   position: sticky;
   top: 0;
-
-  display: grid;
-  align-items: center;
 }
 
 .gallery__drumroll {
+  display: contents;
 }
 
 .gallery__canvas {
-  position: absolute;
-  z-index: -1;
   bottom: 5vh;
   left: 50%;
+  position: absolute;
   translate: -50% 0;
+  z-index: -1;
+}
+
+.gallery__speedmeter {
+  position: absolute;
+  left: calc(var(--col) * 1 + var(--gap) * 0 + var(--margin) * 1);
+  bottom: 0;
+  translate: -50% -50%;
+}
+
+.gallery__link {
+  display: grid;
+  justify-items: center;
+  margin-top: 10rem;
 }
 
 @include mq(sp) {
   .gallery {
-    margin-top: var(--section-space);
+    height: calc(100svh * 3.3);
+    margin-top: calc(var(--section-space) * 0.2);
     padding-inline: calc(var(--margin) * 1);
-    height: calc(var(--vh) * 3);
+  }
+
+  .gallery__inner {
+    height: calc(100svh * 1);
+    position: sticky;
+    top: 0;
+  }
+
+  .gallery__drumroll {
+    display: contents;
+  }
+
+  .gallery__canvas {
+    bottom: 5vh;
+    left: 50%;
+    position: absolute;
+    translate: -50% 0;
+    z-index: -1;
+  }
+
+  .gallery__speedmeter {
+    position: absolute;
+    left: calc(var(--col) * 0 + var(--gap) * 0 + var(--margin) * 1);
+    bottom: auto;
+    bottom: 10vh;
+    translate: -50% -50%;
   }
 }

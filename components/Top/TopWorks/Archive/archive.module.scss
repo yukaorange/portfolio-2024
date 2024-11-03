@@ -6,46 +6,45 @@
 }
 
 .item {
-  overflow: hidden;
   display: grid;
-  position: relative;
-  z-index: 0;
-  width: calc(var(--col) * 12 + var(--gap) * 12);
   min-height: 17.7rem;
+  overflow: hidden;
+  position: relative;
+  width: calc(var(--col) * 12 + var(--gap) * 12);
+  z-index: 0;
 }
 
 .item.unavailable {
 }
 
 .item__inner {
-  display: grid;
-  padding-inline: 2.4rem;
-  align-content: start;
-  grid-template-columns: auto auto;
+  place-content: start space-between;
   align-items: start;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: auto auto;
+  padding-inline: 2.4rem;
 }
 
 .item__header {
-  padding-top: 1.6rem;
   display: grid;
+  padding-top: 1.6rem;
   row-gap: 1.6rem;
 }
 
 .item__heading {
+  align-items: center;
+  column-gap: 1rem;
   display: grid;
   grid-template-columns: auto auto;
-  column-gap: 1rem;
   justify-content: start;
-  align-items: center;
 }
 
 .item__title {
+  color: var(--black-1);
   font-size: 4.8rem;
   font-weight: 700;
-  line-height: 1;
-  color: var(--black-1);
   letter-spacing: 0.01em;
+  line-height: 1;
 }
 
 .item__icon {
@@ -57,16 +56,16 @@
   --width: 4rem;
   --height: 4rem;
 
-  width: var(--width);
   height: var(--height);
+  width: var(--width);
 }
 
 .item__description {
   color: var(--black-1);
   font-size: text(16);
   font-weight: 700;
-  line-height: 1;
   letter-spacing: 0.01em;
+  line-height: 1;
 }
 
 .item__amount {
@@ -79,14 +78,14 @@
 
 .item__bg {
   display: grid;
+  inset: 0;
   position: absolute;
   z-index: -1;
-  inset: 0;
 }
 
 .item__bg svg {
-  width: 72rem;
   height: 17.9rem;
+  width: 72rem;
 }
 
 .item__bg svg path {
@@ -95,14 +94,14 @@
 
 .item__warning {
   display: grid;
-  position: absolute;
-  z-index: 1;
-  opacity: 0.6;
-  width: 84rem;
-  top: 50%;
   left: 50%;
+  opacity: 0.6;
+  position: absolute;
   rotate: -15deg;
+  top: 50%;
   translate: calc(-50% + 13rem) calc(-50% + 1rem);
+  width: 84rem;
+  z-index: 1;
 }
 
 .item__warning img {
@@ -128,52 +127,51 @@
 
 @include mq(sp) {
   .archive {
-    width: 32rem;
     display: grid;
     row-gap: 1.4rem;
+    width: 32rem;
   }
 
   .item {
-    overflow: hidden;
     display: grid;
-    position: relative;
-    z-index: 0;
-    width: 100%;
     min-height: 7.776rem;
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    z-index: 0;
   }
 
   .item.unavailable {
   }
 
   .item__inner {
-    display: grid;
-    padding-inline: 2.4rem;
-    align-content: start;
-    grid-template-columns: auto auto;
+    place-content: start space-between;
     align-items: start;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: auto auto;
+    padding-inline: 2.4rem;
   }
 
   .item__header {
-    padding-top: 0.8rem;
     display: grid;
+    padding-top: 0.8rem;
     row-gap: 0.8rem;
   }
 
   .item__heading {
+    align-items: center;
+    column-gap: 0.4rem;
     display: grid;
     grid-template-columns: auto auto;
-    column-gap: 0.4rem;
     justify-content: start;
-    align-items: center;
   }
 
   .item__title {
+    color: var(--black-1);
     font-size: 2.4rem;
     font-weight: 700;
-    line-height: 1;
-    color: var(--black-1);
     letter-spacing: 0.01em;
+    line-height: 1;
   }
 
   .item__icon {
@@ -185,39 +183,39 @@
     --width: 1.6rem;
     --height: 1.6rem;
 
-    width: var(--width);
     height: var(--height);
+    width: var(--width);
   }
 
   .item__description {
     color: var(--black-1);
     font-size: text(14);
     font-weight: 700;
-    line-height: 1;
     letter-spacing: 0.01em;
+    line-height: 1;
   }
 
   .item__amount {
-    position: absolute;
-    right: 0.4rem;
-    top: 1.2rem;
     color: var(--black-1);
     font-size: 6.4rem;
     font-weight: 700;
     line-height: 1;
     margin-top: -2rem;
+    position: absolute;
+    right: 0.4rem;
+    top: 1.2rem;
   }
 
   .item__bg {
     display: grid;
+    inset: 0;
     position: absolute;
     z-index: -1;
-    inset: 0;
   }
 
   .item__bg svg {
-    width: 32rem;
     height: 7.776rem;
+    width: 32rem;
   }
 
   .item__bg svg path {
@@ -226,14 +224,14 @@
 
   .item__warning {
     display: grid;
-    position: absolute;
-    z-index: 1;
-    opacity: 0.6;
-    width: 40rem;
-    top: 50%;
     left: 50%;
+    opacity: 0.6;
+    position: absolute;
     rotate: -15deg;
+    top: 50%;
     translate: calc(-50% + 11rem) calc(-50% - 0rem);
+    width: 40rem;
+    z-index: 1;
   }
 
   .item__warning img {

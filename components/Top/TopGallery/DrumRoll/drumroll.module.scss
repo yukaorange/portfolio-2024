@@ -1,4 +1,141 @@
 @use "@/styles/mixin/mixins" as *;
 
 .drumroll {
+  position: relative;
+  z-index: 0;
+  height: 100%;
+}
+
+.drumroll__list {
+  width: 100%;
+  display: grid;
+  align-items: center;
+  align-content: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  translate: -50% calc(var(--drumroll-progress) * -1lh - 0.5lh);
+  // font-size: text(64);
+  font-size: text(72);
+  letter-spacing: 0.01em;
+  perspective: 1000px;
+  transform-style: preserve-3d;
+}
+
+.drumroll__list__item {
+  display: grid;
+  width: 100%;
+  height: 100%;
+  position: relative;
+  text-align: center;
+  opacity: calc(1 - var(--drumroll-each-progress) * 1.33);
+  scale: calc(1 - var(--drumroll-each-progress) * 0.5);
+  transform: translate3d(0, 0, calc(var(--drumroll-each-progress) * -300px));
+}
+
+.drumroll__list__item.current {
+  text-shadow: 0 0 0.5rem var(--water-1);
+}
+
+.drumroll__indicator {
+  font-size: text(24);
+  bottom: 2svh;
+  display: grid;
+  height: 1lh;
+  left: 50%;
+  overflow: hidden;
+  position: absolute;
+  translate: -50% 0;
+  width: 100%;
+}
+
+.drumroll__indicator__list {
+  left: 0;
+  position: absolute;
+  top: 0;
+  transition: 0.2s;
+  translate: 0 calc(-1lh * var(--drumroll-indicator-progress));
+  width: 100%;
+}
+
+.drumroll__indicatorlist__item {
+  transition: 1s;
+  display: grid;
+  opacity: 0.2;
+  text-align: center;
+}
+
+.drumroll__indicatorlist__item.current {
+  opacity: 1;
+  display: grid;
+}
+
+@include mq(sp) {
+  .drumroll {
+    position: relative;
+    z-index: 0;
+    height: 100%;
+  }
+
+  .drumroll__list {
+    width: 100%;
+    display: grid;
+    align-items: center;
+    align-content: center;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    translate: -50% calc(var(--drumroll-progress) * -1lh - 0.5lh);
+    font-size: text(32);
+    perspective: 1000px;
+    transform-style: preserve-3d;
+  }
+
+  .drumroll__list__item {
+    display: grid;
+    width: 100%;
+    height: 100%;
+    position: relative;
+    text-align: center;
+    opacity: calc(1 - var(--drumroll-each-progress) * 1.33);
+    scale: calc(1 - var(--drumroll-each-progress) * 0.5);
+    transform: translate3d(0, 0, calc(var(--drumroll-each-progress) * -300px));
+  }
+
+  .drumroll__list__item.current {
+    text-shadow: 0 0 0.5rem var(--water-1);
+  }
+
+  .drumroll__indicator {
+    font-size: text(14);
+    bottom: 2svh;
+    display: grid;
+    height: 1lh;
+    left: 50%;
+    overflow: hidden;
+    position: absolute;
+    translate: -50% 0;
+    width: 100%;
+  }
+
+  .drumroll__indicator__list {
+    left: 0;
+    position: absolute;
+    top: 0;
+    transition: 0.2s;
+    translate: 0 calc(-1lh * var(--drumroll-indicator-progress));
+    width: 100%;
+  }
+
+  .drumroll__indicatorlist__item {
+    transition: 1s;
+    display: grid;
+    opacity: 0.2;
+    text-align: center;
+  }
+
+  .drumroll__indicatorlist__item.current {
+    opacity: 1;
+    display: grid;
+  }
 }
