@@ -39,8 +39,15 @@
   translate: calc(0% + 1px) 0;
 }
 
+.toggle.is_open.is_dragging {
+  transition: 0s;
+  translate: calc((0% - var(--drug-amount) * 0.1rem) + 1px) 0;
+}
+
 .toggle__tab {
   display: grid;
+  width: 3.2rem;
+  justify-items: end;
   position: absolute;
   right: 0;
   top: 2rem;
@@ -61,12 +68,12 @@
   position: absolute;
   left: 50%;
   top: 50%;
-  translate: calc(-50% - 1.1rem) -50%;
+  translate: calc(-50% - 0.3rem) -50%;
 }
 
 .toggle__arrow.is_open {
   rotate: 180deg;
-  translate: calc(-50% + 1.8rem) -50%;
+  translate: calc(-50% + 3.2rem) -50%;
 }
 
 .toggle__arrow svg {
@@ -107,6 +114,11 @@
 .drawer.is_open {
   transition: calc(var(--duration));
   translate: 0 0;
+}
+
+.drawer.is_open.is_dragging {
+  transition: 0s;
+  translate: calc((0% - var(--drug-amount) * 0.1rem) + 1px) 0;
 }
 
 .drawer__inner {
@@ -201,6 +213,11 @@
     translate: calc(0% + 1px) 0; //+1pxは境界のスジを消すため
   }
 
+  .toggle.is_open.is_dragging {
+    transition: 0s;
+    translate: calc((0% - var(--drug-amount) * 0.1rem) + 1px) 0;
+  }
+
   .toggle__tab {
     display: grid;
     position: absolute;
@@ -223,12 +240,12 @@
     position: absolute;
     left: 50%;
     top: 50%;
-    translate: calc(-50% - 1.1rem) -50%;
+    translate: calc(-50% - 0.3rem) -50%;
   }
 
   .toggle__arrow.is_open {
     rotate: 180deg;
-    translate: calc(-50% + 1.6rem) -50%;
+    translate: calc(-50% + 2.3rem) -50%;
   }
 
   .toggle__arrow svg {
@@ -269,6 +286,11 @@
   .drawer.is_open {
     transition: calc(var(--duration));
     translate: 0 0;
+  }
+
+  .drawer.is_open.is_dragging {
+    transition: 0s;
+    translate: calc((0% - var(--drug-amount) * 0.1rem) + 1px) 0;
   }
 
   .drawer__inner {

@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { useRecoilValue } from 'recoil';
 
 import { GitHubIcon } from '@/components/Common/Icons/GithubIcon/GitHubIcon';
@@ -6,7 +7,11 @@ import { Glitch } from '@/components/Layout/Drawer/Glitch/Glitch';
 import styles from '@/components/Layout/Drawer/Nav/nav.module.scss';
 import { navLinksAtom } from '@/store/navLinks';
 
-export const Nav = () => {
+interface NavProps {
+  onClick: () => void;
+}
+
+export const Nav = ({ onClick }: NavProps) => {
   const links = useRecoilValue(navLinksAtom);
 
   return (
@@ -16,35 +21,37 @@ export const Nav = () => {
           <div key={key} className={styles.nav__item}>
             {item.title === 'X' ? (
               <div className={styles.nav__item}>
-                <a
+                <Link
                   className={`${styles.nav__link} ${styles.icon}`}
                   href={item.link}
                   target="_blank"
                   rel="noopener noreferrer"
+                  onClick={onClick}
                 >
                   <Glitch>
                     <XIcon fillColor="#151515" />
                   </Glitch>
-                </a>
+                </Link>
               </div>
             ) : item.title === 'GitHub' ? (
               <div className={styles.nav__item}>
-                <a
+                <Link
                   className={`${styles.nav__link} ${styles.icon}`}
                   href={item.link}
                   target="_blank"
                   rel="noopener noreferrer"
+                  onClick={onClick}
                 >
                   <Glitch>
                     <GitHubIcon fillColor="#151515" />
                   </Glitch>
-                </a>
+                </Link>
               </div>
             ) : (
               <div className={`${styles.nav__item} _en`}>
-                <a className={`${styles.nav__link} `} href={item.link}>
+                <Link className={`${styles.nav__link} `} href={item.link} onClick={onClick}>
                   <Glitch>{item.title}</Glitch>
-                </a>
+                </Link>
               </div>
             )}
           </div>

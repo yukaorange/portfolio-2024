@@ -1,0 +1,17 @@
+@use "@/styles/mixin/mixins" as *;
+
+.about {
+  padding-top: 35rem;
+  display: grid;
+  row-gap: 35rem;
+  padding-inline: calc(var(--col) * 1 + var(--gap) * 1 + var(--margin) * 1);
+}
+
+@include mq(sp) {
+  .about {
+    padding-top: 20rem;
+    display: grid;
+    row-gap: 25rem;
+    padding-inline: calc(var(--margin) * 1);
+  }
+}

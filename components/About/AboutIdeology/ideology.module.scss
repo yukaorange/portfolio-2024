@@ -1,0 +1,29 @@
+@use "@/styles/mixin/mixins" as *;
+
+.ideology {
+}
+
+.ideology__textbox {
+  display: grid;
+  row-gap: 1.2rem;
+  font-size: text(16);
+  text-align: justify;
+}
+
+.ideology__text {
+}
+
+@include mq(sp) {
+  .ideology {
+  }
+
+  .ideology__textbox {
+    display: grid;
+    row-gap: 1.2rem;
+    font-size: text(14);
+    text-align: justify;
+  }
+
+  .ideology__text {
+  }
+}

@@ -9,7 +9,7 @@ export const TopWorks = () => {
       <div className={styles.works__inner}>
         <div className={styles.works__content}>
           <div className={styles.works__lead}>
-            <LeadTop text="works" />
+            <LeadTop text="works & gallery" />
           </div>
           <div className={`${styles.works__textbox} _shadow-blue`}>
             <p className={styles.works__text}>

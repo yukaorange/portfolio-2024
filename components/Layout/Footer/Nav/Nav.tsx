@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { useRecoilValue } from 'recoil';
 
 import { GitHubIcon } from '@/components/Common/Icons/GithubIcon/GitHubIcon';
@@ -15,31 +16,31 @@ export const Nav = () => {
           <div key={key} className={styles.nav__item}>
             {item.title === 'X' ? (
               <div className={styles.nav__item}>
-                <a
+                <Link
                   className={`${styles.nav__link} ${styles.icon}`}
                   href={item.link}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
                   <XIcon />
-                </a>
+                </Link>
               </div>
             ) : item.title === 'GitHub' ? (
               <div className={styles.nav__item}>
-                <a
+                <Link
                   className={`${styles.nav__link} ${styles.icon}`}
                   href={item.link}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
                   <GitHubIcon />
-                </a>
+                </Link>
               </div>
             ) : (
               <div className={`${styles.nav__item} _en`}>
-                <a className={`${styles.nav__link} `} href={item.link}>
+                <Link className={`${styles.nav__link} `} href={item.link}>
                   {item.title}
-                </a>
+                </Link>
               </div>
             )}
           </div>

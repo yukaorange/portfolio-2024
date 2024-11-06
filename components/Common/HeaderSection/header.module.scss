@@ -1,0 +1,81 @@
+@use "@/styles/mixin/mixins" as *;
+
+.header {
+  display: grid;
+  row-gap: 5rem;
+}
+
+.header__inner {
+  display: grid;
+}
+
+.header__lead {
+  font-size: text(24);
+  font-weight: 700;
+  text-align: justify;
+}
+
+.header__heading {
+  font-size: text(64);
+  line-height: 1;
+  text-shadow: 0 0 0.1rem var(--water-01);
+  text-transform: uppercase;
+}
+
+.header__lead__bars {
+  display: grid;
+  row-gap: 0.2rem;
+}
+
+.header__lead__bar1 {
+  background-color: var(--white-1);
+  height: 0.2rem;
+  width: calc(var(--col) * 2 + var(--gap) * 2);
+}
+
+.header__lead__bar2 {
+  background-color: var(--white-1);
+  height: 0.2rem;
+  width: calc(var(--col) * 3 + var(--gap) * 3);
+}
+
+@include mq(sp) {
+  .header {
+    display: grid;
+    row-gap: 4rem;
+  }
+
+  .header__inner {
+    display: grid;
+  }
+
+  .header__heading {
+    font-size: text(32);
+    line-height: 1;
+    text-shadow: 0 0 0.1rem var(--water-01);
+    text-transform: uppercase;
+  }
+
+  .header__lead__bars {
+    display: grid;
+    row-gap: 0.2rem;
+  }
+
+  .header__lead__bar1 {
+    background-color: var(--white-1);
+    height: 0.2rem;
+    width: calc(var(--col) * 2 + var(--gap) * 2);
+  }
+
+  .header__lead__bar2 {
+    background-color: var(--white-1);
+    height: 0.2rem;
+    width: calc(var(--col) * 3 + var(--gap) * 3);
+  }
+
+  .header__lead {
+    font-size: text(16);
+    font-weight: 700;
+    line-height: 1.1;
+  }
+}

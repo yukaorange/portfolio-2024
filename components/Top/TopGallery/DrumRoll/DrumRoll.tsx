@@ -1,4 +1,4 @@
-import { useRef, useEffect, useCallback } from 'react';
+import { useRef, useEffect, useCallback, useState } from 'react';
 import { useRecoilState } from 'recoil';
 
 import styles from '@/components/Top/TopGallery/DrumRoll/drumroll.module.scss';
@@ -18,14 +18,18 @@ interface DrumRollProps {
 export const DrumRoll = ({ targetProgressRef, currentProgressRef }: DrumRollProps) => {
   const listRef = useRef<HTMLUListElement>(null);
   const itemRefs = useRef<HTMLLIElement[]>([]);
+  const animationRef = useRef<number>();
   const indicatorRef = useRef<HTMLUListElement>(null);
   const [roundedIndex] = useRecoilState(galleryRoundedIndex);
+  const [isComponentMounted, setIsComponentMounted] = useState(false);
 
   const setItemRef = useCallback((el: HTMLLIElement | null, index: number) => {
     itemRefs.current[index] = el as HTMLLIElement;
   }, []);
 
   const animateProgress = useCallback(() => {
+    if (!isComponentMounted) return;
+
     listRef.current?.style.setProperty(
       '--drumroll-progress',
       currentProgressRef.current.toString()
@@ -47,17 +51,31 @@ export const DrumRoll = ({ targetProgressRef, currentProgressRef }: DrumRollProp
 
       distance = distance * 2.5;
 
-      item.style.setProperty(`--drumroll-each-progress`, distance.toString());
+      if (item) {
+        item.style.setProperty(`--drumroll-each-progress`, distance.toString());
+      }
     });
 
-    requestAnimationFrame(animateProgress);
-  }, [currentProgressRef]);
+    if (isComponentMounted) {
+      animationRef.current = requestAnimationFrame(animateProgress);
+    }
+  }, [currentProgressRef, isComponentMounted]);
 
   useEffect(() => {
-    const animationId = requestAnimationFrame(animateProgress);
+    setIsComponentMounted(true);
+    animateProgress();
 
-    return () => cancelAnimationFrame(animationId);
-  }, [targetProgressRef, animateProgress]);
+    return () => {
+      console.log('unmount DrumRoll');
+
+      setIsComponentMounted(false);
+      if (animationRef.current) {
+        console.log('stop animation in DrumRoll');
+
+        cancelAnimationFrame(animationRef.current);
+      }
+    };
+  }, [animateProgress, currentProgressRef, isComponentMounted, targetProgressRef]);
 
   const archive = [
     {

@@ -1,0 +1,55 @@
+@use "@/styles/mixin/mixins" as *;
+
+.development {
+}
+
+.list {
+  display: grid;
+  row-gap: 5rem;
+}
+
+.item {
+  display: grid;
+  row-gap: 0.8rem;
+}
+
+.item__title {
+  font-weight: 400;
+  font-size: text(24);
+  text-shadow: 0rem 0rem 0.1rem rgba(66, 240, 191, 0.3);
+}
+
+.item__text {
+  font-size: text(16);
+  text-shadow: 0rem 0rem 0.1rem rgba(66, 240, 191, 0.3);
+  text-align: justify;
+  letter-spacing: 0.1em;
+}
+
+@include mq(sp) {
+  .development {
+  }
+
+  .list {
+    display: grid;
+    row-gap: 5rem;
+  }
+
+  .item {
+    display: grid;
+    row-gap: 0.4rem;
+  }
+
+  .item__title {
+    font-weight: 700;
+    font-size: text(16);
+    text-shadow: 0rem 0rem 0.1rem rgba(66, 240, 191, 0.3);
+  }
+
+  .item__text {
+    font-size: text(14);
+    text-shadow: 0rem 0rem 0.1rem rgba(66, 240, 191, 0.3);
+    text-align: justify;
+    letter-spacing: 0.1em;
+  }
+}

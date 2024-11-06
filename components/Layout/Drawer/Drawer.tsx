@@ -10,13 +10,23 @@ import { toggleMenuOpen } from '@/store/toggleMenuAtom';
 export const Drawer = () => {
   const [isOpen, setIsOpen] = useRecoilState(toggleMenuOpen);
   const [isOverlayClickable, setIsOverlayClickable] = useState(false);
+  const menuAreaRef = useRef<HTMLDivElement>(null);
   const drawerRef = useRef<HTMLDivElement>(null);
+  const toggleRef = useRef<HTMLDivElement>(null);
   const startRef = useRef(0);
   const currentRef = useRef(0);
   const isDraggingRef = useRef(false);
   const hasMovedRef = useRef(false);
+  const isHandlingEventRef = useRef(false);
+
+  const handleClose = () => {
+    setIsOpen(false);
+  };
 
   const handleToggleMenu = (e: React.MouseEvent | React.KeyboardEvent | React.TouchEvent) => {
+    if (isHandlingEventRef.current) return;
+    isHandlingEventRef.current = true;
+
     e.preventDefault();
     e.stopPropagation();
 
@@ -27,13 +37,21 @@ export const Drawer = () => {
     // });
 
     setIsOpen((prev: boolean) => !prev);
+
+    setTimeout(() => {
+      isHandlingEventRef.current = false;
+    }, 100);
   };
 
   const handleTouchStart = (e: React.TouchEvent) => {
-    // console.log('handleTouchStart fired');
+    console.log('handleTouchStart fired');
 
     startRef.current = e.touches[0].clientX;
     isDraggingRef.current = true;
+
+    drawerRef.current?.classList.add(styles.is_dragging);
+    toggleRef.current?.classList.add(styles.is_dragging);
+
     hasMovedRef.current = false;
     currentRef.current = startRef.current;
   };
@@ -43,6 +61,9 @@ export const Drawer = () => {
 
     startRef.current = e.clientX;
     isDraggingRef.current = true;
+    drawerRef.current?.classList.add(styles.is_dragging);
+    toggleRef.current?.classList.add(styles.is_dragging);
+
     hasMovedRef.current = false;
   };
 
@@ -56,7 +77,7 @@ export const Drawer = () => {
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
-    // console.log('handleTouchMove fired');
+    console.log('handleTouchMove fired');
 
     if (!isDraggingRef.current) return;
     currentRef.current = e.touches[0].clientX;
@@ -64,42 +85,57 @@ export const Drawer = () => {
     updateDrawerPosition();
   };
 
-  const handleDragEnd = () => {
-    if (!isDraggingRef.current) return;
+  const handleDragEnd = (e: React.MouseEvent | React.TouchEvent) => {
+    if (!isDraggingRef.current || isHandlingEventRef.current) return;
+    isHandlingEventRef.current = true;
     isDraggingRef.current = false;
 
     const dragDistance = startRef.current - currentRef.current;
-    // console.log('handleDragEnd fired', { dragDistance, hasMoved: hasMovedRef.current, event: e });
 
-    if (Math.abs(dragDistance) > 50) {
+    console.log('handleDragEnd fired', { dragDistance, hasMoved: hasMovedRef.current, event: e });
+
+    if (Math.abs(dragDistance) > 75) {
       setIsOpen((prev: boolean) => !prev);
-    } else if (!hasMovedRef.current || dragDistance <= 50) {
+    } else if (!hasMovedRef.current || dragDistance <= 75) {
       //いずれにせよトグルは動作するようにした。冗長なので改善の余地あり。
       // console.log('not moved');
       setIsOpen((prev) => {
         // console.log('prev:', prev, '\n', 'next:', !prev);
+
         return !prev;
       });
     } else {
       // console.log("resetting drawer's position");
       // console.log({ dragDistance, hasMoved: hasMovedRef.current });
-      resetDrawerPosition();
     }
+
+    resetDrawerPosition();
+
+    setTimeout(() => {
+      isHandlingEventRef.current = false;
+    }, 100);
   };
 
   const updateDrawerPosition = () => {
-    if (!drawerRef.current) return;
+    if (!menuAreaRef.current) return;
 
-    let dragAmount = Math.max(0, startRef.current - currentRef.current);
+    let dragAmount = Math.max(-300, startRef.current - currentRef.current);
+
     dragAmount = Math.min(dragAmount, 300);
+    if (isOpen) {
+      dragAmount = Math.min(dragAmount, 0);
+    }
 
-    drawerRef.current.style.setProperty('--drug-amount', `${dragAmount}`);
+    menuAreaRef.current.style.setProperty('--drug-amount', `${dragAmount}`);
   };
 
   const resetDrawerPosition = () => {
-    if (!drawerRef.current) return;
+    if (!menuAreaRef.current) return;
 
-    drawerRef.current.style.setProperty('--drug-amount', '0');
+    drawerRef.current?.classList.remove(styles.is_dragging);
+    toggleRef.current?.classList.remove(styles.is_dragging);
+
+    menuAreaRef.current.style.setProperty('--drug-amount', '0');
   };
 
   useEffect(() => {
@@ -134,9 +170,10 @@ export const Drawer = () => {
 
   return (
     <>
-      <div className={styles.menuarea} ref={drawerRef}>
+      <div className={styles.menuarea} ref={menuAreaRef}>
         {/* toggleButton */}
         <div
+          ref={toggleRef}
           className={`${styles.toggle} ${isOpen && styles.is_open}`}
           onTouchStart={(e) => {
             // console.log('on touch start');
@@ -146,9 +183,9 @@ export const Drawer = () => {
             // console.log('on touch move');
             handleTouchMove(e);
           }}
-          onTouchEnd={() => {
+          onTouchEnd={(e) => {
             // console.log('on touch end');
-            handleDragEnd();
+            handleDragEnd(e);
           }}
           onMouseDown={(e) => {
             // console.log('on mouse down');
@@ -158,13 +195,13 @@ export const Drawer = () => {
             // console.log('on mouse move');
             handleMouseMove(e);
           }}
-          onMouseUp={() => {
+          onMouseUp={(e) => {
             // console.log('on mouse up');
-            handleDragEnd();
+            handleDragEnd(e);
           }}
-          onMouseLeave={() => {
+          onMouseLeave={(e) => {
             // console.log('on mouse leave');
-            handleDragEnd();
+            handleDragEnd(e);
           }}
           role="button"
           tabIndex={0}
@@ -180,11 +217,11 @@ export const Drawer = () => {
           <div className={styles.toggle__bg}></div>
         </div>
         {/* drawer layer */}
-        <div className={`${styles.drawer} ${isOpen && styles.is_open}`}>
+        <div ref={drawerRef} className={`${styles.drawer} ${isOpen && styles.is_open}`}>
           <div className={styles.drawer__inner}>
             <div className={styles.drawer__content}>
               <div className={styles.drawer__nav}>
-                <Nav />
+                <Nav onClick={handleClose} />
               </div>
               <div className={styles.drawer__timezone}>
                 <TimeZone />

@@ -18,7 +18,7 @@
   background-color: var(--lemon-1);
   inset: 0;
   opacity: 1;
-  scale: 0.99; //境界にすじができるのを防ぐ
+  scale: 1 0.96; //境界にすじができるのを防ぐ
   overflow: hidden;
   position: absolute;
   z-index: -1;
@@ -89,7 +89,7 @@
   .marquee__bg {
     background-color: var(--lemon-1);
     inset: 0;
-    scale: 0.99;
+    scale: 1 0.96;
     opacity: 1;
     position: absolute;
     z-index: -1;

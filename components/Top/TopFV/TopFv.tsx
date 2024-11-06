@@ -1,4 +1,4 @@
-import styles from '@/components/Top/TopFV/fv.module.scss';
+import styles from './fv.module.scss';
 
 export const TopFv = () => {
   return (

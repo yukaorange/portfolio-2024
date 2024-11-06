@@ -1,0 +1,21 @@
+@use "@/styles/mixin/mixins" as *;
+
+.section {
+  display: grid;
+  row-gap: 5rem;
+}
+
+.section__content {
+  width: cols(10);
+}
+
+@include mq(sp) {
+  .section {
+    display: grid;
+    row-gap: 4rem;
+  }
+
+  .section__content {
+    width: 100%;
+  }
+}

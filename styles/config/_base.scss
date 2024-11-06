@@ -182,33 +182,33 @@ button {
 
 //font-size
 :root {
-  --font-size-small-3: calc(1.6rem * 8 / 11);
-  --font-size-small-2: calc(1.6rem * 8 / 10);
-  --font-size-small-1: calc(1.6rem * 8 / 9);
-  --font-size-base: calc(1.6rem * 8 / 8);
-  --font-size-1: calc(1.6rem * 8 / 7);
-  --font-size-2: calc(1.6rem * 8 / 6);
-  --font-size-3: calc(1.6rem * 8 / 5);
-  --font-size-4: calc(1.6rem * 8 / 4);
-  --font-size-5: calc(1.6rem * 8 / 3);
-  --font-size-6: calc(1.6rem * 8 / 2);
-  --font-size-7: calc(1.6rem * 8 / 1);
-  --font-size-8: calc(1.6rem * 8 / 0.8);
-  --font-size-9: calc(1.6rem * 8 / 0.6);
+  --font-size-small-3: calc(text(16) * 8 / 11);
+  --font-size-small-2: calc(text(16) * 8 / 10);
+  --font-size-small-1: calc(text(16) * 8 / 9);
+  --font-size-base: calc(text(16) * 8 / 8);
+  --font-size-1: calc(text(16) * 8 / 7);
+  --font-size-2: calc(text(16) * 8 / 6);
+  --font-size-3: calc(text(16) * 8 / 5);
+  --font-size-4: calc(text(16) * 8 / 4);
+  --font-size-5: calc(text(16) * 8 / 3);
+  --font-size-6: calc(text(16) * 8 / 2);
+  --font-size-7: calc(text(16) * 8 / 1);
+  --font-size-8: calc(text(16) * 8 / 0.8);
+  --font-size-9: calc(text(16) * 8 / 0.6);
   @include mq(sp) {
-    --font-size-small-3: calc(1.4rem * 16 / 19);
-    --font-size-small-2: calc(1.4rem * 16 / 18);
-    --font-size-small-1: calc(1.4rem * 16 / 17);
-    --font-size-base: calc(1.4rem * 16 / 16);
-    --font-size-1: calc(1.4rem * 16 / 15);
-    --font-size-2: calc(1.4rem * 16 / 14);
-    --font-size-3: calc(1.4rem * 16 / 13);
-    --font-size-4: calc(1.4rem * 16 / 12);
-    --font-size-5: calc(1.4rem * 16 / 11);
-    --font-size-6: calc(1.4rem * 16 / 10);
-    --font-size-7: calc(1.4rem * 16 / 9);
-    --font-size-8: calc(1.4rem * 16 / 8);
-    --font-size-9: calc(1.4rem * 16 / 7);
+    --font-size-small-3: calc(text(14) * 16 / 19);
+    --font-size-small-2: calc(text(14) * 16 / 18);
+    --font-size-small-1: calc(text(14) * 16 / 17);
+    --font-size-base: calc(text(14) * 16 / 16);
+    --font-size-1: calc(text(14) * 16 / 15);
+    --font-size-2: calc(text(14) * 16 / 14);
+    --font-size-3: calc(text(14) * 16 / 13);
+    --font-size-4: calc(text(14) * 16 / 12);
+    --font-size-5: calc(text(14) * 16 / 11);
+    --font-size-6: calc(text(14) * 16 / 10);
+    --font-size-7: calc(text(14) * 16 / 9);
+    --font-size-8: calc(text(14) * 16 / 8);
+    --font-size-9: calc(text(14) * 16 / 7);
   }
 }
 
@@ -218,6 +218,7 @@ button {
   --black-1: #151515;
   --gray-1: #dae2e5;
   --gray-2: #c4cfd4;
+  --gray-3: #d9d9d9;
   --yellow-1: #efc51e;
   --lime-1: #9ef502;
   --lime-2: #7af201;

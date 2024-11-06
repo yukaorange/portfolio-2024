@@ -1,0 +1,31 @@
+@use "@/styles/mixin/mixins" as *;
+
+.layout {
+  display: grid;
+  grid-template-columns: cols(17) cols(4);
+  justify-content: space-between;
+}
+
+.layout__list {
+}
+
+.layout__nav {
+}
+
+@include mq(sp) {
+  .layout {
+    display: grid;
+    grid-template-columns: auto;
+    justify-content: stretch;
+    grid-template-areas: "nav" "list";
+    row-gap: 4rem;
+  }
+
+  .layout__list {
+    grid-area: list;
+  }
+
+  .layout__nav {
+    grid-area: nav;
+  }
+}

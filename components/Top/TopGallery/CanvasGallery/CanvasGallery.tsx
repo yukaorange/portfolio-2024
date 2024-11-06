@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import styles from '@/components/Top/TopGallery/CanvasGallery/canvas.module.scss';
 
@@ -23,6 +23,7 @@ interface CanvasGalleryProps {
 }
 
 export const CanvasGallery = ({ currentProgressRef, targetProgressRef }: CanvasGalleryProps) => {
+  const [isComponentMounted, setIsComponentMounted] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationRef = useRef<number>();
   const imageRef = useRef<HTMLImageElement | null>(null);
@@ -192,6 +193,8 @@ export const CanvasGallery = ({ currentProgressRef, targetProgressRef }: CanvasG
   );
 
   const animate = useCallback(() => {
+    if (!isComponentMounted) return;
+
     const canvas = canvasRef.current;
 
     const iconPositions: Point[] = [
@@ -202,9 +205,11 @@ export const CanvasGallery = ({ currentProgressRef, targetProgressRef }: CanvasG
       { x: 542.9, y: 37.17 },
     ];
 
-    if (!canvas) {
-      throw new Error('Canvas is not supported.');
+    if (!canvas && isComponentMounted) {
+      console.log('is component exist ', isComponentMounted, ' but canvas is not supported.');
     }
+
+    if (!canvas) return;
 
     const ctx = canvas.getContext('2d');
     if (!ctx) {
@@ -274,10 +279,14 @@ export const CanvasGallery = ({ currentProgressRef, targetProgressRef }: CanvasG
       ctx.restore();
     }
 
-    animationRef.current = requestAnimationFrame(animate);
-  }, [drawProgress, currentProgressRef, targetProgressRef]);
+    if (isComponentMounted) {
+      animationRef.current = requestAnimationFrame(animate);
+    }
+  }, [drawProgress, currentProgressRef, targetProgressRef, isComponentMounted]);
 
   useEffect(() => {
+    setIsComponentMounted(true);
+
     const img = new Image();
     img.src = '/images/top/flight.svg';
     img.crossOrigin = 'anonymous';
@@ -290,7 +299,12 @@ export const CanvasGallery = ({ currentProgressRef, targetProgressRef }: CanvasG
     };
 
     return () => {
+      console.log('unmount CanvasGallery');
+
+      setIsComponentMounted(false);
       if (animationRef.current) {
+        console.log('stop animation in CanvasGallery');
+
         cancelAnimationFrame(animationRef.current);
       }
     };

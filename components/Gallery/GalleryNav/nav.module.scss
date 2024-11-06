@@ -1,0 +1,63 @@
+@use "@/styles/mixin/mixins" as *;
+
+.nav {
+  width: 100%;
+  display: grid;
+  row-gap: 2.4rem;
+  position: sticky;
+  top: var(--header-height);
+}
+
+.title {
+  font-size: text(16);
+  font-weight: 700;
+  text-align: center;
+  line-height: 1;
+}
+
+.list {
+  display: grid;
+  row-gap: 1rem;
+}
+
+.gategory {
+  font-size: text(16);
+  line-height: 1;
+  background-color: var(--white-1);
+  color: var(--black-1);
+  padding: 0.6rem 0.4rem 0.3rem;
+  text-align: center;
+}
+
+@include mq(sp) {
+  .nav {
+    width: 100%;
+    display: grid;
+    row-gap: 2.4rem;
+    position: static;
+    top: auto;
+  }
+
+  .title {
+    font-size: text(14);
+    font-weight: 700;
+    text-align: left;
+    line-height: 1;
+  }
+
+  .list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    row-gap: 0.8rem;
+    column-gap: 0.8rem;
+  }
+
+  .gategory {
+    font-size: text(14);
+    line-height: 1;
+    background-color: var(--white-1);
+    color: var(--black-1);
+    padding: 0.4rem 0.4rem 0.2rem;
+    text-align: center;
+  }
+}
