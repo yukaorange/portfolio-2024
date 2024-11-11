@@ -1,0 +1,23 @@
+@use "@/styles/mixin/mixins" as *;
+
+.button {
+  display: block;
+  width: 100%;
+  color: var(--black-1);
+  background-color: var(--white-1);
+  padding: 0.6rem 0.8rem 0.3rem;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .button:hover {
+    background-color: var(--danger);
+  }
+}
+
+@include mq(sp) {
+  .button {
+    color: var(--black-1);
+    background-color: var(--white-1);
+    padding: 0.4rem 0.8rem 0.2rem;
+  }
+}

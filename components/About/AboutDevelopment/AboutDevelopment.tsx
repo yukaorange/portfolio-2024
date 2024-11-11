@@ -39,6 +39,11 @@ export const AboutDevelopment = () => {
       content:
         'カスタム投稿、カスタムフィールド、カスタムタクソノミーについては一通り実装することができます。また、メディアプラットフォーム『note』のRSSから記事タイトルとサムネイルを取得して表示するといった、外部サービスとの連携も実装経験があります。静的な部分にあってもPHPの条件分岐やループを効果的に使用して効率と保守性を高めます。\nローカルでの開発はVITEとMAMPを用います。また、GitHub Actionsを利用し、公開用サーバーにコードの変更結果が転送されるようにしています。',
     },
+    {
+      title: 'Jamstack',
+      content:
+        '本ポートフォリオサイトはmicroCMSのAPIからコンテンツを取得し、Next.jsでSSGを行い、Vercelでホスティングしています。また、SEO対策として、metaタグやrobots.txt、sitemap.xmlを設定し、Google Search Consoleでインデックスされるようにしています。',
+    },
   ];
 
   return (

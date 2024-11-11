@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { useRef, useEffect, useCallback, useState } from 'react';
 import { useRecoilState } from 'recoil';
 
@@ -66,11 +67,11 @@ export const DrumRoll = ({ targetProgressRef, currentProgressRef }: DrumRollProp
     animateProgress();
 
     return () => {
-      console.log('unmount DrumRoll');
+      // console.log('unmount DrumRoll');
 
       setIsComponentMounted(false);
       if (animationRef.current) {
-        console.log('stop animation in DrumRoll');
+        // console.log('stop animation in DrumRoll');
 
         cancelAnimationFrame(animationRef.current);
       }
@@ -80,27 +81,27 @@ export const DrumRoll = ({ targetProgressRef, currentProgressRef }: DrumRollProp
   const archive = [
     {
       title: 'Globe Phenomenon',
-      url: '/',
+      url: 'https://point-of-globe-environment.vercel.app/',
       description: 'NASAのAPIを使用した自然現象マップ',
     },
     {
       title: 'Infinite Scroll Gallery',
-      url: '/',
+      url: 'https://design-embraced-challenge.vercel.app/',
       description: '円形を描く無限スクロールギャラリー',
     },
     {
       title: 'Glitch Theater',
-      url: '/',
+      url: 'https://glitch-theater-challenge.vercel.app/',
       description: '3Dモデルでグリッチ演出を一覧化したもの',
     },
     {
       title: 'Scan Ripple ASCII',
-      url: '/',
+      url: 'https://scan-ripple-ascii.vercel.app/',
       description: '視覚エフェクトを統合したもの',
     },
     {
       title: 'Distortion Scroll',
-      url: '/',
+      url: 'https://webgl-school-project07.vercel.app/',
       description: 'スクロールに連動した歪みエフェクト',
     },
   ];
@@ -116,7 +117,9 @@ export const DrumRoll = ({ targetProgressRef, currentProgressRef }: DrumRollProp
                 ref={(el) => setItemRef(el, id)}
                 className={`${styles.drumroll__list__item} ${id === roundedIndex ? styles.current : ''} _en`}
               >
-                {item.title}
+                <Link href={item.url} target="_blank">
+                  {item.title}
+                </Link>
               </li>
             );
           })}

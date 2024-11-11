@@ -1,15 +1,18 @@
 import styles from './layout.module.scss';
 
 interface GalleryLayoutProps {
-  list: React.ReactNode;
-  nav: React.ReactNode;
+  content: React.ReactNode;
+  nav?: React.ReactNode;
 }
 
-export const GalleryLayout = ({ list, nav }: GalleryLayoutProps) => {
+export const GalleryLayout = ({ content, nav = null }: GalleryLayoutProps) => {
   return (
-    <div className={styles.layout}>
-      <div className={styles.layout__list}>{list}</div>
-      <div className={styles.layout__nav}>{nav}</div>
+    <div
+      className={`${styles.layout} 
+    ${!nav && styles.single_column}`}
+    >
+      <div className={styles.layout__content}>{content}</div>
+      {nav && <div className={styles.layout__nav}>{nav}</div>}
     </div>
   );
 };

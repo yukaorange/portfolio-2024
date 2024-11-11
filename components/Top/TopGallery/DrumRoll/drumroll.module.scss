@@ -31,9 +31,15 @@
   opacity: calc(1 - var(--drumroll-each-progress) * 1.33);
   scale: calc(1 - var(--drumroll-each-progress) * 0.5);
   transform: translate3d(0, 0, calc(var(--drumroll-each-progress) * -300px));
+  pointer-events: none;
+}
+
+.drumroll__list__item a {
+  font-size: text(72);
 }
 
 .drumroll__list__item.current {
+  pointer-events: auto;
   text-shadow: 0 0 0.5rem var(--water-1);
 }
 
@@ -70,6 +76,13 @@
   display: grid;
 }
 
+@media (hover: hover) and (pointer: fine) {
+  .drumroll__list__item.current:hover {
+    text-shadow: 0 0 0.5rem var(--danger);
+    color: var(--danger);
+  }
+}
+
 @include mq(sp) {
   .drumroll {
     position: relative;
@@ -100,15 +113,21 @@
     opacity: calc(1 - var(--drumroll-each-progress) * 1.33);
     scale: calc(1 - var(--drumroll-each-progress) * 0.5);
     transform: translate3d(0, 0, calc(var(--drumroll-each-progress) * -300px));
+    pointer-events: none;
   }
 
   .drumroll__list__item.current {
+    pointer-events: auto;
     text-shadow: 0 0 0.5rem var(--water-1);
+  }
+
+  .drumroll__list__item a {
+    font-size: text(32);
   }
 
   .drumroll__indicator {
     font-size: text(14);
-    bottom: 2svh;
+    bottom: 25svh;
     display: grid;
     height: 1lh;
     left: 50%;

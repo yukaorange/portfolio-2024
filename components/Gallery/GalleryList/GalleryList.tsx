@@ -1,220 +1,85 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
-import styles from './list.module.scss';
+import { ButtonCategory } from '@/components/Common/ButtonCategory/ButtonCategory';
+import { Pagination } from '@/components/Gallery/Pagination/Pagination';
+import { useFormattedDate } from '@/hooks/useFormattedData';
+import { Content } from '@/lib/microcms';
 
-export const GalleryList = () => {
-  const contents = [
-    {
-      thumbnail: '/images/icons/training.svg',
-      date: '2024/11/06',
-      title: 'Color Training App',
-      description: '色彩感覚トレーニングのためのWebアプリケーション',
-      link: '/introductionColorApp',
-      categories: ['WebGL', 'WebApp'],
-      newTab: false,
-    },
-    {
-      thumbnail: '/images/icons/blender.svg',
-      date: '2024/11/06',
-      title: 'character',
-      description: '自主制作3Dモデル',
-      link: '/character',
-      categories: ['Graphic', '3D Model'],
-      newTab: false,
-    },
-    {
-      thumbnail: '/images/icons/webgl.svg',
-      date: '2024/11/06',
-      title: 'Globe Phenomenon',
-      description: 'NASAのAPIを使用した自然現象マップ',
-      link: 'https://point-of-globe-environment.vercel.app/',
-      categories: ['WebGL', 'UI'],
-      newTab: true,
-    },
-    {
-      thumbnail: '/images/icons/webgl.svg',
-      date: '2024/11/06',
-      title: 'Infinite Scroll Gallery',
-      description: '円形を描く無限スクロールギャラリー',
-      link: '',
-      categories: ['WebGL', 'UI'],
-      newTab: true,
-    },
-    {
-      thumbnail: '/images/icons/webgl.svg',
-      date: '2024/11/06',
-      title: 'refraction dispersion',
-      description: '6色に分割された屈折表現',
-      link: 'https://refraction-dispersion-maxime.vercel.app/',
-      categories: ['WebGL'],
-      newTab: true,
-    },
-    {
-      thumbnail: '/images/icons/webgl.svg',
-      date: '2024/11/06',
-      title: 'kirifuda interaction',
-      description: 'スクロール連動のcanvasアニメーション',
-      link: 'https://kirifuda-interaction-challenge.vercel.app/',
-      categories: ['WebGL', 'UI'],
-      newTab: true,
-    },
-    {
-      thumbnail: '/images/icons/webgl.svg',
-      date: '2024/11/06',
-      title: 'Glitch Theater',
-      description: '3Dモデルとグリッチ演出を一覧化したもの',
-      link: 'https://glitch-theater-challenge.vercel.app/',
-      categories: ['WebGL', 'UI'],
-      newTab: true,
-    },
-    {
-      thumbnail: '/images/icons/webgl.svg',
-      date: '2024/11/06',
-      title: 'Scan Ripple ASCII',
-      description: '視覚エフェクトを統合したもの',
-      link: 'https://scan-ripple-ascii.vercel.app/',
-      categories: ['WebGL'],
-      newTab: true,
-    },
-    {
-      thumbnail: '/images/icons/webgl.svg',
-      date: '2024/11/06',
-      title: 'Distortion Scroll',
-      description: 'スクロールに連動した画像切り替えと視覚エフェクト',
-      link: 'https://webgl-school-project07.vercel.app/',
-      categories: ['WebGL', 'UI'],
-      newTab: true,
-    },
-    {
-      thumbnail: '/images/icons/webgl.svg',
-      date: '2024/11/06',
-      title: 'Distortion Scroll',
-      description: '円形に動作するテクスチャ変更アニメーション',
-      link: 'https://glsl-school02.vercel.app/',
-      categories: ['WebGL', 'UI'],
-      newTab: true,
-    },
-    {
-      thumbnail: '/images/icons/webgl.svg',
-      date: '2024/11/06',
-      title: 'neuroal noise',
-      description: 'ニューラル模様のノイズエフェクト',
-      link: 'https://neuroal-noise.vercel.app/',
-      categories: ['WebGL'],
-      newTab: true,
-    },
-    {
-      thumbnail: '/images/icons/webgl.svg',
-      date: '2024/11/06',
-      title: 'caustics under sea',
-      description: '海底シーンとコースティックエフェクト',
-      link: 'https://caustics-under-water-evanwallace.vercel.app/',
-      categories: ['WebGL'],
-      newTab: true,
-    },
-    {
-      thumbnail: '/images/icons/webgl.svg',
-      date: '2024/11/06',
-      title: 'projection mapping and instancing',
-      description: 'ジオメトリインスタンシングと投影マッピングの組み合わせ',
-      link: 'https://projection-mapping-nu.vercel.app/',
-      categories: ['WebGL', 'Graphic'],
-      newTab: true,
-    },
-    {
-      thumbnail: '/images/icons/webgl.svg',
-      date: '2024/11/06',
-      title: 'toonshading physic simulation',
-      description: 'トゥーンシェーディングと物理エンジンの組み合わせ',
-      link: 'https://toonshading-physic-r3f.vercel.app/',
-      categories: ['WebGL', 'Graphic'],
-      newTab: true,
-    },
-    {
-      thumbnail: '/images/icons/webgl.svg',
-      date: '2024/11/06',
-      title: 'toonshading physic simulation',
-      description: '深度テクスチャの利用',
-      link: 'https://depth-texture-for-geometry-akella.vercel.app/',
-      categories: ['WebGL', 'Graphic'],
-      newTab: true,
-    },
-    {
-      thumbnail: '/images/icons/webgl.svg',
-      date: '2024/11/06',
-      title: 'movie texture and dispersion',
-      description: '動画テクスチャと屈折エフェクト',
-      link: 'https://webgl-school-project08.vercel.app/',
-      categories: ['WebGL', 'Graphic'],
-      newTab: true,
-    },
-    {
-      thumbnail: '/images/icons/webgl.svg',
-      date: '2024/11/06',
-      title: 'stacking texture',
-      description: 'テクスチャを積み重ねた視覚表現',
-      link: 'https://toppan-demo.vercel.app/',
-      categories: ['WebGL', 'Graphic'],
-      newTab: true,
-    },
-    {
-      thumbnail: '/images/icons/webgl.svg',
-      date: '2024/11/06',
-      title: 'goodboy digital demo',
-      description: 'グリッドとマウスインタラクション',
-      link: 'https://goodboydigital-demo.vercel.app/',
-      categories: ['WebGL', 'Graphic'],
-      newTab: true,
-    },
-  ];
+import styles from './list.module.scss';
+import { TransitionLink } from '@/components/Common/TransitionLink.tsx/TransitionLink';
+
+interface GalleryListProps {
+  contents: Content[];
+  current: number;
+  totalCount: number;
+  pagepath?: string;
+}
+
+export const GalleryList = ({ contents, current, totalCount, pagepath }: GalleryListProps) => {
+  const dates = contents.map((item) => item.publishedAt);
+  const formattedDates = useFormattedDate(dates);
 
   return (
-    <ul className={styles.list}>
-      {contents.map((item, key) => {
-        return (
-          <li key={key} className={styles.item}>
-            <Link
-              href={item.link}
-              target={item.newTab ? '_blank' : ''}
-              className={styles.item__thumbnail}
-            >
-              <Image
-                src={item.thumbnail == '' ? '' : item.thumbnail}
-                alt={item.title}
-                width={108}
-                height={108}
-              />
-            </Link>
-            <div className={styles.item__inner}>
-              <div className={`${styles.item__meta} _en`}>
-                <span className={styles.item__date}>{item.date}</span>
-                <div className={styles.item__categories}>
-                  {item.categories.map((item, categoryKey) => {
-                    return (
-                      <span key={categoryKey} className={styles.item__category}>
-                        {item}
-                      </span>
-                    );
-                  })}
-                </div>
-              </div>
-              <Link href={item.link} className={styles.item__body}>
-                <h3 className={`${styles.item__title} _helvetica`}>{item.title}</h3>
-                <p className={styles.item__description}>{item.description}</p>
-              </Link>
-              <Link
-                href={item.link}
+    <>
+      <ul className={styles.list}>
+        {contents.map((item, key) => {
+          return (
+            <li key={key} className={styles.item}>
+              <TransitionLink
+                href={item.newTab ? item.href : `/gallery/${item.id}`}
                 target={item.newTab ? '_blank' : ''}
-                className={styles.item__linkicon}
+                className={styles.item__thumbnail}
               >
-                {item.newTab ? <LinkIcon /> : null}
-              </Link>
-            </div>
-          </li>
-        );
-      })}
-    </ul>
+                <Image
+                  src={item.thumbnail.url == '' ? '' : item.thumbnail.url}
+                  alt={item.title}
+                  width={108}
+                  height={108}
+                />
+              </TransitionLink>
+              <div className={styles.item__inner}>
+                <div className={`${styles.item__meta} _en`}>
+                  <span className={styles.item__date}>{formattedDates[key]}</span>
+                  <div className={styles.item__categories}>
+                    {item.category
+                      .sort((a, b) => a.name.localeCompare(b.name))
+                      .map((item, categoryKey) => {
+                        return (
+                          <ButtonCategory
+                            href={`/gallery/category/${item.id}/p/1`}
+                            key={categoryKey}
+                          >
+                            {item.name}
+                          </ButtonCategory>
+                        );
+                      })}
+                  </div>
+                </div>
+                <TransitionLink
+                  target={item.newTab ? '_blank' : ''}
+                  href={item.newTab ? item.href : `/gallery/${item.id}`}
+                  className={styles.item__body}
+                >
+                  <h3 className={`${styles.item__title} _helvetica`}>{item.title}</h3>
+                  <p className={styles.item__description}>{item.description}</p>
+                </TransitionLink>
+                <TransitionLink
+                  href={item.newTab ? item.href : `/gallery/${item.id}`}
+                  target={item.newTab ? '_blank' : ''}
+                  className={styles.item__linkicon}
+                >
+                  {item.newTab ? <LinkIcon /> : null}
+                </TransitionLink>
+              </div>
+            </li>
+          );
+        })}
+      </ul>
+      <div className={styles.pagination}>
+        <Pagination totalCount={totalCount} current={current} pagepath={pagepath} />
+      </div>
+    </>
   );
 };
 

@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef } from 'react';
 import { useSetRecoilState } from 'recoil';
 
-import { ButtonLink } from '@/components/Top/TopGallery/ButtonLink/ButtonLink';
+import { ButtonLink } from '@/components/Common/ButtonLink/ButtonLink';
 import { CanvasGallery } from '@/components/Top/TopGallery/CanvasGallery/CanvasGallery';
 import { DrumRoll } from '@/components/Top/TopGallery/DrumRoll/DrumRoll';
 import styles from '@/components/Top/TopGallery/gallery.module.scss';
@@ -172,7 +172,7 @@ export const Topgallery = () => {
           <SpeedMeter velocityRef={velocityRef} />
         </div>
         <div className={styles.gallery__link}>
-          <ButtonLink />
+          <ButtonLink href="/gallery/p/1" text="SEE ALL" />
         </div>
       </div>
     </section>

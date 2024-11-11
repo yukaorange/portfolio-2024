@@ -172,6 +172,41 @@
   box-shadow: inset 0rem 0rem 7.5rem 7.5rem var(--yellow-1);
 }
 
+@media (hover: hover) and (pointer: fine) {
+  .toggle__tab:hover .toggle__arrow {
+    animation-name: arrow-move;
+    animation-duration: 1s;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+  }
+
+  .toggle.is_open:hover .toggle__arrow {
+    animation-name: arrow-move2;
+    animation-duration: 1s;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+  }
+}
+
+@keyframes arrow-move {
+  0%,
+  100% {
+    translate: calc(-50% - 0.8rem) -50%;
+  }
+  50% {
+    translate: calc(-50% - 0.3rem) -50%;
+  }
+}
+@keyframes arrow-move2 {
+  0%,
+  100% {
+    translate: calc(-50% + 3.2rem) -50%;
+  }
+  50% {
+    translate: calc(-50% + 2.8rem) -50%;
+  }
+}
+
 @include mq(sp) {
   .menuarea {
     position: fixed;

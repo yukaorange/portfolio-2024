@@ -20,13 +20,25 @@
   row-gap: 1rem;
 }
 
-.gategory {
+.item {
   font-size: text(16);
   line-height: 1;
   background-color: var(--white-1);
   color: var(--black-1);
-  padding: 0.6rem 0.4rem 0.3rem;
   text-align: center;
+}
+
+.item.item_all {
+  font-weight: 700;
+}
+
+.item__link {
+  padding: 0.6rem 0.4rem 0.3rem;
+  display: block;
+  width: 100%;
+}
+
+.gategory {
 }
 
 @include mq(sp) {
@@ -52,12 +64,21 @@
     column-gap: 0.8rem;
   }
 
-  .gategory {
+  .item {
     font-size: text(14);
     line-height: 1;
     background-color: var(--white-1);
     color: var(--black-1);
-    padding: 0.4rem 0.4rem 0.2rem;
     text-align: center;
+  }
+
+  .item.item_all {
+    font-weight: 700;
+  }
+
+  .item__link {
+    padding: 0.4rem 0.4rem 0.2rem;
+    display: block;
+    width: 100%;
   }
 }

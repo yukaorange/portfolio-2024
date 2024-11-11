@@ -1,19 +1,39 @@
 import Image from 'next/image';
 
 import styles from '@/components/Top/TopWorks/Archive/archive.module.scss';
+import { TransitionLink } from '@/components/Common/TransitionLink.tsx/TransitionLink';
 
 export const Archive = () => {
   const archive = [
-    { title: 'Projects', description: 'Webサイト制作の実績', amount: '02', available: false },
-    { title: 'App', description: '自主制作Webアプリケーション', amount: '01', available: true },
-    { title: 'Modeling', description: '自主制作3Dモデル', amount: '01', available: true },
+    {
+      title: 'Projects',
+      description: 'Webサイト制作の実績',
+      amount: '02',
+      available: false,
+      href: '',
+    },
+    {
+      title: 'App',
+      description: '自主制作Webアプリケーション',
+      amount: '01',
+      available: true,
+      href: 'colortrainingapp',
+    },
+    {
+      title: 'Modeling',
+      description: '自主制作3Dモデル',
+      amount: '01',
+      available: true,
+      href: 'character',
+    },
   ];
 
   return (
     <div className={styles.archive}>
       {archive.map((item, index) => {
         return (
-          <div
+          <TransitionLink
+            href={`gallery/${item.href}`}
             className={`${styles.item} ${item.available == false && styles.unavailable}`}
             key={index}
           >
@@ -37,7 +57,7 @@ export const Archive = () => {
                 <Image src="/images/top/keepout.svg" alt="warning" width={1032} height={73} />
               </div>
             )}
-          </div>
+          </TransitionLink>
         );
       })}
     </div>

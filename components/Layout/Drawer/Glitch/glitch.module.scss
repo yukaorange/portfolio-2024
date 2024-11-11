@@ -20,11 +20,12 @@
 @include jitter(30, 22, 8);
 @include jitter(30, 23, 8);
 @include jitter(30, 24, 8);
-// @include jitter(20, 20, 8);
-// @include jitter(20, 21, 8);
-// @include jitter(20, 22, 8);
-// @include jitter(20, 23, 8);
-// @include jitter(20, 24, 8);
+// hover
+@include jitter(20, 20, 8);
+@include jitter(20, 21, 8);
+@include jitter(20, 22, 8);
+@include jitter(20, 23, 8);
+@include jitter(20, 24, 8);
 
 @keyframes fade-in {
   from {
@@ -83,10 +84,21 @@
     animation-fill-mode: both;
     animation-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
     // animation-iteration-count: infinite;
-    animation-delay: 0.08s;
+    animation-delay: 0.1s;
   }
 }
 
 .label {
   opacity: 0;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  @for $i from 1 through 5 {
+    .glitch.active:hover {
+      color: var(--danger);
+    }
+    .glitch.active:hover svg path {
+      fill: var(--danger);
+    }
+  }
 }

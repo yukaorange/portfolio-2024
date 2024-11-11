@@ -72,16 +72,23 @@
 }
 
 .indicator__content {
+  --scale: 0;
   display: grid;
   padding-top: 0.4rem;
+  max-width: calc(cols(4) * var(--scale));
+  transform-origin: 0 0;
+  overflow: hidden;
 }
 
 .indicator__text {
+  --opacity: 0;
   color: var(--black-1);
   font-size: text(24);
   font-weight: 600;
   letter-spacing: 0.01em;
   line-height: 1;
+  translate: calc((1 - var(--opacity)) * -100%) 0;
+  transform-origin: 0 0;
 }
 
 @keyframes rotateY {

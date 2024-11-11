@@ -34,7 +34,7 @@ export const CanvasGallery = ({ currentProgressRef, targetProgressRef }: CanvasG
     const animationOffset = (Date.now() % 1000) / 1000;
 
     gradient.addColorStop(0, 'rgba(216, 216, 216,1)');
-    gradient.addColorStop(0.5 + Math.sin(animationOffset * Math.PI * 2) * 0.5, '#E3E619'); //-1 -> 1 -> -1 ...
+    gradient.addColorStop(0.5 + Math.sin(animationOffset * Math.PI * 2) * 0.5, '#e23030'); //-1 -> 1 -> -1 ...
     gradient.addColorStop(1, 'rgba(216, 216, 216,1)');
 
     ctx.strokeStyle = gradient;
@@ -72,7 +72,7 @@ export const CanvasGallery = ({ currentProgressRef, targetProgressRef }: CanvasG
     (ctx: CanvasRenderingContext2D, progress: number) => {
       // console.log('progress', progress, '\n', 'roundedProgress', Math.round(progress), '\n');
       const dashPattern = [5, 5];
-      const passedPointColor = '#E3E619';
+      const passedPointColor = '#e23030';
       const baseColor = '#f1f1f1';
 
       ctx.lineWidth = 1;
@@ -299,11 +299,11 @@ export const CanvasGallery = ({ currentProgressRef, targetProgressRef }: CanvasG
     };
 
     return () => {
-      console.log('unmount CanvasGallery');
+      // console.log('unmount CanvasGallery');
 
       setIsComponentMounted(false);
       if (animationRef.current) {
-        console.log('stop animation in CanvasGallery');
+        // console.log('stop animation in CanvasGallery');
 
         cancelAnimationFrame(animationRef.current);
       }

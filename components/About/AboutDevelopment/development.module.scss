@@ -43,11 +43,12 @@
   .item__title {
     font-weight: 700;
     font-size: text(16);
+    line-height: 1;
     text-shadow: 0rem 0rem 0.1rem rgba(66, 240, 191, 0.3);
   }
 
   .item__text {
-    font-size: text(14);
+    font-size: text(12);
     text-shadow: 0rem 0rem 0.1rem rgba(66, 240, 191, 0.3);
     text-align: justify;
     letter-spacing: 0.1em;

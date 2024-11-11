@@ -1,28 +1,34 @@
+import { ButtonCategory } from '@/components/Common/ButtonCategory/ButtonCategory';
+import { Category } from '@/lib/microcms';
+
 import styles from './nav.module.scss';
 
-export const GalleryNav = () => {
-  const categories = [
-    { category: 'webGL' },
-    { category: 'webApp' },
-    { category: 'Graphic' },
-    { category: 'UI' },
-    { category: '3D Model' },
-  ];
+interface GalleryNavProps {
+  categories: Category[];
+}
 
+export const GalleryNav = ({ categories }: GalleryNavProps) => {
   return (
     <>
-      <div className={styles.nav}>
-        <h2 className={styles.title}>カテゴリー</h2>
-        <nav className={styles.list}>
-          {categories.map((category, key) => {
-            return (
-              <span key={key} className={`${styles.gategory} _en`}>
-                {category.category}
-              </span>
-            );
-          })}
-        </nav>
-      </div>
+      <nav className={styles.nav}>
+        <h2 className={styles.title}>カテゴリーリスト</h2>
+        <ul className={styles.list}>
+          {categories
+            .sort((a, b) => a.name.localeCompare(b.name))
+            .map((category, key) => {
+              return (
+                <li key={key} className={`${styles.item} _en`}>
+                  <ButtonCategory href={`/gallery/category/${category.id}/p/1`}>
+                    {category.name}
+                  </ButtonCategory>
+                </li>
+              );
+            })}
+          <li className={`${styles.item} ${styles.item_all} _en`}>
+            <ButtonCategory href={`/gallery/p/1`}>ALL</ButtonCategory>
+          </li>
+        </ul>
+      </nav>
     </>
   );
 };

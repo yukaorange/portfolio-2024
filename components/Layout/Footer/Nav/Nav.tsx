@@ -1,10 +1,11 @@
-import Link from 'next/link';
 import { useRecoilValue } from 'recoil';
 
 import { GitHubIcon } from '@/components/Common/Icons/GithubIcon/GitHubIcon';
 import { XIcon } from '@/components/Common/Icons/XIcon/XIcon';
 import styles from '@/components/Layout/Footer/Nav/nav.module.scss';
 import { navLinksAtom } from '@/store/navLinks';
+import { TransitionLink } from '@/components/Common/TransitionLink.tsx/TransitionLink';
+import Link from 'next/link';
 
 export const Nav = () => {
   const links = useRecoilValue(navLinksAtom);
@@ -19,6 +20,7 @@ export const Nav = () => {
                 <Link
                   className={`${styles.nav__link} ${styles.icon}`}
                   href={item.link}
+                  scroll={false}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
@@ -30,6 +32,7 @@ export const Nav = () => {
                 <Link
                   className={`${styles.nav__link} ${styles.icon}`}
                   href={item.link}
+                  scroll={false}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
@@ -38,9 +41,9 @@ export const Nav = () => {
               </div>
             ) : (
               <div className={`${styles.nav__item} _en`}>
-                <Link className={`${styles.nav__link} `} href={item.link}>
+                <TransitionLink scroll={false} className={`${styles.nav__link} `} href={item.link}>
                   {item.title}
-                </Link>
+                </TransitionLink>
               </div>
             )}
           </div>

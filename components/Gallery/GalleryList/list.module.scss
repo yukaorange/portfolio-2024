@@ -19,7 +19,7 @@
   row-gap: 1.6rem;
   column-gap: 1.6rem;
   grid-template-areas: "meta icon" "body icon";
-  grid-template-columns: 1fr 2.5rem;
+  grid-template-columns: 1fr 2.8rem;
 }
 
 .item__thumbnail {
@@ -82,11 +82,27 @@
 }
 
 .item__linkicon svg {
-  --width: 2.4rem;
-  --height: 2.4rem;
+  --width: 2.8rem;
+  --height: 2.8rem;
   --coefficient: 1;
   width: calc(var(--width) * var(--coefficient));
   height: calc(var(--height) * var(--coefficient));
+}
+
+.pagination {
+  margin-top: 10rem;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .item:has(.item__thumbnail:hover) .item__body {
+    color: var(--danger);
+  }
+  .item:has(.item__body:hover) .item__body {
+    color: var(--danger);
+  }
+  .item:has(.item__linkicon:hover) .item__body {
+    color: var(--danger);
+  }
 }
 
 @include mq(sp) {
@@ -178,5 +194,9 @@
     --coefficient: 0.5;
     width: calc(var(--width) * var(--coefficient));
     height: calc(var(--height) * var(--coefficient));
+  }
+
+  .pagination {
+    margin-top: 10rem;
   }
 }

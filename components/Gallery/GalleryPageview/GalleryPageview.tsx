@@ -2,10 +2,15 @@ import { HeaderSection } from '@/components/Common/HeaderSection/HeaderSection';
 
 import styles from './pageview.module.scss';
 
-export const GalleryPageview = () => {
+interface GalleryPageviewProps {
+  heading: string;
+  lead: string;
+}
+
+export const GalleryPageview = ({ heading, lead }: GalleryPageviewProps) => {
   return (
     <div className={styles.pageview}>
-      <HeaderSection h1={true} heading="gallery" lead="制作したコードやグラフィックを掲載しています。" />
+      <HeaderSection h1={true} heading={heading} lead={lead} />
     </div>
   );
 };

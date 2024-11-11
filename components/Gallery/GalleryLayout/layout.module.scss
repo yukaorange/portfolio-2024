@@ -6,6 +6,10 @@
   justify-content: space-between;
 }
 
+.layout.single_column {
+  grid-template-columns: cols(22);
+}
+
 .layout__list {
 }
 
@@ -19,6 +23,10 @@
     justify-content: stretch;
     grid-template-areas: "nav" "list";
     row-gap: 4rem;
+  }
+
+  .layout.single_column {
+    grid-template-columns: auto;
   }
 
   .layout__list {

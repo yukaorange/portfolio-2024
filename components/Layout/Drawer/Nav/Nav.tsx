@@ -6,9 +6,10 @@ import { XIcon } from '@/components/Common/Icons/XIcon/XIcon';
 import { Glitch } from '@/components/Layout/Drawer/Glitch/Glitch';
 import styles from '@/components/Layout/Drawer/Nav/nav.module.scss';
 import { navLinksAtom } from '@/store/navLinks';
+import { TransitionLink } from '@/components/Common/TransitionLink.tsx/TransitionLink';
 
 interface NavProps {
-  onClick: () => void;
+  onClick: (e: React.MouseEvent | React.KeyboardEvent | React.TouchEvent) => void;
 }
 
 export const Nav = ({ onClick }: NavProps) => {
@@ -26,7 +27,9 @@ export const Nav = ({ onClick }: NavProps) => {
                   href={item.link}
                   target="_blank"
                   rel="noopener noreferrer"
-                  onClick={onClick}
+                  onClick={(e) => {
+                    onClick(e);
+                  }}
                 >
                   <Glitch>
                     <XIcon fillColor="#151515" />
@@ -40,7 +43,9 @@ export const Nav = ({ onClick }: NavProps) => {
                   href={item.link}
                   target="_blank"
                   rel="noopener noreferrer"
-                  onClick={onClick}
+                  onClick={(e) => {
+                    onClick(e);
+                  }}
                 >
                   <Glitch>
                     <GitHubIcon fillColor="#151515" />
@@ -49,9 +54,15 @@ export const Nav = ({ onClick }: NavProps) => {
               </div>
             ) : (
               <div className={`${styles.nav__item} _en`}>
-                <Link className={`${styles.nav__link} `} href={item.link} onClick={onClick}>
+                <TransitionLink
+                  className={`${styles.nav__link} `}
+                  href={item.link}
+                  onClose={(e) => {
+                    onClick(e);
+                  }}
+                >
                   <Glitch>{item.title}</Glitch>
-                </Link>
+                </TransitionLink>
               </div>
             )}
           </div>

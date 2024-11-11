@@ -10,6 +10,8 @@ import { toggleMenuOpen } from '@/store/toggleMenuAtom';
 export const Drawer = () => {
   const [isOpen, setIsOpen] = useRecoilState(toggleMenuOpen);
   const [isOverlayClickable, setIsOverlayClickable] = useState(false);
+  const mouseHoldRef = useRef(false);
+
   const menuAreaRef = useRef<HTMLDivElement>(null);
   const drawerRef = useRef<HTMLDivElement>(null);
   const toggleRef = useRef<HTMLDivElement>(null);
@@ -20,6 +22,9 @@ export const Drawer = () => {
   const isHandlingEventRef = useRef(false);
 
   const handleClose = () => {
+    // e.preventDefault();
+    // e.stopPropagation();
+
     setIsOpen(false);
   };
 
@@ -44,7 +49,7 @@ export const Drawer = () => {
   };
 
   const handleTouchStart = (e: React.TouchEvent) => {
-    console.log('handleTouchStart fired');
+    // console.log('handleTouchStart fired');
 
     startRef.current = e.touches[0].clientX;
     isDraggingRef.current = true;
@@ -65,6 +70,7 @@ export const Drawer = () => {
     toggleRef.current?.classList.add(styles.is_dragging);
 
     hasMovedRef.current = false;
+    mouseHoldRef.current = true;
   };
 
   const handleMouseMove = (e: React.MouseEvent) => {
@@ -77,7 +83,7 @@ export const Drawer = () => {
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
-    console.log('handleTouchMove fired');
+    // console.log('handleTouchMove fired');
 
     if (!isDraggingRef.current) return;
     currentRef.current = e.touches[0].clientX;
@@ -85,14 +91,18 @@ export const Drawer = () => {
     updateDrawerPosition();
   };
 
-  const handleDragEnd = (e: React.MouseEvent | React.TouchEvent) => {
+  const handleDragEnd = () => {
+    // console.log('is mousehold ?', mouseHoldRef.current);
+    mouseHoldRef.current = false;
+
     if (!isDraggingRef.current || isHandlingEventRef.current) return;
+
     isHandlingEventRef.current = true;
     isDraggingRef.current = false;
 
     const dragDistance = startRef.current - currentRef.current;
 
-    console.log('handleDragEnd fired', { dragDistance, hasMoved: hasMovedRef.current, event: e });
+    // console.log('handleDragEnd fired', { dragDistance, hasMoved: hasMovedRef.current, event: e });
 
     if (Math.abs(dragDistance) > 75) {
       setIsOpen((prev: boolean) => !prev);
@@ -122,8 +132,11 @@ export const Drawer = () => {
     let dragAmount = Math.max(-300, startRef.current - currentRef.current);
 
     dragAmount = Math.min(dragAmount, 300);
+
     if (isOpen) {
       dragAmount = Math.min(dragAmount, 0);
+    } else {
+      dragAmount = Math.max(dragAmount, 0);
     }
 
     menuAreaRef.current.style.setProperty('--drug-amount', `${dragAmount}`);
@@ -183,9 +196,9 @@ export const Drawer = () => {
             // console.log('on touch move');
             handleTouchMove(e);
           }}
-          onTouchEnd={(e) => {
+          onTouchEnd={() => {
             // console.log('on touch end');
-            handleDragEnd(e);
+            handleDragEnd();
           }}
           onMouseDown={(e) => {
             // console.log('on mouse down');
@@ -195,13 +208,16 @@ export const Drawer = () => {
             // console.log('on mouse move');
             handleMouseMove(e);
           }}
-          onMouseUp={(e) => {
+          onMouseUp={() => {
             // console.log('on mouse up');
-            handleDragEnd(e);
+            handleDragEnd();
           }}
-          onMouseLeave={(e) => {
+          onMouseLeave={() => {
             // console.log('on mouse leave');
-            handleDragEnd(e);
+            if (mouseHoldRef.current == true) {
+              // console.log('mouse holding', mouseHoldRef.current);
+              handleDragEnd();
+            }
           }}
           role="button"
           tabIndex={0}

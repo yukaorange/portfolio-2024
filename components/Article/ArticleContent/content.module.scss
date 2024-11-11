@@ -1,0 +1,176 @@
+@use "@/styles/mixin/mixins" as *;
+
+.content {
+  display: grid;
+  row-gap: 5rem;
+}
+
+.content__metaArea {
+  display: grid;
+  row-gap: 1.6rem;
+}
+
+.content__meta {
+  display: grid;
+  grid-template-columns: repeat(2, auto);
+  justify-content: start;
+  column-gap: 1.4rem;
+}
+
+.content__thumbnail {
+  width: 5rem;
+  aspect-ratio: 1/1;
+  background-color: var(--gray-1);
+}
+
+.content__date {
+}
+
+.content__categories {
+  display: grid;
+  grid-auto-flow: column;
+  column-gap: 1.6rem;
+}
+
+.content__category {
+  font-size: text(16);
+  line-height: 1;
+  background-color: var(--white-1);
+  color: var(--black-1);
+  text-align: center;
+}
+
+.content__category__link {
+  padding: 0.6rem 0.4rem 0.3rem;
+  display: block;
+}
+
+.content__textbox {
+  width: cols(10);
+}
+
+.content__text {
+  text-align: justify;
+}
+
+.content__back {
+  transition: var(--duration);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  display: grid;
+  width: fit-content;
+  font-size: text(18);
+  background-color: var(--white-1);
+  padding: 0.8rem 1.6rem 0.2em;
+  color: var(--black-1);
+  line-height: 1;
+  cursor: pointer;
+}
+
+.content__images {
+  display: grid;
+  grid-template-columns: repeat(2, auto);
+  gap: 2.4rem;
+  align-items: start;
+}
+
+.content__image {
+  display: grid;
+}
+
+.content__image img {
+  object-fit: contain;
+  max-height: 70rem;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .content__back:hover {
+    background-color: var(--danger);
+  }
+}
+
+@include mq(sp) {
+  .content {
+    display: grid;
+    row-gap: 5rem;
+  }
+
+  .content__metaArea {
+    display: grid;
+    row-gap: 1.4rem;
+  }
+
+  .content__meta {
+    font-size: text(12);
+    display: grid;
+    grid-template-columns: repeat(2, auto);
+    justify-content: start;
+    column-gap: 1.4rem;
+  }
+
+  .content__thumbnail {
+    width: 5rem;
+    aspect-ratio: 1/1;
+    background-color: var(--gray-1);
+  }
+
+  .content__date {
+  }
+
+  .content__categories {
+    display: grid;
+    grid-auto-flow: column;
+    column-gap: 1.6rem;
+  }
+
+  .content__category {
+    font-size: text(14);
+    line-height: 1;
+    background-color: var(--white-1);
+    color: var(--black-1);
+    text-align: left;
+  }
+
+  .content__category__link {
+    padding: 0.4rem 0.4rem 0.2rem;
+    display: block;
+  }
+
+  .content__textbox {
+    width: 100%;
+  }
+
+  .content__text {
+    text-align: left;
+    font-size: text(12);
+  }
+
+  .content__back {
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    display: grid;
+    width: fit-content;
+    font-size: text(18);
+    background-color: var(--white-1);
+    padding: 0.6rem 1.6rem 0.2em;
+    color: var(--black-1);
+    line-height: 1;
+  }
+
+  .content__images {
+    display: grid;
+    grid-template-columns: repeat(1, auto);
+    gap: 1.4rem;
+    align-items: start;
+    justify-items: start;
+  }
+
+  .content__image {
+    display: grid;
+  }
+
+  .content__image img {
+    object-fit: contain;
+    max-height: 50rem;
+  }
+}

@@ -1,0 +1,61 @@
+@use "@/styles/mixin/mixins" as *;
+
+.pagination {
+  display: grid;
+  grid-template-columns: repeat(5, auto);
+  column-gap: 2.4rem;
+  justify-content: start;
+}
+
+.pagination__item {
+  width: 4rem;
+  aspect-ratio: 1/1;
+  display: grid;
+  justify-items: center;
+  align-items: center;
+  font-size: text(16);
+  background-color: var(--white-1);
+  color: var(--black-1);
+}
+
+.pagination__item.current {
+  background-color: var(--black-1);
+  color: var(--gray-1);
+  border: 0.1rem solid var(--white-1);
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .pagination__item:not(.current):hover {
+    background-color: var(--danger);
+  }
+}
+
+@include mq(sp) {
+  .pagination {
+    display: grid;
+    grid-template-columns: repeat(5, auto);
+    column-gap: 2.4rem;
+    justify-content: start;
+  }
+
+  .pagination__item {
+    width: 3.5rem;
+    aspect-ratio: 1/1;
+    display: grid;
+    justify-items: center;
+    align-items: center;
+    font-size: text(14);
+    background-color: var(--white-1);
+    color: var(--black-1);
+  }
+
+  .pagination__item.current {
+    background-color: var(--black-1);
+    color: var(--gray-1);
+    border: 0.1rem solid var(--white-1);
+    pointer-events: none;
+    opacity: 0.5;
+  }
+}

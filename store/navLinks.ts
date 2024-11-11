@@ -18,7 +18,7 @@ export const navLinksAtom = atom<NavLink[]>({
     },
     {
       title: 'GALLERY',
-      link: '/gallery',
+      link: '/gallery/p/1',
     },
     {
       title: 'X',

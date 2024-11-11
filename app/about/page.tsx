@@ -8,7 +8,7 @@ import styles from './about.module.scss';
 export default function About() {
   return (
     <div className={styles.about}>
-      <h1 className='reader-only'>about:私のフロントエンド言語とデザインツールのスキルについて</h1>
+      <h1 className="reader-only">about:私のフロントエンド言語とデザインツールのスキルについて</h1>
       <CommonSection heading="about me" lead="エンジニアとしての私について">
         <AboutIdeology />
       </CommonSection>

@@ -13,6 +13,8 @@
 .nav__link {
   display: grid;
   font-size: text(64);
+  text-shadow: 0 0 0.1rem var(--water-1);
+  transition: var(--duration);
 }
 
 .nav__link.icon {
@@ -20,8 +22,18 @@
 }
 
 .nav__link.icon svg {
+  transition: var(--duration);
 }
 
+@media (hover: hover) and (pointer: fine) {
+  .nav__link:hover {
+    color: var(--danger);
+    text-shadow: 0 0 0.1rem var(--danger);
+  }
+  .nav__link:hover svg path {
+    fill: var(--danger);
+  }
+}
 
 @include mq(sp) {
   .nav {
@@ -42,5 +54,4 @@
   .nav__link.icon {
     display: grid;
   }
-
 }
