@@ -44,6 +44,8 @@ export const TransitionContextProvider = ({ children }: TransitionProviderProps)
   const isTransitioning = useRef<boolean>(false);
   const currentPageTitle = useRef<string>('');
   const arrivaledPageTitle = useRef<string>('');
+  const lastUpdateTimeRef = useRef(0);
+  const animationRef = useRef<number>();
 
   const animateProgress = ({ progressRef, start, end, duration }: AnimateProps): Promise<void> => {
     return new Promise((resolve) => {
@@ -51,6 +53,7 @@ export const TransitionContextProvider = ({ children }: TransitionProviderProps)
 
       const animate = (currentTime: number) => {
         const elapsedTime = currentTime - startTime;
+
         const progress = Math.min(1, elapsedTime / duration);
         progressRef.current = start + (end - start) * progress;
 
@@ -59,6 +62,7 @@ export const TransitionContextProvider = ({ children }: TransitionProviderProps)
         } else {
           // console.log('progress complete : ', `${progressRef.current}`);
           resolve();
+          // cancelAnimationFrame(animationRef.current as number);
         }
       };
 

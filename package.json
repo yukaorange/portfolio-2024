@@ -13,13 +13,17 @@
     "lint:style:fix": "stylelint \"**/*.scss\" --fix"
   },
   "dependencies": {
+    "@react-three/drei": "^9.115.0",
+    "@react-three/fiber": "^8.17.10",
+    "@types/three": "^0.169.0",
     "framer-motion": "^11.11.11",
     "gsap": "^3.12.5",
     "microcms-js-sdk": "^3.1.2",
     "next": "14.2.15",
     "react": "^18",
     "react-dom": "^18",
-    "recoil": "^0.7.7"
+    "recoil": "^0.7.7",
+    "three": "^0.170.0"
   },
   "devDependencies": {
     "@types/node": "^20",

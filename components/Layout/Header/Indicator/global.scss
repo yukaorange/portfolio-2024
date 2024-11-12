@@ -1,0 +1,9 @@
+@use "@/styles/mixin/mixins" as *;
+
+body.is-transitioning .indicator__content {
+  --scale: 0;
+}
+
+body.is-transitioning .indicator__text {
+  --opacity: 0;
+}

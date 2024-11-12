@@ -40,7 +40,7 @@
     display: grid;
     grid-template-columns: repeat(5, auto);
     align-items: center;
-    column-gap: 1.4rem;
+    column-gap: 1.2rem;
   }
 
   .nav__item {
@@ -48,7 +48,7 @@
 
   .nav__link {
     display: grid;
-    font-size: text(16);
+    font-size: text(20);
   }
 
   .nav__link.icon {

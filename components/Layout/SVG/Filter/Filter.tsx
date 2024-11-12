@@ -15,9 +15,9 @@ export const Filters = () => {
     const updateNoiseEffect = (currentTime: number) => {
       if (!turbRef.current || !increaseProgress.current) return;
 
-      // console.log(currentTime - lastUpdateTimeRef.current);
-
-      if (currentTime - lastUpdateTimeRef.current < 1000 / 30) return;
+      if (currentTime - lastUpdateTimeRef.current < 1000 / 15) {
+        return;
+      }
 
       lastUpdateTimeRef.current = currentTime;
 
@@ -116,13 +116,13 @@ export const Filters = () => {
             ref={turbRef}
             type="fractalNoise"
             baseFrequency="0.0 0.0"
-            numOctaves="1"
+            numOctaves="2"
             result="warp"
           ></feTurbulence>
           <feDisplacementMap
             xChannelSelector="R"
             yChannelSelector="G"
-            scale="10"
+            scale="24"
             in="SourceGraphic"
             in2="warp"
           />

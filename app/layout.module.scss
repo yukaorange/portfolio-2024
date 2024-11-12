@@ -1,6 +1,22 @@
 @use "@/styles/mixin/mixins" as *;
 
 .layout {
+  position: relative;
+  z-index: 0;
+}
+
+.layout__content {
+  opacity: 1;
+}
+
+.layout__webgl {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  z-index: var(--z-index-webgl);
+  // z-index: 100;
 }
 
 @include mq(sp) {

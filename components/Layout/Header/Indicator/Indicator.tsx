@@ -1,30 +1,18 @@
 'use client';
 
 import styles from '@/components/Layout/Header/Indicator/indicator.module.scss';
+import './global.scss';
+
 import { useEffect, useRef, useState } from 'react';
 
 import { usePathname } from 'next/navigation';
-import { useTransitionProgress } from '@/app/TransitionContextProvider';
-
-import GSAP from 'gsap';
 
 export const Indicator = () => {
   const [pageTitle, setPageTitle] = useState<string>('');
-
   const contentRef = useRef<HTMLDivElement>(null);
   const pageTitleRef = useRef<HTMLSpanElement>(null);
-  const currentProgressRef = useRef(0);
-  const lastTimeRef = useRef(0);
-  const durationRef = useRef(1);
-  const { decreaseProgress, isMounting, isUnmounting, isTransitioning } = useTransitionProgress();
 
   const pathname = usePathname();
-
-
-
-  const easeInOutCubic = (t: number): number => {
-    return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-  };
 
   useEffect(() => {
     if (pathname === '/') {
@@ -35,66 +23,14 @@ export const Indicator = () => {
     }
   }, [pathname]);
 
-  useEffect(() => {
-    const updateTitleArea = (currentTime: number) => {
-      if (lastTimeRef.current === 0) {
-        lastTimeRef.current = currentTime;
-        return;
-      }
-
-      const deltaTime = (currentTime - lastTimeRef.current) / 1000;
-
-      lastTimeRef.current = currentTime;
-
-      const easedDeltaTime = deltaTime / durationRef.current;
-
-      if (isTransitioning.current == true) {
-        currentProgressRef.current -= easedDeltaTime;
-      } else {
-        currentProgressRef.current += easedDeltaTime;
-      }
-
-      currentProgressRef.current = GSAP.utils.clamp(0, 1, currentProgressRef.current);
-
-      pageTitleRef.current?.style.setProperty('--opacity', currentProgressRef.current.toString());
-
-      contentRef.current?.style.setProperty('--scale', currentProgressRef.current.toString());
-
-      // console.log(
-      //   'isUnmounting : ',
-      //   isUnmounting.current,
-      //   '\n',
-      //   'isMounting :',
-      //   isMounting.current,
-      //   '\n',
-      //   'progress :',
-      //   currentProgressRef.current,
-      //   '\n'
-      // );
-    };
-
-    let animationFrameId: number;
-
-    const animate = (time: number) => {
-      updateTitleArea(time);
-      animationFrameId = requestAnimationFrame(animate);
-    };
-
-    animationFrameId = requestAnimationFrame(animate);
-
-    return () => {
-      cancelAnimationFrame(animationFrameId);
-    };
-  }, [decreaseProgress, isUnmounting, isMounting]);
-
   return (
     <div className={styles.indicator}>
       <div className={styles.indicator__inner}>
         <div className={styles.indicator__icon}>
           <Earth />
         </div>
-        <div ref={contentRef} className={`${styles.indicator__content} _en`}>
-          <span ref={pageTitleRef} className={`${styles.indicator__text} `}>
+        <div ref={contentRef} className={`${styles.indicator__content} indicator__content _en`}>
+          <span ref={pageTitleRef} className={`${styles.indicator__text} indicator__text`}>
             {pageTitle}
           </span>
         </div>

@@ -27,15 +27,16 @@ export const CanvasGallery = ({ currentProgressRef, targetProgressRef }: CanvasG
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationRef = useRef<number>();
   const imageRef = useRef<HTMLImageElement | null>(null);
+  const lastUpdateTimeRef = useRef(0);
 
   const drawGradientLine = useCallback(({ ctx, startX, startY, endX, endY }: GradientLineProps) => {
     const gradient = ctx.createLinearGradient(startX, startY, endX, endY);
 
     const animationOffset = (Date.now() % 1000) / 1000;
 
-    gradient.addColorStop(0, 'rgba(216, 216, 216,1)');
+    gradient.addColorStop(0, 'rgba(216, 216, 216,0.5)');
     gradient.addColorStop(0.5 + Math.sin(animationOffset * Math.PI * 2) * 0.5, '#e23030'); //-1 -> 1 -> -1 ...
-    gradient.addColorStop(1, 'rgba(216, 216, 216,1)');
+    gradient.addColorStop(1, 'rgba(216, 216, 216,0.5)');
 
     ctx.strokeStyle = gradient;
     ctx.lineWidth = 1;
@@ -53,7 +54,7 @@ export const CanvasGallery = ({ currentProgressRef, targetProgressRef }: CanvasG
       y: number,
       radius: number,
       fill: boolean,
-      color: string = '#f1f1f1'
+      color: string = '#f1f1f175'
     ) => {
       ctx.beginPath();
       ctx.arc(x, y, radius, 0, Math.PI * 2);
@@ -73,7 +74,7 @@ export const CanvasGallery = ({ currentProgressRef, targetProgressRef }: CanvasG
       // console.log('progress', progress, '\n', 'roundedProgress', Math.round(progress), '\n');
       const dashPattern = [5, 5];
       const passedPointColor = '#e23030';
-      const baseColor = '#f1f1f1';
+      const baseColor = '#f1f1f175';
 
       ctx.lineWidth = 1;
       ctx.strokeStyle = baseColor;
@@ -192,97 +193,100 @@ export const CanvasGallery = ({ currentProgressRef, targetProgressRef }: CanvasG
     [drawCircle, drawGradientLine]
   );
 
-  const animate = useCallback(() => {
-    if (!isComponentMounted) return;
+  const animate = useCallback(
+    (currentTime: number) => {
+      if (!isComponentMounted) return;
 
-    const canvas = canvasRef.current;
+      const canvas = canvasRef.current;
 
-    const iconPositions: Point[] = [
-      { x: 12.5, y: 106.71 },
-      { x: 187.3, y: 34.77 },
-      { x: 318.9, y: 69.57 },
-      { x: 389.3, y: 12.5 },
-      { x: 542.9, y: 37.17 },
-    ];
+      const iconPositions: Point[] = [
+        { x: 12.5, y: 106.71 },
+        { x: 187.3, y: 34.77 },
+        { x: 318.9, y: 69.57 },
+        { x: 389.3, y: 12.5 },
+        { x: 542.9, y: 37.17 },
+      ];
 
-    if (!canvas && isComponentMounted) {
-      console.log('is component exist ', isComponentMounted, ' but canvas is not supported.');
-    }
+      if (!canvas && isComponentMounted) {
+        console.log('is component exist ', isComponentMounted, ' but canvas is not supported.');
+      }
 
-    if (!canvas) return;
+      if (!canvas) return;
 
-    const ctx = canvas.getContext('2d');
-    if (!ctx) {
-      throw new Error('Failed to get 2D context from canvas.');
-    }
+      const ctx = canvas.getContext('2d');
+      if (!ctx) {
+        throw new Error('Failed to get 2D context from canvas.');
+      }
 
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    const viewBox = [0, 0, 555.4, 119.21];
-    canvas.width = 555.4 * 2;
-    canvas.height = 119.2 * 2;
+      const viewBox = [0, 0, 555.4, 119.21];
+      canvas.width = 555.4 * 2;
+      canvas.height = 119.2 * 2;
 
-    const scaleX = canvas.width / viewBox[2];
-    const scaleY = canvas.height / viewBox[3];
+      const scaleX = canvas.width / viewBox[2];
+      const scaleY = canvas.height / viewBox[3];
 
-    ctx.scale(scaleX, scaleY);
+      ctx.scale(scaleX, scaleY);
 
-    ctx.fillStyle = '#f1f1f1';
-    ctx.strokeStyle = '#f1f1f1';
-    ctx.lineWidth = 1;
+      ctx.fillStyle = '#f1f1f1';
+      ctx.strokeStyle = '#f1f1f1';
+      ctx.lineWidth = 1;
 
-    if (imageRef.current) {
-      const segmentIndex = Math.floor(currentProgressRef.current); //0,1,2,3,4
+      if (imageRef.current) {
+        const segmentIndex = Math.floor(currentProgressRef.current); //0,1,2,3,4
 
-      // const roundedIndex = Math.round(currentProgressRef.current);
+        // const roundedIndex = Math.round(currentProgressRef.current);
 
-      const segmentProgress = currentProgressRef.current - segmentIndex; //0 -> 1
+        const segmentProgress = currentProgressRef.current - segmentIndex; //0 -> 1
 
-      const currentPos = iconPositions[segmentIndex];
-      const nextPos = iconPositions[Math.min(segmentIndex + 1, iconPositions.length)];
+        const currentPos = iconPositions[segmentIndex];
+        const nextPos = iconPositions[Math.min(segmentIndex + 1, iconPositions.length)];
 
-      const x = currentPos.x + (nextPos.x - currentPos.x) * segmentProgress;
-      const y = currentPos.y + (nextPos.y - currentPos.y) * segmentProgress;
+        const x = currentPos.x + (nextPos.x - currentPos.x) * segmentProgress;
+        const y = currentPos.y + (nextPos.y - currentPos.y) * segmentProgress;
 
-      const angle = Math.atan2(nextPos.y - currentPos.y, nextPos.x - currentPos.x);
-      const direction = targetProgressRef.current > currentProgressRef.current ? 1 : -1;
+        const angle = Math.atan2(nextPos.y - currentPos.y, nextPos.x - currentPos.x);
+        const direction = targetProgressRef.current > currentProgressRef.current ? 1 : -1;
 
-      // console.log(
-      //   'targetProgress',
-      //   targetProgressRef.current,
-      //   '\n',
-      //   'currentProgress',
-      //   currentProgressRef.current,
-      //   '\n',
-      //   'segmentIndex',
-      //   segmentIndex,
-      //   '\n',
-      //   'segmentProgress',
-      //   segmentProgress,
-      //   '\n',
-      //   'x',
-      //   x,
-      //   '\n',
-      //   'y',
-      //   y,
-      //   '\n',
-      //   'angle',
-      //   angle
-      // );
+        // console.log(
+        //   'targetProgress',
+        //   targetProgressRef.current,
+        //   '\n',
+        //   'currentProgress',
+        //   currentProgressRef.current,
+        //   '\n',
+        //   'segmentIndex',
+        //   segmentIndex,
+        //   '\n',
+        //   'segmentProgress',
+        //   segmentProgress,
+        //   '\n',
+        //   'x',
+        //   x,
+        //   '\n',
+        //   'y',
+        //   y,
+        //   '\n',
+        //   'angle',
+        //   angle
+        // );
 
-      drawProgress(ctx, currentProgressRef.current);
+        drawProgress(ctx, currentProgressRef.current);
 
-      ctx.save();
-      ctx.translate(x, y);
-      ctx.rotate(angle + (direction > 0 ? Math.PI / 2 : -Math.PI / 2));
-      ctx.drawImage(imageRef.current, -12, -12, 24, 24);
-      ctx.restore();
-    }
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.rotate(angle + (direction > 0 ? Math.PI / 2 : -Math.PI / 2));
+        ctx.drawImage(imageRef.current, -12, -12, 24, 24);
+        ctx.restore();
+      }
 
-    if (isComponentMounted) {
-      animationRef.current = requestAnimationFrame(animate);
-    }
-  }, [drawProgress, currentProgressRef, targetProgressRef, isComponentMounted]);
+      if (isComponentMounted) {
+        animationRef.current = requestAnimationFrame(animate);
+      }
+    },
+    [drawProgress, currentProgressRef, targetProgressRef, isComponentMounted]
+  );
 
   useEffect(() => {
     setIsComponentMounted(true);
@@ -292,7 +296,9 @@ export const CanvasGallery = ({ currentProgressRef, targetProgressRef }: CanvasG
     img.crossOrigin = 'anonymous';
     img.onload = () => {
       imageRef.current = img;
-      animate();
+      if (isComponentMounted) {
+        animationRef.current = requestAnimationFrame(animate);
+      }
     };
     img.onerror = (e) => {
       console.error('Error loading image:', e);

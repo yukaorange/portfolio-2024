@@ -16,6 +16,7 @@ import { ViewPortCalculator } from '@/components/Utility/ViewportCalculator';
 import { Filters } from '@/components/Layout/SVG/Filter/Filter';
 import { UserAgent } from '@/components/Utility/UserAgent';
 import { TransitionOverlay } from '@/components/Common/TransitionOverlay/TransitionOverlay';
+import { Experience } from '@/components/Layout/WebGL/Experience/Experience';
 
 export const LayoutClient = ({ children }: Readonly<{ children: React.ReactNode }>) => {
   const loadingRef = useRef<HTMLDivElement>(null);
@@ -57,8 +58,11 @@ export const LayoutClient = ({ children }: Readonly<{ children: React.ReactNode 
               <Header />
               <Drawer />
               <Filters />
-              <TransitionOverlay/>
+              <TransitionOverlay />
               <div className={`${styles.layout__content} layout__content`}>{children}</div>
+              <div className={styles.layout__webgl}>
+                <Experience />
+              </div>
               <Footer />
             </div>
           </TransitionContextProvider>

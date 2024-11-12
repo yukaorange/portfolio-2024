@@ -53,6 +53,9 @@ export const Topgallery = () => {
     if (lastRoundedIndexRef.current !== roundedIndex) {
       setRoundedIndex(roundedIndex);
     }
+
+    // console.log(lastRoundedIndexRef.current, roundedIndex);
+
     lastRoundedIndexRef.current = roundedIndex;
 
     // const destination = currentProgressRef.current > targetProgressRef.current ? -1 : 1;

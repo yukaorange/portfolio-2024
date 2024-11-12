@@ -39,7 +39,7 @@
 
 @include mq(sp) {
   .gallery {
-    height: calc(100svh * 3.3);
+    height: calc(100svh * 2);
     margin-top: calc(var(--section-space) * 0.2);
     padding-inline: calc(var(--margin) * 1);
   }

@@ -24,7 +24,56 @@ export const GalleryList = ({ contents, current, totalCount, pagepath }: Gallery
     <>
       <ul className={styles.list}>
         {contents.map((item, key) => {
-          return (
+          return item.newTab ? (
+            <li key={key} className={styles.item}>
+              <Link
+                href={item.newTab ? item.href : `/gallery/${item.id}`}
+                target="_blank"
+                className={styles.item__thumbnail}
+              >
+                <Image
+                  src={item.thumbnail.url == '' ? '' : item.thumbnail.url}
+                  alt={item.title}
+                  width={108}
+                  height={108}
+                />
+              </Link>
+              <div className={styles.item__inner}>
+                <div className={`${styles.item__meta} _en`}>
+                  <span className={styles.item__date}>{formattedDates[key]}</span>
+                  <div className={styles.item__categories}>
+                    {item.category
+                      .sort((a, b) => a.name.localeCompare(b.name))
+                      .map((item, categoryKey) => {
+                        return (
+                          <ButtonCategory
+                            href={`/gallery/category/${item.id}/p/1`}
+                            key={categoryKey}
+                          >
+                            {item.name}
+                          </ButtonCategory>
+                        );
+                      })}
+                  </div>
+                </div>
+                <Link
+                  target="_blank"
+                  href={item.newTab ? item.href : `/gallery/${item.id}`}
+                  className={styles.item__body}
+                >
+                  <h3 className={`${styles.item__title} _helvetica`}>{item.title}</h3>
+                  <p className={styles.item__description}>{item.description}</p>
+                </Link>
+                <Link
+                  href={item.newTab ? item.href : `/gallery/${item.id}`}
+                  target="_blank"
+                  className={styles.item__linkicon}
+                >
+                  {item.newTab ? <LinkIcon /> : null}
+                </Link>
+              </div>
+            </li>
+          ) : (
             <li key={key} className={styles.item}>
               <TransitionLink
                 href={item.newTab ? item.href : `/gallery/${item.id}`}

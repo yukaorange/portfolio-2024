@@ -72,16 +72,17 @@
 }
 
 .indicator__content {
-  --scale: 0;
+  --scale: 1;
   display: grid;
   padding-top: 0.4rem;
   max-width: calc(cols(4) * var(--scale));
   transform-origin: 0 0;
   overflow: hidden;
+  transition: 1s;
 }
 
 .indicator__text {
-  --opacity: 0;
+  --opacity: 1;
   color: var(--black-1);
   font-size: text(24);
   font-weight: 600;
@@ -90,6 +91,7 @@
   opacity: var(--opacity);
   translate: calc((1 - var(--opacity)) * -50%) 0;
   transform-origin: 0 0;
+  transition: 1s;
 }
 
 @keyframes rotateY {

@@ -19,8 +19,8 @@ interface DrumRollProps {
 export const DrumRoll = ({ targetProgressRef, currentProgressRef }: DrumRollProps) => {
   const listRef = useRef<HTMLUListElement>(null);
   const itemRefs = useRef<HTMLLIElement[]>([]);
-  const animationRef = useRef<number>();
   const indicatorRef = useRef<HTMLUListElement>(null);
+  const lastUpdateTimeRef = useRef(0);
   const [roundedIndex] = useRecoilState(galleryRoundedIndex);
   const [isComponentMounted, setIsComponentMounted] = useState(false);
 
@@ -28,7 +28,7 @@ export const DrumRoll = ({ targetProgressRef, currentProgressRef }: DrumRollProp
     itemRefs.current[index] = el as HTMLLIElement;
   }, []);
 
-  const animateProgress = useCallback(() => {
+  const animateProgress = (currentTime: number) => {
     if (!isComponentMounted) return;
 
     listRef.current?.style.setProperty(
@@ -56,27 +56,35 @@ export const DrumRoll = ({ targetProgressRef, currentProgressRef }: DrumRollProp
         item.style.setProperty(`--drumroll-each-progress`, distance.toString());
       }
     });
-
-    if (isComponentMounted) {
-      animationRef.current = requestAnimationFrame(animateProgress);
-    }
-  }, [currentProgressRef, isComponentMounted]);
+  };
 
   useEffect(() => {
     setIsComponentMounted(true);
-    animateProgress();
 
     return () => {
       // console.log('unmount DrumRoll');
-
       setIsComponentMounted(false);
-      if (animationRef.current) {
-        // console.log('stop animation in DrumRoll');
-
-        cancelAnimationFrame(animationRef.current);
-      }
     };
-  }, [animateProgress, currentProgressRef, isComponentMounted, targetProgressRef]);
+  }, []);
+
+  useEffect(() => {
+    let animationFrameId: number;
+
+    if (isComponentMounted) {
+      console.log(isComponentMounted);
+      const animate = (currentTime: number) => {
+        animateProgress(currentTime);
+
+        animationFrameId = requestAnimationFrame(animate);
+      };
+
+      animationFrameId = requestAnimationFrame(animate);
+    }
+
+    return () => {
+      cancelAnimationFrame(animationFrameId);
+    };
+  }, [animateProgress, isComponentMounted]);
 
   const archive = [
     {
@@ -106,6 +114,20 @@ export const DrumRoll = ({ targetProgressRef, currentProgressRef }: DrumRollProp
     },
   ];
 
+  useEffect(() => {
+    // console.log(roundedIndex);
+
+    itemRefs.current.forEach((item, index) => {
+      if (item) {
+        if (index === roundedIndex) {
+          item.classList.add(styles.current);
+        } else {
+          item.classList.remove(styles.current);
+        }
+      }
+    });
+  }, [roundedIndex]);
+
   return (
     <>
       <div className={styles.drumroll}>
@@ -113,7 +135,7 @@ export const DrumRoll = ({ targetProgressRef, currentProgressRef }: DrumRollProp
           {archive.map((item, id) => {
             return (
               <li
-                key={id}
+                key={`${id}-${roundedIndex}`}
                 ref={(el) => setItemRef(el, id)}
                 className={`${styles.drumroll__list__item} ${id === roundedIndex ? styles.current : ''} _en`}
               >
