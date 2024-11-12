@@ -5,14 +5,21 @@ export const Filters = () => {
   const { decreaseProgress, increaseProgress, isUnmounting, isMounting } = useTransitionProgress();
 
   const turbRef = useRef<SVGFETurbulenceElement>(null);
+  const lastUpdateTimeRef = useRef(0);
 
   const easeInOutCubic = (t: number): number => {
     return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
   };
 
   useEffect(() => {
-    const updateNoiseEffect = () => {
+    const updateNoiseEffect = (currentTime: number) => {
       if (!turbRef.current || !increaseProgress.current) return;
+
+      // console.log(currentTime - lastUpdateTimeRef.current);
+
+      if (currentTime - lastUpdateTimeRef.current < 1000 / 30) return;
+
+      lastUpdateTimeRef.current = currentTime;
 
       let rawIncreaseProgress = increaseProgress.current;
       let rawDecreaseProgress = decreaseProgress.current;
@@ -24,6 +31,7 @@ export const Filters = () => {
       let decreasingProgress = easedDecreaseProgress;
 
       let baseFrequency = 0;
+
       if (isUnmounting.current == true) {
         baseFrequency = 0.000001 + (0.9 - 0.000001) * increasingProgress;
       } else if (isMounting.current == true) {
@@ -53,12 +61,12 @@ export const Filters = () => {
 
     let animationFrameId: number;
 
-    const animate = () => {
-      updateNoiseEffect();
+    const animate = (currentTime: number) => {
+      updateNoiseEffect(currentTime);
       animationFrameId = requestAnimationFrame(animate);
     };
 
-    animate();
+    animationFrameId = requestAnimationFrame(animate);
 
     return () => {
       cancelAnimationFrame(animationFrameId);
@@ -114,7 +122,7 @@ export const Filters = () => {
           <feDisplacementMap
             xChannelSelector="R"
             yChannelSelector="G"
-            scale="30"
+            scale="10"
             in="SourceGraphic"
             in2="warp"
           />

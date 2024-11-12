@@ -1,0 +1,55 @@
+@use "@/styles/mixin/mixins" as *;
+
+body.is-transitioning .transition-overlay {
+  opacity: 1;
+}
+
+body.is-transitioning .transition-overlay__label {
+  animation-name: scale-up;
+  animation-duration: 0.4s;
+  animation-fill-mode: forwards;
+  animation-timing-function: var(--easeOutQuart);
+}
+
+body.is-transitioning .transition-overlay__char {
+}
+
+@keyframes scale-up {
+  0% {
+    scale: 1 0;
+  }
+  100% {
+    scale: 1 1;
+  }
+}
+
+body.is-transitioning .transition-overlay__bg {
+  animation-name: slide-around;
+  animation-duration: 1s;
+  animation-fill-mode: forwards;
+  animation-timing-function: var(--easeOutQuart);
+}
+
+@keyframes slide-around {
+  0% {
+    transform: translate(calc(50% + 100vw), -50%) skew(-15deg);
+  }
+  // 25% {
+  //   transform: translate(calc(-50% + 0vw), -50%) skew(-15deg);
+  // }
+  // 30% {
+  //   transform: translate(calc(-50% - 0vw), -50%) skew(-15deg);
+  // }
+  50% {
+    transform: translate(calc(-50% + 0vw), -50%) skew(-15deg);
+  }
+  // 60% {
+  //   transform: translate(calc(-50% + 0vw), -50%) skew(-15deg);
+  // }
+  // 75% {
+  //   transform: translate(calc(-50% + 0vw), -50%) skew(-15deg);
+  // }
+  100% {
+    transform: translate(calc(-50% - 100vw), -50%) skew(-15deg);
+  }
+}

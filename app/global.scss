@@ -1,5 +1,5 @@
 @use "@/styles/mixin/mixins" as *;
 
-.template {
+body.is-transitioning .layout__content {
   filter: url(#Analog_noise);
 }

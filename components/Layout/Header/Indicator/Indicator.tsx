@@ -2,21 +2,25 @@
 
 import styles from '@/components/Layout/Header/Indicator/indicator.module.scss';
 import { useEffect, useRef, useState } from 'react';
+
 import { usePathname } from 'next/navigation';
 import { useTransitionProgress } from '@/app/TransitionContextProvider';
+
 import GSAP from 'gsap';
 
 export const Indicator = () => {
   const [pageTitle, setPageTitle] = useState<string>('');
+
   const contentRef = useRef<HTMLDivElement>(null);
   const pageTitleRef = useRef<HTMLSpanElement>(null);
   const currentProgressRef = useRef(0);
-  const targetProgressRef = useRef(1);
   const lastTimeRef = useRef(0);
-  const durationRef = useRef(0.4);
+  const durationRef = useRef(1);
   const { decreaseProgress, isMounting, isUnmounting, isTransitioning } = useTransitionProgress();
 
   const pathname = usePathname();
+
+
 
   const easeInOutCubic = (t: number): number => {
     return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
@@ -37,13 +41,17 @@ export const Indicator = () => {
         lastTimeRef.current = currentTime;
         return;
       }
+
       const deltaTime = (currentTime - lastTimeRef.current) / 1000;
+
       lastTimeRef.current = currentTime;
 
+      const easedDeltaTime = deltaTime / durationRef.current;
+
       if (isTransitioning.current == true) {
-        currentProgressRef.current -= deltaTime / durationRef.current;
+        currentProgressRef.current -= easedDeltaTime;
       } else {
-        currentProgressRef.current += deltaTime / durationRef.current;
+        currentProgressRef.current += easedDeltaTime;
       }
 
       currentProgressRef.current = GSAP.utils.clamp(0, 1, currentProgressRef.current);
@@ -52,17 +60,17 @@ export const Indicator = () => {
 
       contentRef.current?.style.setProperty('--scale', currentProgressRef.current.toString());
 
-      console.log(
-        'isUnmounting : ',
-        isUnmounting.current,
-        '\n',
-        'isMounting :',
-        isMounting.current,
-        '\n',
-        'progress :',
-        currentProgressRef.current,
-        '\n'
-      );
+      // console.log(
+      //   'isUnmounting : ',
+      //   isUnmounting.current,
+      //   '\n',
+      //   'isMounting :',
+      //   isMounting.current,
+      //   '\n',
+      //   'progress :',
+      //   currentProgressRef.current,
+      //   '\n'
+      // );
     };
 
     let animationFrameId: number;

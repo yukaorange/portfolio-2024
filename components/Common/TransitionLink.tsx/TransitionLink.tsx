@@ -1,10 +1,12 @@
 'use client';
 
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 
 import Link, { LinkProps } from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { useTransitionProgress } from '@/app/TransitionContextProvider';
+import { useRecoilState } from 'recoil';
+import { currentPageState, arrivalPageState } from '@/store/pageTitleAtom';
 
 interface TransitionLinkProps extends LinkProps {
   className?: string;
@@ -23,18 +25,38 @@ export const TransitionLink = ({
   ...props
 }: TransitionLinkProps) => {
   const router = useRouter();
+  const pathName = usePathname();
   const { increaseTransition, decreaseTransition, isMounting, isUnmounting, isTransitioning } =
     useTransitionProgress();
+  const [currentPage, setCurrentPage] = useRecoilState(currentPageState);
+  const [arrivalPage, setArrivalPage] = useRecoilState(arrivalPageState);
+
+  const updateCurrentPage = (path: string) => {
+    const title = path === '/' ? 'portfolio' : path.split('/')[1];
+    setCurrentPage({ title, path });
+  };
+
+  const updateArrivalPage = (path: string) => {
+    const title = path === '/' ? 'portfolio' : path.split('/')[1];
+    setArrivalPage({ title, path });
+  };
+
+  // useEffect(() => {
+  //   console.log('currentPage :', currentPage, '\n', 'arrivalPage :', arrivalPage);
+  // }, [currentPage, arrivalPage]);
 
   const handleTransition = useCallback(
     async (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
       e.preventDefault();
       onClose(e);
 
+      updateCurrentPage(pathName);
+      updateArrivalPage(href);
+
       //action when unmount
+      document.body.classList.add('is-transitioning');
       isTransitioning.current = true;
       isUnmounting.current = true;
-      document.body.classList.add('is-transitioning');
 
       console.log('//////page unmounting////// : ', href);
 
@@ -59,7 +81,7 @@ export const TransitionLink = ({
       isMounting.current = false;
       isTransitioning.current = false;
     },
-    [decreaseTransition, increaseTransition, href, router]
+    [decreaseTransition, increaseTransition, href, router, currentPage, arrivalPage]
   );
 
   return (

@@ -5,7 +5,8 @@ import { useState, useRef, useEffect } from 'react';
 import { RecoilRoot } from 'recoil';
 
 import styles from '@/app/layout.module.scss';
-import Template from '@/app/template';
+import './global.scss';
+
 import { TransitionContextProvider } from '@/app/TransitionContextProvider';
 import { Drawer } from '@/components/Layout/Drawer/Drawer';
 import { Footer } from '@/components/Layout/Footer/Footer';
@@ -13,6 +14,8 @@ import { Header } from '@/components/Layout/Header/Header';
 import { Loading } from '@/components/Layout/Loading/Loading';
 import { ViewPortCalculator } from '@/components/Utility/ViewportCalculator';
 import { Filters } from '@/components/Layout/SVG/Filter/Filter';
+import { UserAgent } from '@/components/Utility/UserAgent';
+import { TransitionOverlay } from '@/components/Common/TransitionOverlay/TransitionOverlay';
 
 export const LayoutClient = ({ children }: Readonly<{ children: React.ReactNode }>) => {
   const loadingRef = useRef<HTMLDivElement>(null);
@@ -49,11 +52,13 @@ export const LayoutClient = ({ children }: Readonly<{ children: React.ReactNode 
         ) : (
           <TransitionContextProvider>
             <div className={styles.layout}>
+              <UserAgent />
               {isMounted && <ViewPortCalculator />}
               <Header />
               <Drawer />
               <Filters />
-              <Template>{children}</Template>
+              <TransitionOverlay/>
+              <div className={`${styles.layout__content} layout__content`}>{children}</div>
               <Footer />
             </div>
           </TransitionContextProvider>

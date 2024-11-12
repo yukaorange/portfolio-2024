@@ -8,6 +8,8 @@ interface TransitionContextType {
   isUnmounting: React.MutableRefObject<boolean>;
   isMounting: React.MutableRefObject<boolean>;
   isTransitioning: React.MutableRefObject<boolean>;
+  currentPageTitle: React.MutableRefObject<string>;
+  arrivaledPageTitle: React.MutableRefObject<string>;
   decreaseTransition: () => Promise<void>;
   increaseTransition: () => Promise<void>;
 }
@@ -40,6 +42,8 @@ export const TransitionContextProvider = ({ children }: TransitionProviderProps)
   const isUnmounting = useRef<boolean>(false);
   const isMounting = useRef<boolean>(false);
   const isTransitioning = useRef<boolean>(false);
+  const currentPageTitle = useRef<string>('');
+  const arrivaledPageTitle = useRef<string>('');
 
   const animateProgress = ({ progressRef, start, end, duration }: AnimateProps): Promise<void> => {
     return new Promise((resolve) => {
@@ -67,7 +71,7 @@ export const TransitionContextProvider = ({ children }: TransitionProviderProps)
       progressRef: increaseProgress,
       start: 0,
       end: 1,
-      duration: 400,
+      duration: 500,
     });
   }, []);
 
@@ -76,7 +80,7 @@ export const TransitionContextProvider = ({ children }: TransitionProviderProps)
       progressRef: decreaseProgress,
       start: 1,
       end: 0,
-      duration: 600,
+      duration: 500,
     });
   }, []);
 
@@ -86,6 +90,8 @@ export const TransitionContextProvider = ({ children }: TransitionProviderProps)
     isUnmounting,
     isMounting,
     isTransitioning,
+    currentPageTitle,
+    arrivaledPageTitle,
     increaseTransition,
     decreaseTransition,
   };
