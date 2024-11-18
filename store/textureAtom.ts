@@ -63,7 +63,11 @@ const currentTexturesSelector = selector<string[]>({
         return [];
       }
 
-      return contents.map((content) => content.thumbnail.url);
+      if (Array.isArray(contents)) {
+        return contents.map((content) => content.thumbnail.url);
+      } else {
+        return [(contents as Content).thumbnail.url];
+      }
     }
     return [];
   },
