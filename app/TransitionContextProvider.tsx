@@ -12,6 +12,9 @@ interface TransitionContextType {
   arrivaledPageTitle: React.MutableRefObject<string>;
   decreaseTransition: () => Promise<void>;
   increaseTransition: () => Promise<void>;
+  notifyMountComplete: () => void;
+  startTransition: () => void;
+  mountCompletePromise: React.MutableRefObject<Promise<void> | null>;
 }
 
 const TransitionContext = createContext<TransitionContextType | undefined>(undefined);
@@ -44,8 +47,8 @@ export const TransitionContextProvider = ({ children }: TransitionProviderProps)
   const isTransitioning = useRef<boolean>(false);
   const currentPageTitle = useRef<string>('');
   const arrivaledPageTitle = useRef<string>('');
-  const lastUpdateTimeRef = useRef(0);
-  const animationRef = useRef<number>();
+  const mountCompleteResolver = useRef<(() => void) | null>(null);
+  const mountCompletePromise = useRef<Promise<void> | null>(null);
 
   const animateProgress = ({ progressRef, start, end, duration }: AnimateProps): Promise<void> => {
     return new Promise((resolve) => {
@@ -70,7 +73,16 @@ export const TransitionContextProvider = ({ children }: TransitionProviderProps)
     });
   };
 
+  const startTransition = useCallback(() => {
+    mountCompletePromise.current = new Promise<void>((resolve) => {
+      // console.log('start transition and preparing resolver');
+
+      mountCompleteResolver.current = resolve; //mountCompleteResolver()が呼ばれると、resolve()が起動し、Promiseが解決される。という仕組み
+    });
+  }, []);
+
   const increaseTransition = useCallback(() => {
+    // console.log('increase transition');
     return animateProgress({
       progressRef: increaseProgress,
       start: 0,
@@ -80,12 +92,24 @@ export const TransitionContextProvider = ({ children }: TransitionProviderProps)
   }, []);
 
   const decreaseTransition = useCallback(() => {
+    // console.log('decrease transition');
+
     return animateProgress({
       progressRef: decreaseProgress,
       start: 1,
       end: 0,
       duration: 500,
     });
+  }, []);
+
+  const notifyMountComplete = useCallback(() => {
+    // console.log('Mount complete notified');
+    if (mountCompleteResolver.current) {
+      // console.log('mountCompleteResolver.current is resolving');
+
+      mountCompleteResolver.current(); //resolve is called
+      mountCompleteResolver.current = null;
+    }
   }, []);
 
   const value = {
@@ -96,8 +120,11 @@ export const TransitionContextProvider = ({ children }: TransitionProviderProps)
     isTransitioning,
     currentPageTitle,
     arrivaledPageTitle,
+    startTransition,
     increaseTransition,
     decreaseTransition,
+    notifyMountComplete,
+    mountCompletePromise,
   };
 
   return <TransitionContext.Provider value={value}>{children}</TransitionContext.Provider>;

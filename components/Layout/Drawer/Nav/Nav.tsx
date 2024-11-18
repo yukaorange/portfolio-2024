@@ -3,10 +3,10 @@ import { useRecoilValue } from 'recoil';
 
 import { GitHubIcon } from '@/components/Common/Icons/GithubIcon/GitHubIcon';
 import { XIcon } from '@/components/Common/Icons/XIcon/XIcon';
+import { TransitionLink } from '@/components/Common/TransitionLink/TransitionLink';
 import { Glitch } from '@/components/Layout/Drawer/Glitch/Glitch';
 import styles from '@/components/Layout/Drawer/Nav/nav.module.scss';
 import { navLinksAtom } from '@/store/navLinks';
-import { TransitionLink } from '@/components/Common/TransitionLink.tsx/TransitionLink';
 
 interface NavProps {
   onClick: (e: React.MouseEvent | React.KeyboardEvent | React.TouchEvent) => void;

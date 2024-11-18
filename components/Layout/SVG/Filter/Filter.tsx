@@ -1,5 +1,20 @@
-import { useTransitionProgress } from '@/app/TransitionContextProvider';
 import { useEffect, useRef } from 'react';
+
+import { useTransitionProgress } from '@/app/TransitionContextProvider';
+
+// const easingFunctions = {
+//   linear: (t: number): number => t,
+//   easeInQuad: (t: number): number => t * t,
+//   easeOutQuad: (t: number): number => t * (2 - t),
+//   easeInOutQuad: (t: number): number => (t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t),
+//   easeInCubic: (t: number): number => t * t * t,
+//   easeOutCubic: (t: number): number => --t * t * t + 1,
+//   easeInOutCubic: (t: number): number =>
+//     t < 0.5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1,
+//   easeInQuart: (t: number): number => t * t * t * t,
+//   easeOutQuart: (t: number): number => 1 - --t * t * t * t,
+//   easeInOutQuart: (t: number): number => (t < 0.5 ? 8 * t * t * t * t : 1 - 8 * --t * t * t * t),
+// };
 
 export const Filters = () => {
   const { decreaseProgress, increaseProgress, isUnmounting, isMounting } = useTransitionProgress();
@@ -7,8 +22,8 @@ export const Filters = () => {
   const turbRef = useRef<SVGFETurbulenceElement>(null);
   const lastUpdateTimeRef = useRef(0);
 
-  const easeInOutCubic = (t: number): number => {
-    return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+  const ease = (t: number): number => {
+    return t * (2 - t);
   };
 
   useEffect(() => {
@@ -21,21 +36,21 @@ export const Filters = () => {
 
       lastUpdateTimeRef.current = currentTime;
 
-      let rawIncreaseProgress = increaseProgress.current;
-      let rawDecreaseProgress = decreaseProgress.current;
+      const rawIncreaseProgress = increaseProgress.current; //0->1
+      const rawDecreaseProgress = decreaseProgress.current; //1->0
 
-      let easedIncreaseProgress = easeInOutCubic(rawIncreaseProgress as number);
-      let easedDecreaseProgress = easeInOutCubic(rawDecreaseProgress as number);
+      const easedIncreaseProgress = ease(rawIncreaseProgress as number);
+      const easedDecreaseProgress = ease(rawDecreaseProgress as number);
 
-      let increasingProgress = easedIncreaseProgress;
-      let decreasingProgress = easedDecreaseProgress;
+      const increasingProgress = easedIncreaseProgress;
+      const decreasingProgress = easedDecreaseProgress;
 
       let baseFrequency = 0;
 
       if (isUnmounting.current == true) {
-        baseFrequency = 0.000001 + (0.9 - 0.000001) * increasingProgress;
+        baseFrequency = 0.000001 + (0.99 - 0.000001) * increasingProgress;
       } else if (isMounting.current == true) {
-        baseFrequency = 0.000001 + (0.9 - 0.000001) * decreasingProgress;
+        baseFrequency = 0.000001 + (0.99 - 0.000001) * decreasingProgress;
       }
 
       // console.log(

@@ -1,11 +1,10 @@
 'use client';
 
-import styles from '@/components/Layout/Header/Indicator/indicator.module.scss';
-import './global.scss';
-
+import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 
-import { usePathname } from 'next/navigation';
+import styles from '@/components/Layout/Header/Indicator/indicator.module.scss';
+import './global.scss';
 
 export const Indicator = () => {
   const [pageTitle, setPageTitle] = useState<string>('');

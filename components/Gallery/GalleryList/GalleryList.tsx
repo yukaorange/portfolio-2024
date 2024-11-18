@@ -2,12 +2,12 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 import { ButtonCategory } from '@/components/Common/ButtonCategory/ButtonCategory';
+import { TransitionLink } from '@/components/Common/TransitionLink/TransitionLink';
 import { Pagination } from '@/components/Gallery/Pagination/Pagination';
 import { useFormattedDate } from '@/hooks/useFormattedData';
 import { Content } from '@/lib/microcms';
 
 import styles from './list.module.scss';
-import { TransitionLink } from '@/components/Common/TransitionLink.tsx/TransitionLink';
 
 interface GalleryListProps {
   contents: Content[];

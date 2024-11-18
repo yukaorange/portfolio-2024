@@ -103,6 +103,15 @@
   .item:has(.item__linkicon:hover) .item__body {
     color: var(--danger);
   }
+  .item:has(.item__thumbnail:hover) .item__linkicon svg path {
+    stroke: var(--danger);
+  }
+  .item:has(.item__body:hover) .item__linkicon svg path {
+    stroke: var(--danger);
+  }
+  .item:has(.item__linkicon:hover) .item__linkicon svg path {
+    stroke: var(--danger);
+  }
 }
 
 @include mq(sp) {

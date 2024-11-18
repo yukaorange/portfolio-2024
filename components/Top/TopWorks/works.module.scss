@@ -2,17 +2,74 @@
 
 .works {
   overflow: hidden;
-  padding-inline: calc(var(--col) * 1 + var(--gap) * 1 + var(--margin) * 1);
   padding-top: var(--section-space);
+  padding-bottom: var(--section-space);
   position: relative;
   z-index: 0;
 }
 
+.works::before,
+.works::after {
+  content: "";
+  position: absolute;
+  display: block;
+  width: 100%;
+  left: 0;
+  z-index: -1;
+  height: var(--section-space);
+}
+
+.works::before {
+  top: 0;
+  background-image: 
+  // repeating-linear-gradient(
+  //     0deg,
+  //     transparent,
+  //     transparent 2px,
+  //     rgba(21, 21, 21, 0) 2px,
+  //     rgba(21, 21, 21, 0.3) 3px
+  //   ),
+    linear-gradient(
+    180deg,
+    rgba(21, 21, 21, 1) 0%,
+    rgba(21, 21, 21, 1) 20%,
+    rgba(21, 21, 21, 1) 40%,
+    rgba(21, 21, 21, 1) 60%,
+    rgba(21, 21, 21, 1) 80%,
+    rgba(21, 21, 21, 1) 100%
+  );
+}
+
+.works::after {
+  bottom: 0;
+  background-image:
+  //  repeating-linear-gradient(
+  //     0deg,
+  //     transparent,
+  //     transparent 2px,
+  //     rgba(21, 21, 21, 0) 2px,
+  //     rgba(21, 21, 21, 0.3) 3px
+  //   ),
+    linear-gradient(
+    180deg,
+    rgba(21, 21, 21, 1) 0%,
+    rgba(21, 21, 21, 0.8) 20%,
+    rgba(21, 21, 21, 0.6) 40%,
+    rgba(21, 21, 21, 0.4) 60%,
+    rgba(21, 21, 21, 0.2) 80%,
+    rgba(21, 21, 21, 0) 100%
+  );
+}
+
 .works__inner {
+  background-color: var(--black-1);
+  padding-inline: calc(var(--col) * 1 + var(--gap) * 1 + var(--margin) * 1);
   display: grid;
 }
 
 .works__content {
+  position: relative;
+  z-index: 1;
   display: grid;
   row-gap: 3.2rem;
 }
@@ -37,7 +94,8 @@
   position: absolute;
   top: calc(18rem + var(--section-space));
   width: 100%;
-  z-index: -1;
+  pointer-events: none;
+  z-index: 0;
 }
 
 .works__arrows {
@@ -63,12 +121,17 @@
 
 @include mq(sp) {
   .works {
-    padding-inline: calc(var(--margin) * 1);
     padding-top: var(--section-space);
+    padding-bottom: var(--section-space);
+    position: relative;
+    z-index: 0;
   }
 
   .works__inner {
+    padding-top: 10rem;
+    padding-inline: calc(var(--margin) * 1);
     display: grid;
+    background-color: var(--black-1);
   }
 
   .works__content {
@@ -94,7 +157,8 @@
   .works__marquee {
     left: 0;
     position: absolute;
-    top: calc(-11.2rem + var(--section-space));
-    z-index: -1;
+    top: calc(0rem + var(--section-space));
+    z-index: 0;
+    pointer-events: none;
   }
 }

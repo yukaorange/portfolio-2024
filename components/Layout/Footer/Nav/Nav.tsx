@@ -1,11 +1,11 @@
+import Link from 'next/link';
 import { useRecoilValue } from 'recoil';
 
 import { GitHubIcon } from '@/components/Common/Icons/GithubIcon/GitHubIcon';
 import { XIcon } from '@/components/Common/Icons/XIcon/XIcon';
+import { TransitionLink } from '@/components/Common/TransitionLink/TransitionLink';
 import styles from '@/components/Layout/Footer/Nav/nav.module.scss';
 import { navLinksAtom } from '@/store/navLinks';
-import { TransitionLink } from '@/components/Common/TransitionLink.tsx/TransitionLink';
-import Link from 'next/link';
 
 export const Nav = () => {
   const links = useRecoilValue(navLinksAtom);

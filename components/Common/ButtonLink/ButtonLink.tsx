@@ -1,7 +1,7 @@
 import Image from 'next/image';
 
 import styles from './button.module.scss';
-import { TransitionLink } from '../TransitionLink.tsx/TransitionLink';
+import { TransitionLink } from '../TransitionLink/TransitionLink';
 
 interface ButtonLinkProps {
   href: string;

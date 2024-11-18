@@ -1,3 +1,4 @@
+import { ClientWrapper } from '@/app/ClientWrapper';
 import { GalleryLayout } from '@/components/Gallery/GalleryLayout/GalleryLayout';
 import { GalleryList } from '@/components/Gallery/GalleryList/GalleryList';
 import { GalleryNav } from '@/components/Gallery/GalleryNav/GalleryNav';
@@ -23,15 +24,20 @@ export default async function gallery({ params }: GalleryProps) {
 
   return (
     <>
-      <div className={styles.gallery}>
-        {/* fv */}
-        <GalleryPageview heading="gallery" lead="制作したコードやグラフィックを掲載しています。" />
-        {/* content */}
-        <GalleryLayout
-          content={<GalleryList contents={contents} current={current} totalCount={totalCount} />}
-          nav={<GalleryNav categories={categories} />}
-        />
-      </div>
+      <ClientWrapper galleryContents={contents}>
+        <div className={styles.gallery}>
+          {/* fv */}
+          <GalleryPageview
+            heading="gallery"
+            lead="制作したコードやグラフィックを掲載しています。"
+          />
+          {/* content */}
+          <GalleryLayout
+            content={<GalleryList contents={contents} current={current} totalCount={totalCount} />}
+            nav={<GalleryNav categories={categories} />}
+          />
+        </div>
+      </ClientWrapper>
     </>
   );
 }

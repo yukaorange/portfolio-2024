@@ -34,6 +34,10 @@
         "alphabetize": { "order": "asc", "caseInsensitive": true }
       }
     ],
+    "react/no-unknown-property": [
+      "error",
+      { "ignore": ["dispose", "geometry", "material", "position", "rotation", "scale", "args"] }
+    ],
     "jsx-a11y/no-static-element-interactions": "warn",
     "jsx-a11y/click-events-have-key-events": "warn"
   },

@@ -1,7 +1,5 @@
-import Link from 'next/link';
-
 import styles from './button.module.scss';
-import { TransitionLink } from '../TransitionLink.tsx/TransitionLink';
+import { TransitionLink } from '../TransitionLink/TransitionLink';
 
 interface ButtonCategoryProps {
   href: string;

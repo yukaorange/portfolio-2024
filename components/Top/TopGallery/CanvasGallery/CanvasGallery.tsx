@@ -27,7 +27,6 @@ export const CanvasGallery = ({ currentProgressRef, targetProgressRef }: CanvasG
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationRef = useRef<number>();
   const imageRef = useRef<HTMLImageElement | null>(null);
-  const lastUpdateTimeRef = useRef(0);
 
   const drawGradientLine = useCallback(({ ctx, startX, startY, endX, endY }: GradientLineProps) => {
     const gradient = ctx.createLinearGradient(startX, startY, endX, endY);
@@ -195,7 +194,10 @@ export const CanvasGallery = ({ currentProgressRef, targetProgressRef }: CanvasG
 
   const animate = useCallback(
     (currentTime: number) => {
-      if (!isComponentMounted) return;
+      if (!isComponentMounted) {
+        console.log("is component doesn't exist. ", currentTime);
+        return;
+      }
 
       const canvas = canvasRef.current;
 
@@ -208,7 +210,7 @@ export const CanvasGallery = ({ currentProgressRef, targetProgressRef }: CanvasG
       ];
 
       if (!canvas && isComponentMounted) {
-        console.log('is component exist ', isComponentMounted, ' but canvas is not supported.');
+        // console.log('is component exist ', isComponentMounted, ' but canvas is not supported.');
       }
 
       if (!canvas) return;
@@ -314,7 +316,7 @@ export const CanvasGallery = ({ currentProgressRef, targetProgressRef }: CanvasG
         cancelAnimationFrame(animationRef.current);
       }
     };
-  }, [animate]);
+  }, [animate, isComponentMounted]);
 
   return (
     <canvas

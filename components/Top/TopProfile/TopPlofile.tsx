@@ -1,13 +1,12 @@
 import Image from 'next/image';
-import Link from 'next/link';
 
 import { LeadTop } from '@/components/Common/LeadTop/LeadTop';
+import { TransitionLink } from '@/components/Common/TransitionLink/TransitionLink';
 import { BgApplication } from '@/components/Top/TopProfile/BgApplication/BgApplication';
 import styles from '@/components/Top/TopProfile/profile.module.scss';
 import { Stats } from '@/components/Top/TopProfile/Stats/Stats';
 import { Tag } from '@/components/Top/TopProfile/Tag/Tag';
 import { Ticket } from '@/components/Top/TopProfile/Ticket/Ticket';
-import { TransitionLink } from '@/components/Common/TransitionLink.tsx/TransitionLink';
 
 export const TopProfile = () => {
   return (

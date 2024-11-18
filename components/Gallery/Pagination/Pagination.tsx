@@ -1,5 +1,4 @@
-import Link from 'next/link';
-
+import { TransitionLink } from '@/components/Common/TransitionLink/TransitionLink';
 import { GALLERY_LIST_LIMIT } from '@/lib/microcms';
 
 import styles from './pagination.module.scss';
@@ -20,7 +19,7 @@ export const Pagination = ({ totalCount, current, pagepath = '/gallery/p' }: Pag
     <div className={styles.pagination}>
       {pages.map((page, index) => {
         return (
-          <Link
+          <TransitionLink
             href={`${pagepath}/${page}`}
             key={index}
             className={
@@ -30,7 +29,7 @@ export const Pagination = ({ totalCount, current, pagepath = '/gallery/p' }: Pag
             }
           >
             {page}
-          </Link>
+          </TransitionLink>
         );
       })}
     </div>

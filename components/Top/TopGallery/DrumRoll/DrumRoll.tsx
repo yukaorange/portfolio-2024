@@ -20,7 +20,6 @@ export const DrumRoll = ({ targetProgressRef, currentProgressRef }: DrumRollProp
   const listRef = useRef<HTMLUListElement>(null);
   const itemRefs = useRef<HTMLLIElement[]>([]);
   const indicatorRef = useRef<HTMLUListElement>(null);
-  const lastUpdateTimeRef = useRef(0);
   const [roundedIndex] = useRecoilState(galleryRoundedIndex);
   const [isComponentMounted, setIsComponentMounted] = useState(false);
 
@@ -28,35 +27,41 @@ export const DrumRoll = ({ targetProgressRef, currentProgressRef }: DrumRollProp
     itemRefs.current[index] = el as HTMLLIElement;
   }, []);
 
-  const animateProgress = (currentTime: number) => {
-    if (!isComponentMounted) return;
-
-    listRef.current?.style.setProperty(
-      '--drumroll-progress',
-      currentProgressRef.current.toString()
-    );
-
-    itemRefs.current.forEach((item, index) => {
-      let distance = Math.abs(index - currentProgressRef.current) / (itemRefs.current.length - 1);
-
-      // if (index == 0) {
-      //   console.log(
-      //     distance,
-      //     index,
-      //     currentProgressRef.current,
-      //     itemRefs.current.length - 1,
-      //     Math.abs(index - currentProgressRef.current),
-      //     Math.abs(index - currentProgressRef.current) / (itemRefs.current.length - 1)
-      //   );
-      // }
-
-      distance = distance * 2.5;
-
-      if (item) {
-        item.style.setProperty(`--drumroll-each-progress`, distance.toString());
+  const animateProgress = useCallback(
+    (currentTime: number) => {
+      if (!isComponentMounted) {
+        console.log('unmount DrumRoll', currentTime, targetProgressRef);
+        return;
       }
-    });
-  };
+
+      listRef.current?.style.setProperty(
+        '--drumroll-progress',
+        currentProgressRef.current.toString()
+      );
+
+      itemRefs.current.forEach((item, index) => {
+        let distance = Math.abs(index - currentProgressRef.current) / (itemRefs.current.length - 1);
+
+        // if (index == 0) {
+        //   console.log(
+        //     distance,
+        //     index,
+        //     currentProgressRef.current,
+        //     itemRefs.current.length - 1,
+        //     Math.abs(index - currentProgressRef.current),
+        //     Math.abs(index - currentProgressRef.current) / (itemRefs.current.length - 1)
+        //   );
+        // }
+
+        distance = distance * 2.5;
+
+        if (item) {
+          item.style.setProperty(`--drumroll-each-progress`, distance.toString());
+        }
+      });
+    },
+    [currentProgressRef, isComponentMounted, itemRefs, listRef, targetProgressRef]
+  );
 
   useEffect(() => {
     setIsComponentMounted(true);
@@ -71,7 +76,7 @@ export const DrumRoll = ({ targetProgressRef, currentProgressRef }: DrumRollProp
     let animationFrameId: number;
 
     if (isComponentMounted) {
-      console.log(isComponentMounted);
+      // console.log(isComponentMounted);
       const animate = (currentTime: number) => {
         animateProgress(currentTime);
 

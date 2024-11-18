@@ -4,6 +4,9 @@ const path = require('path');
 const nextConfig = {
   reactStrictMode: true,
   productionBrowserSourceMaps: true,
+  experimental: {
+    scrollRestoration: true,
+  },
   sassOptions: {
     includePaths: [path.join(__dirname, 'styles'), path.join(__dirname, 'components')],
   },
@@ -14,6 +17,11 @@ const nextConfig = {
       test: /\.glsl$/,
       exclude: /node_modules/,
       use: ['raw-loader', 'glslify-loader'],
+    });
+
+    config.externals.push({
+      'react-native-fs': 'reactNativeFs',
+      canvas: 'canvas',
     });
 
     return config;

@@ -3,6 +3,23 @@
 .profile {
   padding-inline: calc(var(--col) * 1 + var(--gap) * 1 + var(--margin) * 1);
   padding-top: var(--section-space);
+  background-image:
+  //  repeating-linear-gradient(
+  //     0deg,
+  //     transparent,
+  //     transparent 2px,
+  //     rgba(21, 21, 21, 0) 2px,
+  //     rgba(21, 21, 21, 0.3) 3px
+  //   ),
+    linear-gradient(
+    180deg,
+    rgba(21, 21, 21, 0) 0%,
+    rgba(21, 21, 21, 0) 20%,
+    rgba(21, 21, 21, 0.25) 40%,
+    rgba(21, 21, 21, 0.5) 60%,
+    rgba(21, 21, 21, 0.75) 80%,
+    rgba(21, 21, 21, 1) 100%
+  );
 }
 
 .profile__inner {

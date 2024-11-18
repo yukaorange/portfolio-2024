@@ -21,7 +21,7 @@
 .pagination__item.current {
   background-color: var(--black-1);
   color: var(--gray-1);
-  border: 0.1rem solid var(--white-1);
+  // border: 0.1rem solid var(--white-1);
   pointer-events: none;
   opacity: 0.5;
 }
@@ -54,7 +54,7 @@
   .pagination__item.current {
     background-color: var(--black-1);
     color: var(--gray-1);
-    border: 0.1rem solid var(--white-1);
+    // border: 0.1rem solid var(--white-1);
     pointer-events: none;
     opacity: 0.5;
   }

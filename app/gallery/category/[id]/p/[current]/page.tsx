@@ -1,3 +1,4 @@
+import { ClientWrapper } from '@/app/ClientWrapper';
 import { GalleryLayout } from '@/components/Gallery/GalleryLayout/GalleryLayout';
 import { GalleryList } from '@/components/Gallery/GalleryList/GalleryList';
 import { GalleryNav } from '@/components/Gallery/GalleryNav/GalleryNav';
@@ -30,21 +31,23 @@ export default async function gallery({ params }: CategoryProps) {
   });
 
   return (
-    <div className={styles.category}>
-      {/* fv */}
-      <GalleryPageview heading="filtered by category" lead={`表示中:${currentCategory.name}`} />
-      {/* content */}
-      <GalleryLayout
-        content={
-          <GalleryList
-            contents={contents}
-            current={current}
-            totalCount={totalCount}
-            pagepath={`/gallery/category/${params.id}/p`}
-          />
-        }
-        nav={<GalleryNav categories={categories} />}
-      />
-    </div>
+    <ClientWrapper galleryContents={contents}>
+      <div className={styles.category}>
+        {/* fv */}
+        <GalleryPageview heading="filtered by category" lead={`表示中:${currentCategory.name}`} />
+        {/* content */}
+        <GalleryLayout
+          content={
+            <GalleryList
+              contents={contents}
+              current={current}
+              totalCount={totalCount}
+              pagepath={`/gallery/category/${params.id}/p`}
+            />
+          }
+          nav={<GalleryNav categories={categories} />}
+        />
+      </div>
+    </ClientWrapper>
   );
 }

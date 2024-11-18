@@ -1,15 +1,15 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { usePathname } from 'next/navigation';
-import { useTransitionProgress } from '@/app/TransitionContextProvider';
+import React, { useEffect, useCallback } from 'react';
+import { useRecoilValue } from 'recoil';
+
+// import { useTransitionProgress } from '@/app/TransitionContextProvider';
+import { arrivalPageState } from '@/store/pageTitleAtom';
+
 import styles from './overlay.module.scss';
 import './global.scss';
 
-import { useRecoilValue } from 'recoil';
-import { currentPageState, arrivalPageState } from '@/store/pageTitleAtom';
-
 export const TransitionOverlay = () => {
-  const { increaseTransition, decreaseTransition, isMounting, isUnmounting, isTransitioning } =
-    useTransitionProgress();
+  // const { increaseTransition, decreaseTransition, isMounting, isUnmounting, isTransitioning } =
+  //   useTransitionProgress();
 
   const arrivalPage = useRecoilValue(arrivalPageState);
 

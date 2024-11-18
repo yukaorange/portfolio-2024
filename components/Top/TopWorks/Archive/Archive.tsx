@@ -1,7 +1,7 @@
 import Image from 'next/image';
 
+import { TransitionLink } from '@/components/Common/TransitionLink/TransitionLink';
 import styles from '@/components/Top/TopWorks/Archive/archive.module.scss';
-import { TransitionLink } from '@/components/Common/TransitionLink.tsx/TransitionLink';
 
 export const Archive = () => {
   const archive = [
