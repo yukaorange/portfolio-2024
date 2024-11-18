@@ -105,7 +105,7 @@ export const Experience = () => {
         rotation={[modelRotation.x, modelRotation.y, modelRotation.z]}
       />
       <Panels textures={loadedTextures} />
-      <Floor color={color} />
+      {/* <Floor color={color} /> */}
     </>
   );
 };
