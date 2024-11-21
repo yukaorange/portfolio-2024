@@ -1,74 +1,94 @@
 'use client';
 
-import { useControls, folder } from 'leva';
-import React, { useEffect, useState } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
+import { useControls, folder } from 'leva';
+import React, { useEffect, useState, useRef } from 'react';
+import { useRecoilValue } from 'recoil';
 import * as THREE from 'three';
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer';
-import { SMAAPass } from 'three/examples/jsm/postprocessing/SMAAPass';
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass';
+import { SMAAPass } from 'three/examples/jsm/postprocessing/SMAAPass';
+import { AnimationControls } from '@/types/animation';
+import { useScroll } from '@/app/ScrollContextProvider';
+import { useScrollVelocity } from '@/app/ScrollVelocityProvider';
+import { useTransitionProgress } from '@/app/TransitionContextProvider';
+import { Floor } from '@/components/WebGL/Floor/Floor';
+import { Model } from '@/components/WebGL/Model/Model';
+import { Panels } from '@/components/WebGL/Panels/Panels';
+import { useTransitionAnimation } from '@/hooks/useTransitionAnimation';
+import { currentPageState } from '@/store/pageTitleAtom';
 import { useScene } from '@/store/textureAtom';
 
-import { Model } from '@/components/WebGL/Model/Model';
 import { ResponsiveCamera } from './ResponsiveCamera';
-import { Floor } from '@/components/WebGL/Floor/Floor';
-import { Panels } from '@/components/WebGL/Panels/Panels';
 
 export const Experience = () => {
+  const { indicatorOfScrollEnd, indicatorOfScrollStart } = useScroll();
+  const { velocityRef, currentProgressRef, targetProgressRef } = useScrollVelocity();
+  const { decreaseProgress, increaseProgress, singleProgress } = useTransitionProgress();
   const { gl, scene, camera } = useThree();
+  const observePageTransitionRef = useTransitionAnimation();
+  const lastTimeRef = useRef(0);
   const [composer, setComposer] = useState<EffectComposer | null>(null);
-  const { currentPage, loadedTextures, characterTexture, suitcaseTexture } = useScene();
+  const currentPage = useRecoilValue(currentPageState);
+
+  const {
+    loadedTextures,
+    characterTexture,
+    suitcaseTexture,
+    floorNormalTexture,
+    floorRoughnessTexture,
+  } = useScene();
 
   const modelTextureMap = {
     characterTexture: characterTexture || new THREE.Texture(),
     suitcaseTexture: suitcaseTexture || new THREE.Texture(),
   };
 
+  const floorTextureMap = {
+    roughness: floorRoughnessTexture || new THREE.Texture(),
+    normal: floorNormalTexture || new THREE.Texture(),
+  };
+
   //observe  page and textures
-  useEffect(() => {
-    //current page が変更されるたびにテクスチャを再生成するロジックはtetureAtom.tsにある
-    console.log('Current page:', currentPage);
-    console.log('Loaded textures:', loadedTextures);
-  }, [currentPage, loadedTextures]);
+  // useEffect(() => {
+  //   //current page が変更されるたびにテクスチャを再生成するロジックはtetureAtom.tsにある
+  //   console.log('Current page:', currentPage);
+  //   console.log('Loaded textures:', loadedTextures);
+  // }, [currentPage, loadedTextures]);
 
   // camera setting
-  // const { position, lookAt, near, far, modelPosition, modelRotation, color } = useControls(
-  //   {
-  //     Camera: folder({
-  //       position: {
-  //         value: { x: 0, y: 2.3, z: 10 }, //[0.0,0.5,5.0] is default
-  //         step: 0.01,
-  //       },
-  //       lookAt: {
-  //         value: { x: 0, y: 2.3, z: 0 }, //[0,1.7,0] is default
-  //         step: 0.1,
-  //       },
-  //       near: { value: 0.1, min: 0.1, max: 10, step: 0.1 },
-  //       far: { value: 1000, min: 100, max: 5000, step: 100 },
-  //     }),
-  //     Model: folder({
-  //       modelPosition: {
-  //         value: { x: 0, y: 0, z: 9 },
-  //         step: 0.1,
-  //       },
-  //       modelRotation: {
-  //         value: { x: 0, y: 0, z: 0 },
-  //         step: 0.1,
-  //       },
-  //     }),
-  //     Floor: folder({
-  //       color: { value: [0.2, 0.2, 0.2], label: 'Ground Color' },
-  //     }),
-  //   },
-  //   {
-  //     collapsed: true,
-  //     hidden: true,
-  //   }
-  // );
+  // const { position, lookAt, near, far, modelPosition, modelRotation, color } = useControls({
+  //   Camera: folder({
+  //     position: {
+  //       value: { x: 0, y: 1.0, z: 10 }, //[0.0,1.0,5.0] is default
+  //       step: 0.01,
+  //     },
+  //     lookAt: {
+  //       value: { x: 0, y: 3.0, z: 0 }, //[0,3.0,0] is default
+  //       step: 0.1,
+  //     },
+  //     near: { value: 0.1, min: 0.1, max: 10, step: 0.1 },
+  //     far: { value: 1000, min: 100, max: 5000, step: 100 },
+  //   }),
+  //   Model: folder({
+  //     modelPosition: {
+  //       value: { x: 0, y: 0, z: 10 },
+  //       step: 0.1,
+  //     },
+  //     modelRotation: {
+  //       value: { x: 0, y: 0, z: 0 },
+  //       step: 0.1,
+  //     },
+  //   }),
+  //   Floor: folder({
+  //     color: { value: [0.1, 0.1, 0.1], label: 'Ground Color' },
+  //   }),
+  // });
 
+  //LEVAで決めた値、確定後
   const controls = {
-    position: { x: 0, y: 2.3, z: 10 },
-    lookAt: { x: 0, y: 2.3, z: 0 },
+    position: { x: 0, y: 1.0, z: 10 },
+    lookAt: { x: 0, y: 3.0, z: 0 },
     near: 0.1,
     far: 1000,
     modelPosition: { x: 0, y: 0, z: 9 },
@@ -87,13 +107,76 @@ export const Experience = () => {
     effectComposer.addPass(smaaPass);
 
     setComposer(effectComposer);
-  }, []);
+  }, [gl, scene, camera]);
 
   // render
   useFrame((state, delta) => {
     if (!composer) return;
+
+    const currentTime = state.clock.getElapsedTime();
+    const deltaTime = currentTime - lastTimeRef.current;
+    lastTimeRef.current = currentTime;
+
+    // console.log(
+    //   'check status : ',
+    //   '\n',
+    //   'delta time',
+    //   deltaTime,
+    //   '\n',
+    //   'current page : ',
+    //   currentPage,
+    //   '\n',
+    //   'velocity : ',
+    //   velocityRef.current, //スピードメーター
+    //   'increase Progress : ',
+    //   increaseProgress.current, //トランジション時に0->1
+    //   '\n',
+    //   'decrease progress : ',
+    //   decreaseProgress.current, //トランジション時に1->0
+    //   '\n',
+    //   'single Progress :',
+    //   singleProgress.current, //トランジション時に0->1->0
+    //   '\n',
+    //   'obsever page change :',
+    //   observePageTransitionRef.current, //ページ切り替わり検知で0->1（duration 1000ms）,その後0
+    //   '\n',
+    //   'indicatorOfScrollStart : ',
+    //   indicatorOfScrollStart.current, //メインビューエリアを離れたらtrue
+    //   '\n',
+    //   'indicatorOfScrollEnd : ',
+    //   indicatorOfScrollEnd.current, //フッターに到達したらtrue
+    //   '\n',
+    //   'gallery current progress : ',
+    //   currentProgressRef.current, //top pageのgalleryの進行度
+    //   '\n',
+    //   'gallery target progress : ',
+    //   targetProgressRef.current, //top pageのgalleryのインデックス(target)
+    //   '\n',
+    //   'gallery current : ',
+    //   Math.round(currentProgressRef.current) //top pageのgalleryのインデックス
+    // );
+
+    if (indicatorOfScrollEnd.current) {
+      // フッターセクション付近まで到達したときの処理
+    }
+    if (indicatorOfScrollStart.current) {
+      // ヘッダーセクション付近から離れたときの処理
+    }
+
     composer.render(delta);
   }, 1);
+
+  const animationControls: AnimationControls = {
+    increaseProgress,
+    decreaseProgress,
+    singleProgress,
+    velocityRef,
+    currentProgressRef,
+    targetProgressRef,
+    indicatorOfScrollStart,
+    indicatorOfScrollEnd,
+    observePageTransitionRef,
+  };
 
   return (
     <>
@@ -101,11 +184,12 @@ export const Experience = () => {
       <ambientLight intensity={0.3} />
       <Model
         textures={modelTextureMap}
+        animationControls={animationControls}
         position={[modelPosition.x, modelPosition.y, modelPosition.z]}
         rotation={[modelRotation.x, modelRotation.y, modelRotation.z]}
       />
-      <Panels textures={loadedTextures} />
-      {/* <Floor color={color} /> */}
+      <Panels loadedTextures={loadedTextures} animationControls={animationControls} />
+      <Floor color={color} textures={floorTextureMap} animationControls={animationControls} />
     </>
   );
 };

@@ -17,6 +17,7 @@
   display: grid;
   grid-column: span 1;
   grid-template-columns: subgrid;
+  text-shadow: var(--blue-shadow);
 }
 
 .stats__desc {
@@ -24,6 +25,7 @@
   grid-column: span 1;
   grid-template-columns: subgrid;
   text-align: right;
+  text-shadow: var(--blue-shadow);
 }
 
 .stats__unit {
@@ -32,6 +34,8 @@
   grid-column: span 1;
   grid-template-columns: subgrid;
   text-align: right;
+
+  text-shadow: var(--blue-shadow);
 }
 
 .stats__unit.stats__unit--small {

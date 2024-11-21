@@ -7,6 +7,7 @@ import { useGLTF } from '@react-three/drei';
 import React, { useMemo } from 'react';
 import * as THREE from 'three';
 import { GLTF } from 'three-stdlib';
+import { AnimationControls } from '@/types/animation';
 
 import characterFragment from '@/shaders/character/fragment-character.glsl';
 import characterVertex from '@/shaders/character/vertex-character.glsl';
@@ -38,9 +39,10 @@ interface ModelProps extends GroupProps {
     characterTexture: THREE.Texture;
     suitcaseTexture: THREE.Texture;
   };
+  animationControls: AnimationControls;
 }
 
-export const Model = ({ textures, ...props }: ModelProps) => {
+export const Model = ({ textures, animationControls, ...props }: ModelProps) => {
   const { nodes } = useGLTF('/models/scene_for_portfolio_2024_2.glb') as GLTFResult;
 
   const characterMaterial = useMemo(() => {

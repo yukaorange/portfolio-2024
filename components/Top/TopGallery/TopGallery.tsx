@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef } from 'react';
 import { useSetRecoilState } from 'recoil';
 
+import { useScrollVelocity } from '@/app/ScrollVelocityProvider';
 import { ButtonLink } from '@/components/Common/ButtonLink/ButtonLink';
 import { CanvasGallery } from '@/components/Top/TopGallery/CanvasGallery/CanvasGallery';
 import { DrumRoll } from '@/components/Top/TopGallery/DrumRoll/DrumRoll';
@@ -12,20 +13,8 @@ import { galleryRoundedIndex } from '@/store/galleryProgressAtom';
 
 export const Topgallery = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
-  const currentProgressRef = useRef(0);
   const lastRoundedIndexRef = useRef<number>(0);
-  const targetProgressRef = useRef(0);
-  const touchStartY = useRef<number | null>(null);
-  const lastTouchY = useRef<number | null>(null);
-  const touchVelocity = useRef<number>(0);
-  const velocityRef = useRef<number>(0);
-  const deltaTimeRef = useRef<number>(0);
-  const lastTimeRef = useRef<number>(0);
-
-  const decayRate = 5;
-  const maxVelocity = 1;
-  const minVelocity = 0.001;
-
+  const { currentProgressRef, targetProgressRef, setTargetProgress } = useScrollVelocity();
   const setRoundedIndex = useSetRecoilState(galleryRoundedIndex);
 
   const handleScroll = useCallback(() => {
@@ -36,19 +25,27 @@ export const Topgallery = () => {
     const sectionTop = sectionRect.top + window.scrollY || 0;
 
     if (window.scrollY < sectionTop) {
-      targetProgressRef.current = 0;
+      setTargetProgress(0);
       return;
     }
 
     const currentScrollPosition = window.scrollY;
 
     const scrollPosition = currentScrollPosition - sectionTop;
+
     const sectionHeight = sectionRect.height;
+
     const progressRange = sectionHeight - window.innerHeight;
+
     const rawProgress = Math.min(Math.max((scrollPosition / progressRange) * 4, 0), 4);
 
-    targetProgressRef.current = rawProgress;
-    const roundedIndex = Math.round(currentProgressRef.current);
+    setTargetProgress(rawProgress);
+
+    let roundedIndex: number = 0;
+
+    if (currentProgressRef.current) {
+      roundedIndex = Math.round(currentProgressRef.current);
+    }
 
     if (lastRoundedIndexRef.current !== roundedIndex) {
       setRoundedIndex(roundedIndex);
@@ -79,84 +76,12 @@ export const Topgallery = () => {
     //   'rawProgress',
     //   rawProgress
     // );
-  }, [setRoundedIndex]);
-
-  const handleWheel = useCallback((event: WheelEvent) => {
-    const isTrackpad = event.deltaMode === 0 && Math.abs(event.deltaY) < 50;
-
-    if (isTrackpad) {
-      velocityRef.current += event.deltaY * 0.003;
-    } else {
-      velocityRef.current += event.deltaY * 0.0013;
-    }
-  }, []);
-
-  const handleTouchStart = useCallback((event: TouchEvent) => {
-    touchStartY.current = event.touches[0].clientY;
-    lastTouchY.current = event.touches[0].clientY;
-    touchVelocity.current = 0;
-  }, []);
-
-  const handleTouchMove = useCallback((event: TouchEvent) => {
-    if (lastTouchY.current !== null) {
-      const currentY = event.touches[0].clientY;
-      const deltaY = lastTouchY.current - currentY;
-      touchVelocity.current = deltaY * 0.004;
-      lastTouchY.current = currentY;
-
-      velocityRef.current += touchVelocity.current;
-    }
-  }, []);
-
-  const handleTouchEnd = useCallback(() => {
-    touchStartY.current = null;
-    lastTouchY.current = null;
-  }, []);
+  }, [setRoundedIndex, setTargetProgress, currentProgressRef]);
 
   useEffect(() => {
     window.addEventListener('scroll', handleScroll);
-    window.addEventListener('wheel', handleWheel);
-    window.addEventListener('touchstart', handleTouchStart);
-    window.addEventListener('touchmove', handleTouchMove);
-    window.addEventListener('touchend', handleTouchEnd);
-
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
-  }, [handleScroll, handleWheel, handleTouchStart, handleTouchMove, handleTouchEnd]);
-
-  useEffect(() => {
-    const animate = (currentTime: number) => {
-      // currentProgressの値を収束
-      const diff = targetProgressRef.current - currentProgressRef.current;
-      currentProgressRef.current += diff * 0.1;
-
-      // 速度の減衰を算出
-      if (lastTimeRef.current !== 0) {
-        deltaTimeRef.current = (currentTime - lastTimeRef.current) / 1000;
-      } else {
-        deltaTimeRef.current = 0;
-      }
-      lastTimeRef.current = currentTime;
-
-      velocityRef.current += diff * 0.07;
-
-      const decay = Math.exp(-decayRate * deltaTimeRef.current);
-      velocityRef.current *= decay;
-
-      if (Math.abs(velocityRef.current) < minVelocity) {
-        velocityRef.current = 0;
-      }
-
-      velocityRef.current = Math.max(Math.min(velocityRef.current, maxVelocity), -maxVelocity);
-
-      requestAnimationFrame(animate);
-    };
-
-    const animationId = requestAnimationFrame(animate);
-
-    return () => cancelAnimationFrame(animationId);
-  }, []);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [handleScroll]);
 
   return (
     <section ref={sectionRef} className={styles.gallery}>
@@ -172,7 +97,7 @@ export const Topgallery = () => {
           />
         </div>
         <div className={styles.gallery__speedmeter}>
-          <SpeedMeter velocityRef={velocityRef} />
+          <SpeedMeter />
         </div>
         <div className={styles.gallery__link}>
           <ButtonLink href="/gallery/p/1" text="SEE ALL" />

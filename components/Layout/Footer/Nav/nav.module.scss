@@ -13,7 +13,7 @@
 .nav__link {
   display: grid;
   font-size: text(64);
-  text-shadow: 0 0 0.1rem var(--water-1);
+  text-shadow: var(--blue-shadow);
   transition: var(--duration);
 }
 
@@ -23,6 +23,7 @@
 
 .nav__link.icon svg {
   transition: var(--duration);
+  filter: drop-shadow(0 0 0.1rem var(--water-1));
 }
 
 @media (hover: hover) and (pointer: fine) {

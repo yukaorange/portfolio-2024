@@ -16,12 +16,12 @@
 .item__title {
   font-weight: 400;
   font-size: text(24);
-  text-shadow: 0rem 0rem 0.1rem rgba(66, 240, 191, 0.3);
+  text-shadow: var(--blue-shadow);
 }
 
 .item__text {
   font-size: text(16);
-  text-shadow: 0rem 0rem 0.1rem rgba(66, 240, 191, 0.3);
+  text-shadow: var(--blue-shadow);
   text-align: justify;
 }
 

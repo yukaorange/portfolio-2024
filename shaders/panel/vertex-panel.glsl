@@ -1,13 +1,19 @@
 uniform float uAspect;
-attribute float aIndex;
+uniform float uTime;
+uniform float uTotalWidth;
+uniform float uTotalHeight;
 varying float vIndex;
 varying vec2 vUv;
 varying vec3 vNormal;
 varying vec3 vWorldPosition;
 varying vec3 vInstacePosition;
 
+#define PI 3.1415926535897932384626433832795
+
 void main() {
-  vIndex = aIndex;
+  float instanceId = float(gl_InstanceID);
+
+  vIndex = instanceId;
 
   vUv = uv;
 
@@ -17,6 +23,9 @@ void main() {
   vInstacePosition = instancePosition.xyz;
 
   vec4 worldPosition = modelMatrix * instancePosition;
+
+  worldPosition.z -= sin(worldPosition.x / uTotalWidth * PI + PI / 2.) * 3.5;
+
   vWorldPosition = worldPosition.xyz;
 
   vec4 viewPosition = viewMatrix * worldPosition;

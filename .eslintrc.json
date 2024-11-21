@@ -36,7 +36,19 @@
     ],
     "react/no-unknown-property": [
       "error",
-      { "ignore": ["dispose", "geometry", "material", "position", "rotation", "scale", "args"] }
+      {
+        "ignore": [
+          "dispose",
+          "geometry",
+          "material",
+          "position",
+          "rotation",
+          "scale",
+          "args",
+          "object",
+          "intensity"
+        ]
+      }
     ],
     "jsx-a11y/no-static-element-interactions": "warn",
     "jsx-a11y/click-events-have-key-events": "warn"

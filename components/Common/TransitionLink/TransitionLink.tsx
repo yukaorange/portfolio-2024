@@ -6,7 +6,7 @@ import React, { useCallback } from 'react';
 import { useSetRecoilState } from 'recoil';
 
 import { useTransitionProgress } from '@/app/TransitionContextProvider';
-import { currentPageState, arrivalPageState } from '@/store/pageTitleAtom';
+import { currentPageState, arrivalPageState, isManualNavigationState } from '@/store/pageTitleAtom';
 import { useSetCurrentPage } from '@/store/textureAtom';
 
 interface TransitionLinkProps extends LinkProps {
@@ -29,6 +29,8 @@ export const TransitionLink = ({
   const {
     increaseTransition,
     decreaseTransition,
+    singleTransitionOut,
+    singleTransitionIn,
     isMounting,
     isUnmounting,
     isTransitioning,
@@ -36,17 +38,18 @@ export const TransitionLink = ({
     startTransition,
     mountCompletePromise,
   } = useTransitionProgress();
+
   const setCurrentPage = useSetRecoilState(currentPageState);
   const setArrivalPage = useSetRecoilState(arrivalPageState);
-  const setWebGLCurrentPage = useSetCurrentPage();
+  const setIsManualNavigation = useSetRecoilState(isManualNavigationState);
+  const setWebGLCurrentPage = useSetCurrentPage(); //textureAtom.tsにおいて、WebGlのコンテキストに現在のページを伝達するために使用
 
   const updateCurrentPage = useCallback(
     (path: string) => {
       const title = path === '/' ? 'portfolio' : path.split('/')[1];
 
-      setCurrentPage({ title, path });
-
-      setWebGLCurrentPage(path); //textureのリロードは
+      setCurrentPage({ title, path }); //DOMのページ現在のページを管理する
+      setWebGLCurrentPage(path); //これがtextureのリロードを行うための契機となる
     },
     [setCurrentPage, setWebGLCurrentPage]
   );
@@ -58,6 +61,56 @@ export const TransitionLink = ({
     },
     [setArrivalPage]
   );
+
+  const handlePageExit = useCallback(async () => {
+    // console.log('//////page unmounting////// : ', href);
+    document.body.classList.add('is-transitioning');
+    document.body.classList.add('is-transition-unmounting');
+    isUnmounting.current = true;
+    await Promise.all([decreaseTransition(), increaseTransition(), singleTransitionOut()]);
+  }, [decreaseTransition, increaseTransition, isUnmounting, singleTransitionOut]);
+
+  const executePageTransition = useCallback(
+    async (isSamePage: boolean) => {
+      if (isSamePage) {
+        // console.log('Same page, skipping route change');
+        notifyMountComplete(); //同じページの場合は、router.push()でページ遷移が発生しないため、mountCompletePromise.currentが解決されない。そのため、ここで強制的に解決させる。
+      } else {
+        router.push(href);
+        if (mountCompletePromise.current) {
+          await mountCompletePromise.current;
+        }
+      }
+    },
+    [router, mountCompletePromise, notifyMountComplete, href]
+  );
+
+  const handlePageEnter = useCallback(async () => {
+    isUnmounting.current = false;
+    isMounting.current = true;
+    document.body.classList.remove('is-transition-unmounting');
+    document.body.classList.add('is-transition-mounting');
+
+    if (mountCompletePromise.current) {
+      // console.log('Waiting for page mount to complete');
+      await mountCompletePromise.current;
+    }
+    // console.log('//////page mounted////// : ', href);
+    await Promise.all([decreaseTransition(), increaseTransition(), singleTransitionIn()]);
+
+    document.body.classList.remove('is-transition-mounting');
+    document.body.classList.remove('is-transitioning');
+    isMounting.current = false;
+    isTransitioning.current = false;
+  }, [
+    decreaseTransition,
+    increaseTransition,
+    singleTransitionIn,
+    isMounting,
+    isTransitioning,
+    mountCompletePromise,
+    isUnmounting,
+  ]);
 
   // useEffect(() => {
   //   console.log('currentPage :', currentPage, '\n', 'arrivalPage :', arrivalPage);
@@ -73,7 +126,6 @@ export const TransitionLink = ({
       }
 
       e.preventDefault();
-
       onClose(e);
 
       const currentPath = window.location.pathname;
@@ -89,76 +141,33 @@ export const TransitionLink = ({
       //   'href',
       //   href
       // );
+      isTransitioning.current = true;
+      setIsManualNavigation(true);
 
       updateArrivalPage(href); //set next page
 
       startTransition();
-
-      //action when unmount
-      document.body.classList.add('is-transitioning');
-      isTransitioning.current = true;
-      isUnmounting.current = true;
-
-      // console.log('//////page unmounting////// : ', href);
-
-      await Promise.all([decreaseTransition(), increaseTransition()]);
-
-      document.body.classList.add('is-transition-unmounting');
-
+      await handlePageExit();
       //--------chage route-------//
-      if (isSamePage) {
-        // console.log('Same page, skipping route change');
-        notifyMountComplete();
-      } else {
-        // console.log('routing to : ', href);
-        router.push(href);
-        if (mountCompletePromise.current) {
-          // console.log('Waiting for page mount to complete');
-          await mountCompletePromise.current; //同じページの場合は、router.push()でページ遷移が発生しないため、mountCompletePromise.currentが解決されない。そのため、ここで強制的に解決させる。
-        }
-        // window.scrollTo(0, 0);
-      }
+      await executePageTransition(isSamePage);
       //--------chage route-------//
-
-      isUnmounting.current = false;
-      isMounting.current = true;
-
-      document.body.classList.remove('is-transition-unmounting');
-      document.body.classList.add('is-transition-mounting');
-
-      if (mountCompletePromise.current) {
-        // console.log('Waiting for page mount to complete');
-        await mountCompletePromise.current;
-      }
-
-      // console.log('//////page mounted////// : ', href);
-
-      //action when mount
-      await Promise.all([decreaseTransition(), increaseTransition()]);
-
-      document.body.classList.remove('is-transition-mounting');
-      document.body.classList.remove('is-transitioning');
-      isMounting.current = false;
-      isTransitioning.current = false;
+      await handlePageEnter();
 
       updateCurrentPage(href);
-
+      setIsManualNavigation(false);
       // console.log('transition complete current page is :', href, performance.now());
     },
     [
-      decreaseTransition,
-      increaseTransition,
       href,
-      router,
       startTransition,
-      mountCompletePromise,
-      notifyMountComplete,
       onClose,
-      isMounting,
-      isUnmounting,
       isTransitioning,
       updateCurrentPage,
       updateArrivalPage,
+      handlePageEnter,
+      handlePageExit,
+      executePageTransition,
+      setIsManualNavigation,
     ]
   );
 

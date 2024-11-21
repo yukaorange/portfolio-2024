@@ -137,7 +137,7 @@ export const Filters = () => {
           <feDisplacementMap
             xChannelSelector="R"
             yChannelSelector="G"
-            scale="24"
+            scale="8"
             in="SourceGraphic"
             in2="warp"
           />

@@ -21,6 +21,7 @@
   grid-template-columns: subgrid;
   position: relative;
   z-index: 0;
+  text-shadow: var(--blue-shadow);
 }
 
 .tag__term::before {
@@ -34,6 +35,7 @@
 }
 
 .tag__desc {
+  text-shadow: var(--blue-shadow);
 }
 
 .tag__row {

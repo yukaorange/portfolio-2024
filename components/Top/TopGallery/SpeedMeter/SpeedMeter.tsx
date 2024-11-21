@@ -1,18 +1,24 @@
 import { useCallback, useEffect, useRef } from 'react';
 
+import { useScrollVelocity } from '@/app/ScrollVelocityProvider';
 import styles from '@/components/Top/TopGallery/SpeedMeter/speedmeter.module.scss';
 
 interface SpeedMeterProps {
-  velocityRef: React.MutableRefObject<number>;
   width?: number;
   height?: number;
 }
 
-export const SpeedMeter = ({ velocityRef, width = 83, height = 57 }: SpeedMeterProps) => {
+export const SpeedMeter = ({ width = 83, height = 57 }: SpeedMeterProps) => {
   const speedmeterRef = useRef<SVGSVGElement>(null);
 
+  const { velocityRef } = useScrollVelocity();
+
   const animateVelocity = useCallback(() => {
-    const velocity = Math.abs(velocityRef.current);
+    let velocity = 0;
+
+    if (velocityRef.current) {
+      velocity = Math.abs(velocityRef.current);
+    }
 
     speedmeterRef.current?.style.setProperty('--velocity', velocity.toString());
     requestAnimationFrame(animateVelocity);

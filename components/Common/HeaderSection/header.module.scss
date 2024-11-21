@@ -13,12 +13,13 @@
   font-size: text(24);
   font-weight: 700;
   text-align: justify;
+  text-shadow: var(--blue-shadow);
 }
 
 .header__heading {
   font-size: text(64);
   line-height: 1;
-  text-shadow: 0 0 0.1rem var(--water-01);
+  text-shadow: var(--blue-shadow);
   text-transform: uppercase;
 }
 

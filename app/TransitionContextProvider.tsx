@@ -5,6 +5,7 @@ import React, { createContext, useContext, useCallback, useRef } from 'react';
 interface TransitionContextType {
   increaseProgress: React.RefObject<number>;
   decreaseProgress: React.RefObject<number>;
+  singleProgress: React.RefObject<number>;
   isUnmounting: React.MutableRefObject<boolean>;
   isMounting: React.MutableRefObject<boolean>;
   isTransitioning: React.MutableRefObject<boolean>;
@@ -12,22 +13,15 @@ interface TransitionContextType {
   arrivaledPageTitle: React.MutableRefObject<string>;
   decreaseTransition: () => Promise<void>;
   increaseTransition: () => Promise<void>;
+  singleTransitionOut: () => Promise<void>;
+  singleTransitionIn: () => Promise<void>;
   notifyMountComplete: () => void;
   startTransition: () => void;
   mountCompletePromise: React.MutableRefObject<Promise<void> | null>;
 }
 
+//このコンテキストは、ページのトランジションを司り、値の変遷は、TransitionLinkコンポーネントにロジックがあります。
 const TransitionContext = createContext<TransitionContextType | undefined>(undefined);
-
-export const useTransitionProgress = () => {
-  const context = useContext(TransitionContext);
-
-  if (!context) {
-    throw new Error('useTransition must be used within a TransitionContextProvider');
-  }
-
-  return context;
-};
 
 interface TransitionProviderProps {
   children: React.ReactNode;
@@ -42,6 +36,7 @@ interface AnimateProps {
 export const TransitionContextProvider = ({ children }: TransitionProviderProps) => {
   const increaseProgress = useRef<number>(0);
   const decreaseProgress = useRef<number>(1);
+  const singleProgress = useRef<number>(0);
   const isUnmounting = useRef<boolean>(false);
   const isMounting = useRef<boolean>(false);
   const isTransitioning = useRef<boolean>(false);
@@ -76,8 +71,7 @@ export const TransitionContextProvider = ({ children }: TransitionProviderProps)
   const startTransition = useCallback(() => {
     mountCompletePromise.current = new Promise<void>((resolve) => {
       // console.log('start transition and preparing resolver');
-
-      mountCompleteResolver.current = resolve; //mountCompleteResolver()が呼ばれると、resolve()が起動し、Promiseが解決される。という仕組み
+      mountCompleteResolver.current = resolve; //mountCompleteResolver()が呼ばれると、resolve()が起動し、Promiseが解決される。結果、TransitionLinkのhandleTransitionが次の書に進む
     });
   }, []);
 
@@ -102,12 +96,30 @@ export const TransitionContextProvider = ({ children }: TransitionProviderProps)
     });
   }, []);
 
+  const singleTransitionOut = useCallback(() => {
+    return animateProgress({
+      progressRef: singleProgress,
+      start: 0,
+      end: 1,
+      duration: 500,
+    });
+  }, []);
+
+  const singleTransitionIn = useCallback(() => {
+    return animateProgress({
+      progressRef: singleProgress,
+      start: 1,
+      end: 0,
+      duration: 500,
+    });
+  }, []);
+
   const notifyMountComplete = useCallback(() => {
     // console.log('Mount complete notified');
     if (mountCompleteResolver.current) {
       // console.log('mountCompleteResolver.current is resolving');
 
-      mountCompleteResolver.current(); //resolve is called
+      mountCompleteResolver.current(); //mountCompleteResolver()が呼ばれると、resolve()が起動し、Promiseが解決される。結果、TransitionLinkのhandleTransitionが次の書に進む
       mountCompleteResolver.current = null;
     }
   }, []);
@@ -115,6 +127,7 @@ export const TransitionContextProvider = ({ children }: TransitionProviderProps)
   const value = {
     increaseProgress,
     decreaseProgress,
+    singleProgress,
     isUnmounting,
     isMounting,
     isTransitioning,
@@ -123,9 +136,21 @@ export const TransitionContextProvider = ({ children }: TransitionProviderProps)
     startTransition,
     increaseTransition,
     decreaseTransition,
+    singleTransitionOut,
+    singleTransitionIn,
     notifyMountComplete,
     mountCompletePromise,
   };
 
   return <TransitionContext.Provider value={value}>{children}</TransitionContext.Provider>;
+};
+
+export const useTransitionProgress = () => {
+  const context = useContext(TransitionContext);
+
+  if (!context) {
+    throw new Error('useTransition must be used within a TransitionContextProvider');
+  }
+
+  return context;
 };

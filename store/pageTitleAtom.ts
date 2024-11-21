@@ -16,3 +16,8 @@ export const arrivalPageState = atom({
     path: '',
   },
 });
+
+export const isManualNavigationState = atom({
+  key: 'isManualNavigationState',
+  default: false,
+});

@@ -70,6 +70,7 @@
   display: grid;
   opacity: 0.2;
   text-align: center;
+  text-shadow: var(--blue-shadow);
 }
 
 .drumroll__indicatorlist__item.current {

@@ -22,6 +22,7 @@
   --section-space: 35rem;
   --delay: 0.2s;
   --duration: 0.2s;
+  --blue-shadow: 0 0 0.3rem var(--water-1);
 }
 
 @include mq(sp) {
@@ -226,7 +227,7 @@ button {
   --lime-2: #7af201;
   --lemon-1: #e3e619;
   --lemon-2: #d9e630;
-  --water-1: rgba(66, 240, 191, 30%);
+  --water-1: rgba(66, 240, 191, 25%);
   --purple-1: #610afd;
   --blue-1: #1c19e6;
   --danger: #e23030;
