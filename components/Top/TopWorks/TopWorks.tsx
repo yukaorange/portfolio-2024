@@ -5,7 +5,7 @@ import styles from '@/components/Top/TopWorks/works.module.scss';
 
 export const TopWorks = () => {
   return (
-    <section className={styles.works}>
+    <section id="top-works" className={styles.works} data-section="gallery">
       <div className={styles.works__inner}>
         <div className={styles.works__content}>
           <div className={styles.works__lead}>

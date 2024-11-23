@@ -10,7 +10,7 @@ import { Ticket } from '@/components/Top/TopProfile/Ticket/Ticket';
 
 export const TopProfile = () => {
   return (
-    <section className={styles.profile}>
+    <section id="top-profile" className={styles.profile}>
       <div className={styles.profile__inner}>
         <div className={styles.profile__content}>
           <div className={styles.profile__lead}>

@@ -1,13 +1,12 @@
-// import { MeshReflectorMaterial } from '@react-three/drei';
 import React, { useMemo } from 'react';
 import * as THREE from 'three';
+
 import { AnimationControls } from '@/types/animation';
 
 import floorFragment from '@/shaders/floor/fragment-floor.glsl';
 import floorVertex from '@/shaders/floor/vertex-floor.glsl';
 
 interface FloorProps {
-  color: number[];
   textures: {
     roughness: THREE.Texture;
     normal: THREE.Texture;
@@ -15,20 +14,15 @@ interface FloorProps {
   animationControls: AnimationControls;
 }
 
-export const Floor = ({ color: [r, g, b], textures, animationControls }: FloorProps) => {
+export const Floor = ({ textures }: FloorProps) => {
   const floorMaterial = useMemo(() => {
     if (!textures) return;
 
     const { roughness, normal } = textures;
+    const lightIntensity = 0.25;
 
     const shaderMaterial = new THREE.ShaderMaterial({
       uniforms: {
-        // uResolution: {
-        //   value: null,
-        // },
-        // uTextureResolution: {
-        //   value: null,
-        // },
         uRoughness: {
           value: roughness,
         },
@@ -38,17 +32,24 @@ export const Floor = ({ color: [r, g, b], textures, animationControls }: FloorPr
         uTime: {
           value: 0,
         },
-        // uAspect: {
-        //   value: aspect,
-        // },
-        uColor: { value: new THREE.Vector3(r, g, b) },
+        uLightPositions: {
+          value: [
+            new THREE.Vector3(0, 7, 10),
+            new THREE.Vector3(-5, 7, 10),
+            new THREE.Vector3(5, 7, 10),
+          ],
+        },
+        uLightColors: {
+          value: [new THREE.Color(1, 1, 1), new THREE.Color(1, 1, 1), new THREE.Color(1, 1, 1)],
+        },
+        uLightIntensities: { value: [lightIntensity, lightIntensity * 0.1, lightIntensity * 0.1] },
       },
       vertexShader: floorVertex,
       fragmentShader: floorFragment,
     });
 
     return shaderMaterial;
-  }, [r, g, b, textures]);
+  }, [textures]);
 
   return (
     <mesh
@@ -58,24 +59,6 @@ export const Floor = ({ color: [r, g, b], textures, animationControls }: FloorPr
       material={floorMaterial}
     >
       <planeGeometry args={[100, 100]} />
-      {/* <MeshReflectorMaterial
-        envMapIntensity={0}
-        normalScale={new THREE.Vector2(0.15, 0.15)}
-        dithering={true}
-        roughness={0.0}
-        metalness={0.7}
-        blur={[0.001, 0.001]}
-        mixBlur={0}
-        mixStrength={80}
-        mixContrast={1}
-        resolution={1024}
-        mirror={0}
-        depthScale={0.01}
-        minDepthThreshold={0.1}
-        maxDepthThreshold={1}
-        depthToBlurRatioBias={0.25}
-        reflectorOffset={0.1}
-      /> */}
     </mesh>
   );
 };

@@ -75,7 +75,7 @@ void main() {
   vec4 fullScreenDiffuseColor8 = texture2D(uTextures[8], fullScreenOptimizedUv8);
   vec4 fullScreenDiffuseColor9 = texture2D(uTextures[9], fullScreenOptimizedUv9);
 
-  //top pageのテキストが流れるアニメーションに使用
+  //top pageのテキストが流れるアニメーションに使用するテクスチャ出力
   vec2 scrollingUv = fullScreenOptimizedUv0;
   int row = int(floor(scrollingUv.y * 5.0));//テクスチャは5行に分かれたテキストであるため。
   float speed = uSpeed * (1.0 / uRowLengths[row]);//各行にふさわしいスピードを設定
@@ -84,7 +84,7 @@ void main() {
   float rowLength = uRowLengths[row];
   float compressdX = scrollingUv.x * rowLength;//各行の空白部分はサンプリングしないので、その部分を圧縮
   scrollingUv.x = mod(compressdX + scrollingOffset, rowLength);//圧縮した部分を元に戻す。例えば、0.7の幅だとしたら、0.7の長さが1.0の長さになるようにする。（自分用のメモです）
-  // vec4 scrollingDiffuseColor = texture2D(uTextures[0], scrollingUv);//glitchでサンプリングをずらすために、後述
+  // vec4 scrollingDiffuseColor = texture2D(uTextures[0], scrollingUv);//glitchでサンプリングをずらすため、diffuseの決定は後述にまわす
 
   float totalDuration = 8.0;
   float transitionDuration = 0.1;

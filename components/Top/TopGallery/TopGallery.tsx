@@ -84,7 +84,7 @@ export const Topgallery = () => {
   }, [handleScroll]);
 
   return (
-    <section ref={sectionRef} className={styles.gallery}>
+    <section id="top-gallery" ref={sectionRef} className={styles.gallery}>
       <div className={styles.gallery__inner}>
         <div className={styles.gallery__drumroll}>
           <DrumRoll currentProgressRef={currentProgressRef} targetProgressRef={targetProgressRef} />

@@ -9,6 +9,7 @@ const ScrollContext = createContext({
   ratio: { current: 0 },
   indicatorOfScrollStart: { current: false },
   indicatorOfScrollEnd: { current: false },
+  // indicatorIsGallerySection: { current: false },
 }); //refオブジェクトを渡すので、{ current: 0 }はRefオブジェクトのこと。使用するときは、 const { position: scroll, ratio: scrollRatio } = useScroll();として取り出して、scroll.currentのように使う。
 
 interface ScrollProviderProps {
@@ -20,7 +21,16 @@ export const ScrollProvider = ({ children }: ScrollProviderProps) => {
   const scrollRatioRef = useRef<number>(0);
   const indicatorOfScrollStartRef = useRef<boolean>(false);
   const indicatorOfScrollEndRef = useRef<boolean>(false);
-  const currentPage = useRecoilValue(currentPageState);
+  // const gallerSectionScrollYRef = useRef<number>(0);
+  // const indicatorIsGallerySectioneRef = useRef<boolean>(false);
+  // const currentPage = useRecoilValue(currentPageState);
+
+  // const calculateGalleryScrollY = () => {
+  //   const gallerySection = document.querySelector('[data-section="gallery"]') || null;
+  //   const gallerySectionY = gallerySection?.getBoundingClientRect().top;
+
+  //   gallerSectionScrollYRef.current = gallerySectionY || 0;
+  // };
 
   const updateScrollValues = () => {
     scrollRef.current = window.scrollY;
@@ -32,6 +42,8 @@ export const ScrollProvider = ({ children }: ScrollProviderProps) => {
     );
     //ページの上部から抜けたか監視
     indicatorOfScrollStartRef.current = scrollRatioRef.current >= 1;
+    //galleryセクションに到達したか監視
+    // indicatorIsGallerySectioneRef.current = scrollRef.current >= gallerSectionScrollYRef.current;
     //ページの下部に到達したか監視
     indicatorOfScrollEndRef.current =
       scrollRef.current >=
@@ -39,8 +51,9 @@ export const ScrollProvider = ({ children }: ScrollProviderProps) => {
   };
 
   useEffect(() => {
+    // calculateGalleryScrollY();
     updateScrollValues();
-  }, [currentPage]);
+  }, [currentPageState]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -58,6 +71,7 @@ export const ScrollProvider = ({ children }: ScrollProviderProps) => {
         ratio: scrollRatioRef,
         indicatorOfScrollStart: indicatorOfScrollStartRef,
         indicatorOfScrollEnd: indicatorOfScrollEndRef,
+        // indicatorIsGallerySection: indicatorIsGallerySectioneRef,
       }}
     >
       {children}

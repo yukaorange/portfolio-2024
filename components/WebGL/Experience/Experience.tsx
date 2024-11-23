@@ -13,6 +13,7 @@ import { useScroll } from '@/app/ScrollContextProvider';
 import { useScrollVelocity } from '@/app/ScrollVelocityProvider';
 import { useTransitionProgress } from '@/app/TransitionContextProvider';
 import { Floor } from '@/components/WebGL/Floor/Floor';
+import { Lights } from '@/components/WebGL/Lights/Lights';
 import { Model } from '@/components/WebGL/Model/Model';
 import { Panels } from '@/components/WebGL/Panels/Panels';
 import { useTransitionAnimation } from '@/hooks/useTransitionAnimation';
@@ -49,15 +50,22 @@ export const Experience = () => {
     normal: floorNormalTexture || new THREE.Texture(),
   };
 
-  //observe  page and textures
-  // useEffect(() => {
-  //   //current page が変更されるたびにテクスチャを再生成するロジックはtetureAtom.tsにある
-  //   console.log('Current page:', currentPage);
-  //   console.log('Loaded textures:', loadedTextures);
-  // }, [currentPage, loadedTextures]);
+  //current page が変更されるたびにテクスチャを再生成するロジックはtetureAtom.tsにある
 
-  // camera setting
-  // const { position, lookAt, near, far, modelPosition, modelRotation, color } = useControls({
+  // メッシュやカメラの位置;
+  // LEVA, 確定後は固定値をつかう;
+  // const {
+  //   position,
+  //   lookAt,
+  //   near,
+  //   far,
+  //   modelPosition,
+  //   modelRotation,
+  //   color,
+  //   // pointLight1,
+  //   // pointLight2,
+  //   // pointLight3,
+  // } = useControls({
   //   Camera: folder({
   //     position: {
   //       value: { x: 0, y: 1.0, z: 10 }, //[0.0,1.0,5.0] is default
@@ -93,9 +101,8 @@ export const Experience = () => {
     far: 1000,
     modelPosition: { x: 0, y: 0, z: 9 },
     modelRotation: { x: 0, y: 0, z: 0 },
-    color: [0.2, 0.2, 0.2],
   };
-  const { position, lookAt, near, far, modelPosition, modelRotation, color } = controls;
+  const { position, lookAt, near, far, modelPosition, modelRotation } = controls;
 
   // post processing
   useEffect(() => {
@@ -181,7 +188,8 @@ export const Experience = () => {
   return (
     <>
       <ResponsiveCamera position={position} lookAt={lookAt} near={near} far={far} />
-      <ambientLight intensity={0.3} />
+      <ambientLight intensity={0.5} />
+      <Lights />
       <Model
         textures={modelTextureMap}
         animationControls={animationControls}
@@ -189,7 +197,7 @@ export const Experience = () => {
         rotation={[modelRotation.x, modelRotation.y, modelRotation.z]}
       />
       <Panels loadedTextures={loadedTextures} animationControls={animationControls} />
-      <Floor color={color} textures={floorTextureMap} animationControls={animationControls} />
+      <Floor textures={floorTextureMap} animationControls={animationControls} />
     </>
   );
 };

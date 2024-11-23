@@ -19,6 +19,7 @@ interface LoadedTextureInfo {
 import { Content } from '@/lib/microcms';
 
 //currentPageAtomが変更→currentTexturesSelectorが変更→useLoadTexturesが変更、結果として、loadedTexturesAtomが変更となり、テクスチャセットが更新される
+//App.tsxでuseSceneを使っているので、WebGLマウント時にテクスチャがロードされる
 
 const currentPageAtom = atom<string>({
   key: 'currentPageAtom',
@@ -34,7 +35,7 @@ const topPageGalleryTexturesAtom = atom<TextureInfo[]>({
     },
     {
       url: '/images/textures/scroll-down.jpg',
-      aspectRatio: 1.6,
+      aspectRatio: 4 / 3,
     },
     {
       url: '/images/textures/noise.png',
