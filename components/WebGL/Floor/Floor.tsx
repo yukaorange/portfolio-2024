@@ -5,6 +5,8 @@ import { AnimationControls } from '@/types/animation';
 
 import floorFragment from '@/shaders/floor/fragment-floor.glsl';
 import floorVertex from '@/shaders/floor/vertex-floor.glsl';
+import { useRecoilValue } from 'recoil';
+import { browserState, osState, iphoneState } from '@/store/userAgentAtom';
 
 interface FloorProps {
   textures: {
@@ -15,6 +17,8 @@ interface FloorProps {
 }
 
 export const Floor = ({ textures }: FloorProps) => {
+  const deviceState = useRecoilValue(iphoneState);
+
   const floorMaterial = useMemo(() => {
     if (!textures) return;
 
@@ -42,6 +46,7 @@ export const Floor = ({ textures }: FloorProps) => {
         uLightColors: {
           value: [new THREE.Color(1, 1, 1), new THREE.Color(1, 1, 1), new THREE.Color(1, 1, 1)],
         },
+        uIsMobile: { value: deviceState ? 1 : 0 },
         uLightIntensities: { value: [lightIntensity, lightIntensity * 0.1, lightIntensity * 0.1] },
       },
       vertexShader: floorVertex,

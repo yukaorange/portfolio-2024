@@ -3,9 +3,10 @@ varying vec3 vNormal;
 varying vec3 vWorldPosition;
 
 // uniform float uTime;
-uniform vec3 uColor;
+
 uniform sampler2D uRoughness;
 uniform sampler2D uNormal;
+uniform float uIsMobile;
 uniform vec3 uLightPositions[3];
 uniform vec3 uLightColors[3];
 uniform float uLightIntensities[3];
@@ -33,7 +34,7 @@ void main() {
     //diffuseとspecular
     float diff = max(dot(normal, lightDir), 0.0);
     vec3 halfwayDir = normalize(lightDir + viewDir);//光源と視線のハーフベクトルは、光源と視線の中間の方向を向いており、光源と視線の角度の平均を表している。
-    float spec = pow(max(dot(normal, halfwayDir), 0.0), 18.0);//法線とハーフベクトルの内積を取ることで、光源と視線の角度の平均を表すスペキュラーを計算できる。角度が水平に近いときにスペキュラーが強くなる。べき乗の値を大きくすると、スペキュラーが小さくなり、より輝きの範囲をしぼることができる。
+    float spec = pow(max(dot(normal, halfwayDir), 0.0), 24.0);//法線とハーフベクトルの内積を取ることで、光源と視線の角度の平均を表すスペキュラーを計算できる。角度が水平に近いときにスペキュラーが強くなる。べき乗の値を大きくすると、スペキュラーが小さくなり、より輝きの範囲をしぼることができる。
 
     // totalLight += diff;//test diff only
     // totalLight += spec;//test spec only
@@ -43,8 +44,16 @@ void main() {
   }
 
   vec3 color = vec3(1.0, 1.0, 1.0);
-  color *= totalLight;
-  color = mix(color, color * roughness, 0.5);
+
+  vec3 ambient;
+  if(uIsMobile == 1.0) {
+    ambient = vec3(0.1);
+  } else {
+    ambient = vec3(0.0);
+  }
+
+  color *= (totalLight + ambient);
+  color = mix(color, color * roughness, 0.2);
 
   gl_FragColor = vec4(color, 1.0);
 

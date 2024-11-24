@@ -76,4 +76,4 @@ float cnoise(vec3 P) {
   return 2.2 * n_xyz;
 }
 
-#pragma glslify: export(cnoise);
+#pragma glslify:export(cnoise);

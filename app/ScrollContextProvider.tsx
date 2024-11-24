@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useRef, useEffect } from 'react';
+import React, { createContext, useContext, useRef, useEffect, useState } from 'react';
 import { useRecoilValue } from 'recoil';
 import * as THREE from 'three';
 
@@ -7,9 +7,9 @@ import { currentPageState } from '@/store/pageTitleAtom';
 const ScrollContext = createContext({
   position: { current: 0 },
   ratio: { current: 0 },
-  indicatorOfScrollStart: { current: false },
-  indicatorOfScrollEnd: { current: false },
-  // indicatorIsGallerySection: { current: false },
+  indicatorOfScrollStart: false,
+  indicatorOfScrollEnd: false,
+  indicatorIsGallerySection: false,
 }); //refオブジェクトを渡すので、{ current: 0 }はRefオブジェクトのこと。使用するときは、 const { position: scroll, ratio: scrollRatio } = useScroll();として取り出して、scroll.currentのように使う。
 
 interface ScrollProviderProps {
@@ -19,41 +19,45 @@ interface ScrollProviderProps {
 export const ScrollProvider = ({ children }: ScrollProviderProps) => {
   const scrollRef = useRef<number>(0);
   const scrollRatioRef = useRef<number>(0);
-  const indicatorOfScrollStartRef = useRef<boolean>(false);
-  const indicatorOfScrollEndRef = useRef<boolean>(false);
-  // const gallerSectionScrollYRef = useRef<number>(0);
-  // const indicatorIsGallerySectioneRef = useRef<boolean>(false);
-  // const currentPage = useRecoilValue(currentPageState);
+  // const indicatorOfScrollStartRef = useRef<boolean>(false);
+  const [indicatorOfScrollStart, setIndicatorOfScrollStart] = useState<boolean>(false);
+  const [indicatorIsGallerySection, setIndicatorIsGallerySection] = useState<boolean>(false);
+  const [indicatorOfScrollEnd, setIndicatorOfScrollEnd] = useState<boolean>(false);
 
-  // const calculateGalleryScrollY = () => {
-  //   const gallerySection = document.querySelector('[data-section="gallery"]') || null;
-  //   const gallerySectionY = gallerySection?.getBoundingClientRect().top;
+  const gallerySectionScrollYRef = useRef<number>(0);
+  const currentPage = useRecoilValue(currentPageState);
 
-  //   gallerSectionScrollYRef.current = gallerySectionY || 0;
-  // };
+  const calculateGalleryScrollY = () => {
+    const gallerySection = document.querySelector('[data-section="gallery"]') || null;
+    const gallerySectionY = gallerySection?.getBoundingClientRect().top;
+
+    gallerySectionScrollYRef.current = gallerySectionY || 0;
+  };
 
   const updateScrollValues = () => {
+    const viewportHeight = document.documentElement.clientHeight;
+    const documentHeight = document.documentElement.scrollHeight;
+
     scrollRef.current = window.scrollY;
 
-    scrollRatioRef.current = THREE.MathUtils.clamp(
-      scrollRef.current / (window.innerHeight * 1),
-      0,
-      1
-    );
+    scrollRatioRef.current = THREE.MathUtils.clamp(scrollRef.current / (viewportHeight * 1), 0, 1);
+
     //ページの上部から抜けたか監視
-    indicatorOfScrollStartRef.current = scrollRatioRef.current >= 1;
+    setIndicatorOfScrollStart(scrollRatioRef.current >= 1);
+
     //galleryセクションに到達したか監視
-    // indicatorIsGallerySectioneRef.current = scrollRef.current >= gallerSectionScrollYRef.current;
+    setIndicatorIsGallerySection(scrollRef.current >= gallerySectionScrollYRef.current);
+
     //ページの下部に到達したか監視
-    indicatorOfScrollEndRef.current =
-      scrollRef.current >=
-      document.documentElement.scrollHeight - window.innerHeight - window.innerHeight * 0.5;
+    setIndicatorOfScrollEnd(
+      scrollRef.current >= documentHeight - viewportHeight - viewportHeight * 0.5
+    );
   };
 
   useEffect(() => {
-    // calculateGalleryScrollY();
+    calculateGalleryScrollY();
     updateScrollValues();
-  }, [currentPageState]);
+  }, [currentPage]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -69,9 +73,9 @@ export const ScrollProvider = ({ children }: ScrollProviderProps) => {
       value={{
         position: scrollRef,
         ratio: scrollRatioRef,
-        indicatorOfScrollStart: indicatorOfScrollStartRef,
-        indicatorOfScrollEnd: indicatorOfScrollEndRef,
-        // indicatorIsGallerySection: indicatorIsGallerySectioneRef,
+        indicatorOfScrollStart: indicatorOfScrollStart,
+        indicatorOfScrollEnd: indicatorOfScrollEnd,
+        indicatorIsGallerySection: indicatorIsGallerySection,
       }}
     >
       {children}

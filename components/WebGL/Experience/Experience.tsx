@@ -21,6 +21,7 @@ import { currentPageState } from '@/store/pageTitleAtom';
 import { useScene } from '@/store/textureAtom';
 
 import { ResponsiveCamera } from './ResponsiveCamera';
+//current page が変更されるたびにテクスチャを再生成するロジックはtetureAtom.tsにある
 
 export const Experience = () => {
   const { indicatorOfScrollEnd, indicatorOfScrollStart } = useScroll();
@@ -49,8 +50,6 @@ export const Experience = () => {
     roughness: floorRoughnessTexture || new THREE.Texture(),
     normal: floorNormalTexture || new THREE.Texture(),
   };
-
-  //current page が変更されるたびにテクスチャを再生成するロジックはtetureAtom.tsにある
 
   // メッシュやカメラの位置;
   // LEVA, 確定後は固定値をつかう;
@@ -99,9 +98,10 @@ export const Experience = () => {
     lookAt: { x: 0, y: 3.0, z: 0 },
     near: 0.1,
     far: 1000,
-    modelPosition: { x: 0, y: 0, z: 9 },
+    modelPosition: { x: 0, y: 0, z: 10 },
     modelRotation: { x: 0, y: 0, z: 0 },
   };
+  
   const { position, lookAt, near, far, modelPosition, modelRotation } = controls;
 
   // post processing
@@ -163,12 +163,12 @@ export const Experience = () => {
     //   Math.round(currentProgressRef.current) //top pageのgalleryのインデックス
     // );
 
-    if (indicatorOfScrollEnd.current) {
-      // フッターセクション付近まで到達したときの処理
-    }
-    if (indicatorOfScrollStart.current) {
-      // ヘッダーセクション付近から離れたときの処理
-    }
+    // if (indicatorOfScrollEnd.current) {
+    //   // フッターセクション付近まで到達したときの処理
+    // }
+    // if (indicatorOfScrollStart.current) {
+    //   // ヘッダーセクション付近から離れたときの処理
+    // }
 
     composer.render(delta);
   }, 1);

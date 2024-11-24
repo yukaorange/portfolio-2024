@@ -23,12 +23,21 @@ void main() {
   //各パネルを使用する場合のUV
   vec2 singleScreenUv = vUv;
 
+  // vec2 n = vec2((texture2D(uNoiseTex, vec2(vUv.y * 2.0, uTime * 3.0)).xy - 0.5) * 0.5);
+  // n *= vFade;
+  // n.x -= (texture2D(uNoiseTex, vec2(vUv.y * 50.0, uTime * 3.0)).x - 0.5) * 0.05;
+
+  // vec2 singleScreenUvR = singleScreenUv + n;
+  // vec2 singleScreenUvG = singleScreenUv + n * 0.5;
+  // vec2 singleScreenUvB = singleScreenUv + n * 1.0;
+
   //全体で一つのパネルと捉えた際のUV
   float totalWidth = uCount * uAspect * 2.0;
   float totalHeight = uCount * 2.0;
   float x = (vWorldPosition.x + totalWidth * 0.5) / totalWidth;
   float y = (vWorldPosition.y) / totalHeight;
   vec2 fullScreenUv = vec2(x, y);
+
   //全各パネルのアスペクト比を考慮したUV
   vec2 singleOptimizedUv0 = optimizationTextureUv(singleScreenUv, uAspect, uTextureAspectRatios[0]);
   vec2 singleOptimizedUv1 = optimizationTextureUv(singleScreenUv, uAspect, uTextureAspectRatios[1]);
@@ -86,26 +95,59 @@ void main() {
   scrollingUv.x = mod(compressdX + scrollingOffset, rowLength);//圧縮した部分を元に戻す。例えば、0.7の幅だとしたら、0.7の長さが1.0の長さになるようにする。（自分用のメモです）
   // vec4 scrollingDiffuseColor = texture2D(uTextures[0], scrollingUv);//glitchでサンプリングをずらすため、diffuseの決定は後述にまわす
 
-  float totalDuration = 8.0;
-  float transitionDuration = 0.1;
+  //ノイズ画面
+  vec3 noiseColor = vec3(0.0) + rand(fullScreenUv + mod(uTime, 1.0) + 24.0) * 0.7;
+  noiseColor += step(0.0, sin(uTime * 0.51 - fullScreenUv.y) * sin(uTime * 0.56 - fullScreenUv.y * 1.0)) * 0.05;
 
-  float cycle = floor(uTime / totalDuration);
-  float t = mod(uTime, totalDuration);//0.0 ～ totalDurationを繰り返す
+  //画面切り替えの設定
+  float totalDuration = 6.0;
+  float noiseDuration = 0.1;
+  float transitionDuration = 0.02;//これは切り替え時にノイズが出る時間の長さとなる
 
+  //切り替えのサイクルを設定
+  float cycle = mod(uTime, totalDuration);//0.0 ～ totalDurationを繰り返す
+  float normalizedCycle = cycle / totalDuration;//0.0 ～ 1.0に正規化
+
+  //切り替え時にノイズを表示する期間の設定
+  float noiseStartThreshold = noiseDuration / totalDuration; // 0.2/4.0=0.05
+  float noiseEndThreshold = 1.0 - noiseStartThreshold; // 3.8/4.0 = 0.95
+
+  //ノイズ表示の判定に使用する
+  bool shouldShowNoise = normalizedCycle < noiseStartThreshold || normalizedCycle > noiseEndThreshold;
+
+  //サイクルの偶数奇数の判別に使う
+  float EvenOdd = mod(floor(uTime / totalDuration), 2.0);
+
+  float noiseIntensity;
+  if(shouldShowNoise) {
+    noiseIntensity = 1.0;
+
+    if(normalizedCycle < noiseStartThreshold) {
+      float t = normalizedCycle / noiseStartThreshold;
+
+      noiseIntensity = 1.0 - t;
+    } else if(normalizedCycle > noiseEndThreshold) {
+      float t = (normalizedCycle - noiseEndThreshold) / (1.0 - noiseEndThreshold);
+
+      noiseIntensity = t;
+    }
+  }
+
+  float transition = smoothstep(0.0, transitionDuration, normalizedCycle);//transitionDurationの時点で1.0になるから、その時点で切り替わる
   float progress;
 
-  float transition = smoothstep(0.0, transitionDuration, t);//transitionDurationの時点で1.0になるから、その時点で切り替わる
-
-  if(mod(cycle, 2.0) == 0.0) {
+  if(EvenOdd == 0.0) {//fullscreen
     progress = transition;
-  } else {
+  } else {//singlescreen
     progress = 1.0 - transition;
   }
 
-  vec4 glitchProgressDiffuse;
-  float glitchProgressIntensity = smoothstep(0.0, transitionDuration, t) *
-    (1.0 - smoothstep(transitionDuration, totalDuration, t));
-  vec2 glitchOffset = vec2(rand(vec2(vUv.y, uTime)) * 2.0 - 1.0, rand(vec2(vUv.x, uTime)) * 2.0 - 1.0) * 0.03 * glitchProgressIntensity;
+  vec2 glitchOffset;
+  if(shouldShowNoise) {
+    glitchOffset = vec2(cnoise(vec3(vUv.y, uTime * 0.1, 1.0)), 0.0) * noiseIntensity;
+  }
+
+  vec4 ProgressDiffuse;//サイクルによって切り替わる最終的な出力の土台
 
    //チェッカーボードのレイアウトにするなら、使える。
   vec4 checkerBoardDiffuseColor;
@@ -122,29 +164,37 @@ void main() {
   vec4 oddProgressDiffuse = scrollingDiffuseColor;
   vec4 evenProgressDiffuse = checkerBoardDiffuseColor;
 
-  glitchProgressDiffuse = mix(evenProgressDiffuse, oddProgressDiffuse, progress);
+  ProgressDiffuse = mix(evenProgressDiffuse, oddProgressDiffuse, progress);
 
   //vUndexの色デバッグ用
   // color = vec3(vIndex / (uCount * uCount), 0.0, 0.0);
   // color = vec3(vIndex / 50.0, vIndex / 50.0, vIndex / 50.0);
-  vec4 finalColor = glitchProgressDiffuse;
+  vec4 finalColor = ProgressDiffuse;
 
   //最終的な色調整
-  colorIntensity = 0.13 + 0.2 * uVelocity;//明度の調節用
+  colorIntensity = 0.4 + 0.6 * uVelocity;//明度の4調節用
+
   finalColor.rgb *= colorIntensity;
 
   vec3 color = finalColor.rgb;
-  // ビカビカ
+
+  // 点滅
   color *= step(0.0, sin(vUv.y * 5.0 - uTime * 80.0)) * 0.05 + 0.95;
-  	// 反転
-  // color = mix(color, 1.0 - color, vInvert);
 
-	// なみなみ
-  color *= 0.78 - sin(vUv.y * 200.0 - uTime * 10.0) * 0.02;
+	// 走査線（太）
+  color *= 0.78 - sin(fullScreenUv.y * 200.0 - uTime * 10.0) * 0.02;
 
-	// 周辺減光的な
-  color *= smoothstep(1.0, 0.3, length(vUv - 0.5));
+	// ヴィネット
+  if(EvenOdd == 0.0) {
+    color *= smoothstep(1.0, 0.3, length(fullScreenUv - 0.5));
+  } else {
+    color *= smoothstep(1.0, 0.3, length(singleScreenUv - 0.5));
+  }
+
+  //画面切り替え時のノイズの表示
+  if(shouldShowNoise) {
+    color = mix(color, noiseColor, noiseIntensity); // ノイズの強度を調整（0.8は調整可能）
+  };
 
   gl_FragColor = vec4(color, finalColor.a);
-
 }
