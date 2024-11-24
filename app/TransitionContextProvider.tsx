@@ -45,6 +45,7 @@ export const TransitionContextProvider = ({ children }: TransitionProviderProps)
   const mountCompleteResolver = useRef<(() => void) | null>(null);
   const mountCompletePromise = useRef<Promise<void> | null>(null);
 
+  //TrasnitionLink.tsxと連携し、ページ遷移時に使用する値の変遷を司る
   const animateProgress = ({ progressRef, start, end, duration }: AnimateProps): Promise<void> => {
     return new Promise((resolve) => {
       const startTime = performance.now();

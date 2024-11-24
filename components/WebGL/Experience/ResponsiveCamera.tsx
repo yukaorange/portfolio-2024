@@ -1,8 +1,8 @@
 import { useThree, useFrame } from '@react-three/fiber';
-import { useRef, useEffect, useState, useCallback } from 'react';
+import { useRef, useEffect, useCallback } from 'react';
 import { useRecoilValue } from 'recoil';
 import * as THREE from 'three';
-import GSAP from 'gsap';
+
 import { useScroll } from '@/app/ScrollContextProvider';
 import { currentPageState } from '@/store/pageTitleAtom';
 
@@ -27,8 +27,8 @@ export const ResponsiveCamera = ({ position, lookAt, near, far }: ResponsiveCame
   const minWidth = 360;
   const maxWidth = 1440;
   const standardWidth = maxWidth;
-  const minFov = 45;
-  const maxFov = 50;
+  const minFov = 60; //@mobile
+  const maxFov = 45;
   const minLookAtY = 2.7;
   const maxPositionY = 0.25;
   const maxLookAtY = 2.0;

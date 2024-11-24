@@ -10,12 +10,13 @@ const ScrollContext = createContext({
   indicatorOfScrollStart: false,
   indicatorOfScrollEnd: false,
   indicatorIsGallerySection: false,
-}); //refオブジェクトを渡すので、{ current: 0 }はRefオブジェクトのこと。使用するときは、 const { position: scroll, ratio: scrollRatio } = useScroll();として取り出して、scroll.currentのように使う。
+}); //position,ratioはRefオブジェクトなので、再レンダリングを望まないコンポーネントで使用（DrumRoll等）
 
 interface ScrollProviderProps {
   children: React.ReactNode;
 }
 
+//スクロール進捗とセクションへの侵入を監視する
 export const ScrollProvider = ({ children }: ScrollProviderProps) => {
   const scrollRef = useRef<number>(0);
   const scrollRatioRef = useRef<number>(0);

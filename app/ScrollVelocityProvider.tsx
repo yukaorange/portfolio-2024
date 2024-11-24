@@ -10,6 +10,7 @@ interface ScrollVelocityContextType {
 
 const ScrollVelocityContext = createContext<ScrollVelocityContextType | null>(null);
 
+//スクロール系入力値を積算->減算することで、加速度を算出。加速度を供給する。
 export const ScrollVelocityProvider = ({ children }: { children: React.ReactNode }) => {
   const velocityRef = useRef<number>(0);
   const currentProgressRef = useRef<number>(0);

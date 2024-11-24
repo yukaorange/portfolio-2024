@@ -24,15 +24,11 @@ import { Content } from '@/lib/microcms';
 const currentPageAtom = atom<string>({
   key: 'currentPageAtom',
   default: '/',
-});
+}); //WebGL/App.tsxにおけるcurrentPageであり、DOMのそれとは別の世界線で管理（変更のタイミングが違うため）。
 
 const topPageGalleryTexturesAtom = atom<TextureInfo[]>({
   key: 'topPageGalleryTexturesAtom',
   default: [
-    {
-      url: '/images/textures/message-on-board-mid.jpg',
-      aspectRatio: 3.4,
-    },
     {
       url: '/images/textures/scroll-down.jpg',
       aspectRatio: 4 / 3,
@@ -74,6 +70,16 @@ const floorRoughnessTextureAtom = atom<THREE.Texture | null>({
   default: null,
 });
 
+const noiseTextureAtom = atom<THREE.Texture | null>({
+  key: 'noiseTextureAtom',
+  default: null,
+});
+
+const telopTextureAtom = atom<THREE.Texture | null>({
+  key: 'telopTextureAtom',
+  default: null,
+});
+
 const currentTexturesSelector = selector<TextureInfo[]>({
   key: 'currentTexturesSelector',
   get: ({ get }) => {
@@ -107,13 +113,16 @@ const currentTexturesSelector = selector<TextureInfo[]>({
 });
 
 export const useCurrentPage = () => useRecoilValue(currentPageAtom);
-export const useSetCurrentPage = () => useSetRecoilState(currentPageAtom);
 export const useCurrentTextures = () => useRecoilValue(currentTexturesSelector);
 export const useLoadedTextures = () => useRecoilValue(loadedTexturesAtom);
 export const useCharacterTexture = () => useRecoilValue(characterTextureAtom);
 export const useSuitcaseTexture = () => useRecoilValue(suitcaseTextureAtom);
 export const useFloorNormalTexture = () => useRecoilValue(floorNormalTextureAtom);
+export const useNoiseTexture = () => useRecoilValue(noiseTextureAtom);
+export const useTelopTexture = () => useRecoilValue(telopTextureAtom);
 export const useFloorRoughnessTexture = () => useRecoilValue(floorRoughnessTextureAtom);
+
+export const useSetCurrentPage = () => useSetRecoilState(currentPageAtom); //現在のページをセット
 
 export const useLoadTextures = () => {
   const setLoadedTextures = useSetRecoilState(loadedTexturesAtom);
@@ -152,7 +161,29 @@ export const useLoadCharacterAndSuitcaseTextures = () => {
   return [characterTexture, suitcaseTexture];
 };
 
-export const useFloorTextures = () => {
+export const useLoadNoiseTexture = () => {
+  const setNoiseTexture = useSetRecoilState(noiseTextureAtom);
+  const [noiseTexture] = useTexture(['/images/textures/noise.png']);
+
+  useEffect(() => {
+    setNoiseTexture(noiseTexture);
+  }, [noiseTexture, setNoiseTexture]);
+
+  return noiseTexture;
+};
+
+export const useLoadTelopTexture = () => {
+  const setTelopTexture = useSetRecoilState(telopTextureAtom);
+  const [telopTexture] = useTexture(['/images/textures/message-on-board-mid.jpg']);
+
+  useEffect(() => {
+    setTelopTexture(telopTexture);
+  }, [telopTexture, setTelopTexture]);
+
+  return telopTexture;
+};
+
+export const useLoadFloorTextures = () => {
   const setFloorNormalTexture = useSetRecoilState(floorNormalTextureAtom);
   const setFloorRoughnessTexture = useSetRecoilState(floorRoughnessTextureAtom);
 
@@ -190,24 +221,30 @@ export const useInitializeCurrentPage = () => {
 
 export const useScene = () => {
   const currentPage = useCurrentPage();
-  const setCurrentPage = useSetCurrentPage(); //currentPageAtomを更新する
+  const setCurrentPage = useSetCurrentPage();
   const currentTextures = useCurrentTextures();
   const loadedTextures = useLoadTextures();
-  const setGalleryContents = useSetGalleryContents() as SetterOrUpdater<Content[]>;
   const [characterTexture, suitcaseTexture] = useLoadCharacterAndSuitcaseTextures();
-  const [floorNormalTexture, floorRoughnessTexture] = useFloorTextures();
+  const [floorNormalTexture, floorRoughnessTexture] = useLoadFloorTextures();
+  const noiseTexture = useLoadNoiseTexture();
+  const telopTexture = useLoadTelopTexture();
 
-  useInitializeCurrentPage();
+  //ギャラリーのコンテンツをセットする
+  const setGalleryContents = useSetGalleryContents() as SetterOrUpdater<Content[]>;
+
+  useInitializeCurrentPage(); //初回アクセス時currentPageを更新しする。いかなるページであっても、そのページにふさわしいテクスチャをセットする
 
   return {
     currentPage,
     setCurrentPage, //Transition Linkでページ遷移するたびにcurrentPageAtomが更新されるようにしている
+    setGalleryContents,
     currentTextures,
     loadedTextures,
-    setGalleryContents,
     characterTexture,
     suitcaseTexture,
     floorNormalTexture,
     floorRoughnessTexture,
+    noiseTexture,
+    telopTexture,
   };
 };

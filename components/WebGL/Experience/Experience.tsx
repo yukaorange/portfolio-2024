@@ -1,14 +1,14 @@
 'use client';
 
 import { useFrame, useThree } from '@react-three/fiber';
-import { useControls, folder } from 'leva';
+// import { useControls, folder } from 'leva';
 import React, { useEffect, useState, useRef } from 'react';
-import { useRecoilValue } from 'recoil';
+// import { useRecoilValue } from 'recoil';
 import * as THREE from 'three';
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer';
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass';
 import { SMAAPass } from 'three/examples/jsm/postprocessing/SMAAPass';
-import { AnimationControls } from '@/types/animation';
+
 import { useScroll } from '@/app/ScrollContextProvider';
 import { useScrollVelocity } from '@/app/ScrollVelocityProvider';
 import { useTransitionProgress } from '@/app/TransitionContextProvider';
@@ -17,21 +17,22 @@ import { Lights } from '@/components/WebGL/Lights/Lights';
 import { Model } from '@/components/WebGL/Model/Model';
 import { Panels } from '@/components/WebGL/Panels/Panels';
 import { useTransitionAnimation } from '@/hooks/useTransitionAnimation';
-import { currentPageState } from '@/store/pageTitleAtom';
+// import { currentPageState } from '@/store/pageTitleAtom';
 import { useScene } from '@/store/textureAtom';
+import { AnimationControls } from '@/types/animation';
 
 import { ResponsiveCamera } from './ResponsiveCamera';
 //current page が変更されるたびにテクスチャを再生成するロジックはtetureAtom.tsにある
 
 export const Experience = () => {
-  const { indicatorOfScrollEnd, indicatorOfScrollStart } = useScroll();
+  const { indicatorOfScrollEnd, indicatorOfScrollStart, indicatorIsGallerySection } = useScroll();
   const { velocityRef, currentProgressRef, targetProgressRef } = useScrollVelocity();
   const { decreaseProgress, increaseProgress, singleProgress } = useTransitionProgress();
   const { gl, scene, camera } = useThree();
   const observePageTransitionRef = useTransitionAnimation();
   const lastTimeRef = useRef(0);
   const [composer, setComposer] = useState<EffectComposer | null>(null);
-  const currentPage = useRecoilValue(currentPageState);
+  // const currentPage = useRecoilValue(currentPageState);
 
   const {
     loadedTextures,
@@ -39,16 +40,20 @@ export const Experience = () => {
     suitcaseTexture,
     floorNormalTexture,
     floorRoughnessTexture,
+    noiseTexture,
+    telopTexture,
   } = useScene();
 
   const modelTextureMap = {
     characterTexture: characterTexture || new THREE.Texture(),
     suitcaseTexture: suitcaseTexture || new THREE.Texture(),
+    noiseTexture: noiseTexture || new THREE.Texture(),
   };
 
   const floorTextureMap = {
     roughness: floorRoughnessTexture || new THREE.Texture(),
     normal: floorNormalTexture || new THREE.Texture(),
+    noiseTexture: noiseTexture || new THREE.Texture(),
   };
 
   // メッシュやカメラの位置;
@@ -101,7 +106,7 @@ export const Experience = () => {
     modelPosition: { x: 0, y: 0, z: 10 },
     modelRotation: { x: 0, y: 0, z: 0 },
   };
-  
+
   const { position, lookAt, near, far, modelPosition, modelRotation } = controls;
 
   // post processing
@@ -121,7 +126,7 @@ export const Experience = () => {
     if (!composer) return;
 
     const currentTime = state.clock.getElapsedTime();
-    const deltaTime = currentTime - lastTimeRef.current;
+    // const deltaTime = currentTime - lastTimeRef.current;
     lastTimeRef.current = currentTime;
 
     // console.log(
@@ -182,6 +187,7 @@ export const Experience = () => {
     targetProgressRef,
     indicatorOfScrollStart,
     indicatorOfScrollEnd,
+    indicatorIsGallerySection,
     observePageTransitionRef,
   };
 
@@ -196,7 +202,12 @@ export const Experience = () => {
         position={[modelPosition.x, modelPosition.y, modelPosition.z]}
         rotation={[modelRotation.x, modelRotation.y, modelRotation.z]}
       />
-      <Panels loadedTextures={loadedTextures} animationControls={animationControls} />
+      <Panels
+        loadedTextures={loadedTextures}
+        animationControls={animationControls}
+        noiseTexture={noiseTexture}
+        telopTexture={telopTexture}
+      />
       <Floor textures={floorTextureMap} animationControls={animationControls} />
     </>
   );

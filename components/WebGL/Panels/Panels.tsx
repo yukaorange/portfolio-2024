@@ -1,29 +1,35 @@
 import { Instance, Instances } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
 import React, { useMemo, useRef, useEffect, useState } from 'react';
+import { useRecoilValue } from 'recoil';
 import * as THREE from 'three';
-import { AnimationControls } from '@/types/animation';
 
 import panelFragment from '@/shaders/panel/fragment-panel.glsl';
 import panelVertex from '@/shaders/panel/vertex-panel.glsl';
+import { currentPageState } from '@/store/pageTitleAtom';
+import { AnimationControls } from '@/types/animation';
 
 interface PanelsProps {
   loadedTextures: {
     texture: THREE.Texture;
     aspectRatio: number;
   }[];
+  noiseTexture: THREE.Texture;
+  telopTexture: THREE.Texture;
   animationControls: AnimationControls;
 }
 
-export const Panels = ({ loadedTextures, animationControls }: PanelsProps) => {
+export const Panels = ({
+  loadedTextures,
+  animationControls,
+  noiseTexture,
+  telopTexture,
+}: PanelsProps) => {
   const ref = useRef<THREE.InstancedMesh>(null);
   const count = 7;
   const aspect = 4 / 3;
   const [shaderMaterial, setShaderMaterial] = useState<THREE.ShaderMaterial>();
-
-  // useEffect(() => {
-  //   console.log(loadedTextures);
-  // }, [loadedTextures]);
+  const currentPage = useRecoilValue(currentPageState);
 
   const { positions, scales, matrices, totalWidth, totalHeight } = useMemo(() => {
     const positions = [];
@@ -73,7 +79,11 @@ export const Panels = ({ loadedTextures, animationControls }: PanelsProps) => {
       uniforms: {
         uTotalWidth: { value: totalWidth },
         uTotalHeight: { value: totalHeight },
+        uTelopAspect: { value: 3.4 },
         uTextures: { value: [] },
+        uActivePage: { value: null },
+        uNoiseTexture: { value: noiseTexture },
+        uTelopTexture: { value: telopTexture },
         uTextureAspectRatios: { value: [] },
         uTime: { value: 0 },
         uSpeed: { value: 0.02 },
@@ -86,7 +96,7 @@ export const Panels = ({ loadedTextures, animationControls }: PanelsProps) => {
       fragmentShader: panelFragment,
     });
     setShaderMaterial(material);
-  }, [totalWidth, totalHeight, count, aspect]);
+  }, [totalWidth, totalHeight, count, aspect, noiseTexture, telopTexture]);
 
   useEffect(() => {
     if (ref.current) {
@@ -98,28 +108,27 @@ export const Panels = ({ loadedTextures, animationControls }: PanelsProps) => {
   }, [matrices]);
 
   useEffect(() => {
+    let activePage;
+    if (currentPage.title === 'portfolio') {
+      activePage = 0;
+    } else if (currentPage.title === 'about') {
+      activePage = 1;
+    } else {
+      activePage = 2;
+    }
+
+    console.log(loadedTextures);
+
     if (shaderMaterial && loadedTextures.length > 0) {
       const textures = loadedTextures.map((t) => t.texture);
       const aspectRatios = loadedTextures.map((t) => t.aspectRatio);
 
       shaderMaterial.uniforms.uTextures.value = textures;
       shaderMaterial.uniforms.uTextureAspectRatios.value = aspectRatios;
+      shaderMaterial.uniforms.uActivePage.value = activePage;
       shaderMaterial.needsUpdate = true;
     }
-  }, [shaderMaterial, loadedTextures]);
-
-  // useEffect(() => {
-  //   const textures = loadedTextures.map((texture) => {
-  //     return texture.texture;
-  //   });
-  //   const aspectRatios = loadedTextures.map((texture) => {
-  //     return texture.aspectRatio;
-  //   });
-
-  //   panelMaterial.uniforms.uTextures.value = textures;
-  //   panelMaterial.uniforms.uTextureAspectRatios.value = aspectRatios;
-  //   panelMaterial.needsUpdate = true;
-  // }, [loadedTextures]);
+  }, [shaderMaterial, loadedTextures, currentPage]);
 
   const geometry = useMemo(() => {
     const baseGeometry = new THREE.PlaneGeometry(1, 1);
@@ -131,6 +140,7 @@ export const Panels = ({ loadedTextures, animationControls }: PanelsProps) => {
       const { velocityRef } = animationControls;
 
       shaderMaterial.uniforms.uTime.value = state.clock.elapsedTime;
+
       shaderMaterial.uniforms.uVelocity.value = Math.abs(velocityRef.current);
     }
   });
@@ -138,7 +148,7 @@ export const Panels = ({ loadedTextures, animationControls }: PanelsProps) => {
   if (!shaderMaterial) return null;
 
   return (
-    <Instances limit={count * count} ref={ref} geometry={geometry}>
+    <Instances limit={count * count} geometry={geometry}>
       <primitive object={shaderMaterial} />
       {positions.map((position, i) => (
         <Instance

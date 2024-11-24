@@ -4,6 +4,7 @@ import { useSetRecoilState, useRecoilValue } from 'recoil';
 
 import { currentPageState, isManualNavigationState } from '@/store/pageTitleAtom';
 
+//ブラウザ機能によるページ遷移を検知し、ページタイトルを更新する。アプリケーションの機能によるページ遷移ロジックは/components/TransitionLink.tsxにて管理
 export const useNavigationAtomUpdater = () => {
   const pathname = usePathname();
 
