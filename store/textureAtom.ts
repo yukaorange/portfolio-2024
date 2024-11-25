@@ -34,8 +34,40 @@ const topPageGalleryTexturesAtom = atom<TextureInfo[]>({
       aspectRatio: 4 / 3,
     },
     {
-      url: '/images/textures/noise.png',
-      aspectRatio: 1,
+      url: '/images/textures/thc.jpg',
+      aspectRatio: 4 / 3,
+    },
+    {
+      url: '/images/textures/airport-board.jpg',
+      aspectRatio: 4 / 3,
+    },
+    {
+      url: '/images/textures/no-item.jpg',
+      aspectRatio: 4 / 3,
+    },
+    {
+      url: '/images/textures/no-item.jpg',
+      aspectRatio: 4 / 3,
+    },
+    {
+      url: '/images/textures/no-item.jpg',
+      aspectRatio: 4 / 3,
+    },
+    {
+      url: '/images/textures/no-item.jpg',
+      aspectRatio: 4 / 3,
+    },
+    {
+      url: '/images/textures/no-item.jpg',
+      aspectRatio: 4 / 3,
+    },
+    {
+      url: '/images/textures/no-item.jpg',
+      aspectRatio: 4 / 3,
+    },
+    {
+      url: '/images/textures/no-item.jpg',
+      aspectRatio: 4 / 3,
     },
   ],
 });

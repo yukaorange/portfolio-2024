@@ -4,6 +4,7 @@ import { useRecoilValue } from 'recoil';
 import * as THREE from 'three';
 
 import { useScroll } from '@/app/ScrollContextProvider';
+import { useTransitionProgress } from '@/app/TransitionContextProvider';
 import { currentPageState } from '@/store/pageTitleAtom';
 
 interface ResponsiveCameraProps {
@@ -19,6 +20,7 @@ export const ResponsiveCamera = ({ position, lookAt, near, far }: ResponsiveCame
   const isScrolled = indicatorIsGallerySection;
   const currentPage = useRecoilValue(currentPageState);
   const cameraRef = useRef(camera as THREE.PerspectiveCamera);
+  const { isTransitioning } = useTransitionProgress();
 
   const targetPosition = useRef(new THREE.Vector3(position.x, position.y, position.z));
   const targetLookAt = useRef(new THREE.Vector3(lookAt.x, lookAt.y, lookAt.z));
@@ -27,12 +29,12 @@ export const ResponsiveCamera = ({ position, lookAt, near, far }: ResponsiveCame
   const minWidth = 360;
   const maxWidth = 1440;
   const standardWidth = maxWidth;
-  const minFov = 60; //@mobile
-  const maxFov = 45;
-  const minLookAtY = 2.7;
+  const minFov = 50; //@mobile
+  const maxFov = 40;
+  const minLookAtY = 2.0;
   const maxPositionY = 0.25;
-  const maxLookAtY = 2.0;
-  const minPositionY = 0.5;
+  const maxLookAtY = 2.25;
+  const minPositionY = 0.275;
   const maxMoveRange = 3.0;
 
   const getTransformValue = useCallback((windowInnerWidth: number) => {
@@ -56,16 +58,20 @@ export const ResponsiveCamera = ({ position, lookAt, near, far }: ResponsiveCame
 
     if (isScrolled || isSubPage) {
       newTargetLookAtY = Math.min(baseLookAtY + maxMoveRange, maxLookAtY + maxMoveRange);
-      newTargetPositionZ -= scaleFactor;
+
       const moveRange = Math.min(newTargetLookAtY - newTargetPositionY, maxMoveRange);
+
       newTargetPositionY = Math.min(newTargetPositionY + moveRange, maxPositionY + maxMoveRange);
+
+      newTargetPositionZ -= scaleFactor;
     } else {
       newTargetPositionZ += scaleFactor;
     }
 
     targetPosition.current.set(position.x, newTargetPositionY, newTargetPositionZ);
+
     targetLookAt.current.set(lookAt.x, newTargetLookAtY, lookAt.z);
-  }, [position, lookAt, isScrolled, currentPage, getTransformValue]);
+  }, [position, lookAt, isScrolled, currentPage, getTransformValue, standardWidth]);
 
   useEffect(() => {
     updateCameraTargets();
@@ -77,12 +83,27 @@ export const ResponsiveCamera = ({ position, lookAt, near, far }: ResponsiveCame
     cameraRef.current.updateProjectionMatrix();
   }, [near, far]);
 
-  useFrame(() => {
-    cameraRef.current.position.lerp(targetPosition.current, 0.02);
+  useFrame((state, delta) => {
+    const lerpFactor = 1.0 - Math.pow(0.1, delta);
+    //0.0秒: 1.0 - Math.pow(0.2, 0.0) = 0.0  // 開始
+    //0.2秒: 1.0 - Math.pow(0.2, 0.2) ≈ 0.63 // 残り37%
+    //0.4秒: 1.0 - Math.pow(0.2, 0.4) ≈ 0.86 // 残り14%
+    //0.6秒: 1.0 - Math.pow(0.2, 0.6) ≈ 0.95 // 残り5%
+
+    //ページトランジション中はカメラの位置を動かさな
+    if (isTransitioning.current == true) {
+      return;
+    }
+
+    cameraRef.current.position.lerp(targetPosition.current, lerpFactor);
 
     cameraRef.current.lookAt(targetLookAt.current);
 
-    cameraRef.current.fov = THREE.MathUtils.lerp(cameraRef.current.fov, targetFov.current, 0.02);
+    cameraRef.current.fov = THREE.MathUtils.lerp(
+      cameraRef.current.fov,
+      targetFov.current,
+      lerpFactor
+    );
 
     cameraRef.current.updateProjectionMatrix();
   });

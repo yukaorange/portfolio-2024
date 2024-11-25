@@ -21,6 +21,9 @@ interface TransitionContextType {
 }
 
 //このコンテキストは、ページのトランジションを司り、値の変遷は、TransitionLinkコンポーネントにロジックがあります。
+//TransitionContext（コンテキスト作成）
+//TransitionContextProvider（コンテキストをvalueとして供給）
+//useTransitionProgress（コンテキストの値を抽出するフック）
 const TransitionContext = createContext<TransitionContextType | undefined>(undefined);
 
 interface TransitionProviderProps {

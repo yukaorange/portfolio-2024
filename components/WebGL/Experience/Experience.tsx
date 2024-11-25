@@ -3,7 +3,7 @@
 import { useFrame, useThree } from '@react-three/fiber';
 // import { useControls, folder } from 'leva';
 import React, { useEffect, useState, useRef } from 'react';
-// import { useRecoilValue } from 'recoil';
+import { useRecoilValue } from 'recoil';
 import * as THREE from 'three';
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer';
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass';
@@ -17,7 +17,7 @@ import { Lights } from '@/components/WebGL/Lights/Lights';
 import { Model } from '@/components/WebGL/Model/Model';
 import { Panels } from '@/components/WebGL/Panels/Panels';
 import { useTransitionAnimation } from '@/hooks/useTransitionAnimation';
-// import { currentPageState } from '@/store/pageTitleAtom';
+import { currentPageState } from '@/store/pageTitleAtom';
 import { useScene } from '@/store/textureAtom';
 import { AnimationControls } from '@/types/animation';
 
@@ -32,7 +32,7 @@ export const Experience = () => {
   const observePageTransitionRef = useTransitionAnimation();
   const lastTimeRef = useRef(0);
   const [composer, setComposer] = useState<EffectComposer | null>(null);
-  // const currentPage = useRecoilValue(currentPageState);
+  const currentPage = useRecoilValue(currentPageState);
 
   const {
     loadedTextures,
@@ -126,7 +126,7 @@ export const Experience = () => {
     if (!composer) return;
 
     const currentTime = state.clock.getElapsedTime();
-    // const deltaTime = currentTime - lastTimeRef.current;
+    const deltaTime = currentTime - lastTimeRef.current;
     lastTimeRef.current = currentTime;
 
     // console.log(
@@ -153,10 +153,10 @@ export const Experience = () => {
     //   observePageTransitionRef.current, //ページ切り替わり検知で0->1（duration 1000ms）,その後0
     //   '\n',
     //   'indicatorOfScrollStart : ',
-    //   indicatorOfScrollStart.current, //メインビューエリアを離れたらtrue
+    //   indicatorOfScrollStart, //メインビューエリアを離れたらtrue
     //   '\n',
     //   'indicatorOfScrollEnd : ',
-    //   indicatorOfScrollEnd.current, //フッターに到達したらtrue
+    //   indicatorOfScrollEnd, //フッターに到達したらtrue
     //   '\n',
     //   'gallery current progress : ',
     //   currentProgressRef.current, //top pageのgalleryの進行度

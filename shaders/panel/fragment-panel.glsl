@@ -10,6 +10,7 @@ uniform sampler2D uNoiseTexture;
 uniform sampler2D uTelopTexture;
 uniform float uTextureAspectRatios[10];
 uniform float uRowLengths[5];
+uniform vec2 uResolution;
 
 const float PI = 3.14159265359;
 
@@ -20,16 +21,20 @@ varying vec3 vWorldPosition;
 varying vec3 vInstacePosition;
 
 #pragma glslify: optimizationTextureUv = require('../utils/optimizeUv.glsl');
-#pragma glslify: cnoise = require('../utils/noise.glsl');
+#pragma glslify: hash = require('../utils/hash.glsl');
+#pragma glslify: cnoise = require('../utils/cnoise.glsl');
+// #pragma glslify: snoise = require('../utils/snoise.glsl');
 #pragma glslify: rand = require('../utils/random.glsl');
+#pragma glslify: wave = require('../utils/wave.glsl');
+#pragma glslify: cardiogram = require('../utils/electrocardiogram.glsl');
+#pragma glslify: blendOverlay = require('../utils/blend.glsl');
+#pragma glslify: crtEffect = require('../utils/crtEffect.glsl');
 
 void main() {
-  float colorIntensity;//明度の調節用
 
-  float activepage = floor(uActivePage);//ページ判定 0:top 1:about 2:gallery系
+  //----------テクスチャサンプル ----------
 
-  //汎用ノイズ
-  float noise = cnoise(vec3(vUv.y * 60.0, sin(uTime * 40.0), vUv.y));
+  vec3 testcolor; //test
 
   //各パネルを使用する場合のUV
   vec2 singleScreenUv = vUv;
@@ -56,19 +61,10 @@ void main() {
   vec2 fullScreenOptimizedTelopUv = optimizationTextureUv(fullScreenUv, uAspect, uTelopAspect);
   // vec2 fullScreenOptimizedUv0 = optimizationTextureUv(fullScreenUv, uAspect, uTextureAspectRatios[0]);
 
- //各パネルを使用する場合のテクスチャを取得
-  vec4 singleDiffuseColor0 = texture2D(uTextures[0], singleOptimizedUv0);
-  vec4 singleDiffuseColor1 = texture2D(uTextures[1], singleOptimizedUv1);
-  vec4 singleDiffuseColor2 = texture2D(uTextures[2], singleOptimizedUv2);
-  vec4 singleDiffuseColor3 = texture2D(uTextures[3], singleOptimizedUv3);
-  vec4 singleDiffuseColor4 = texture2D(uTextures[4], singleOptimizedUv4);
-  vec4 singleDiffuseColor5 = texture2D(uTextures[5], singleOptimizedUv5);
-  vec4 singleDiffuseColor6 = texture2D(uTextures[6], singleOptimizedUv6);
-  vec4 singleDiffuseColor7 = texture2D(uTextures[7], singleOptimizedUv7);
-  vec4 singleDiffuseColor8 = texture2D(uTextures[8], singleOptimizedUv8);
-  vec4 singleDiffuseColor9 = texture2D(uTextures[9], singleOptimizedUv9);
+ //各パネルを使用する場合のテクスチャを取得する場合
+  // vec4 singleDiffuseColor0 = texture2D(uTextures[0], singleOptimizedUv0);
 
-  //各全体で一つのパネルとした場合のテクスチャを取得方法
+  //各全体で一つのパネルとした場合のテクスチャを取得する場合
   // vec4 fullScreenDiffuseColor0 = texture2D(uTextures[0], fullScreenOptimizedUv0);
 
   //top pageのテキストが流れるアニメーションに使用するテクスチャ出力
@@ -80,13 +76,55 @@ void main() {
   float rowLength = uRowLengths[row];
   float compressdX = scrollingUv.x * rowLength;//各行の空白部分はサンプリングしないので、その部分を圧縮
   scrollingUv.x = mod(compressdX + scrollingOffset, rowLength);//圧縮した部分を元に戻す。例えば、0.7の幅だとしたら、0.7の長さが1.0の長さになるようにする。（自分用のメモです）
+
   // vec4 scrollingDiffuseColor = texture2D(uTextures[0], scrollingUv);//glitchでサンプリングをずらすため、diffuseの決定は後述にまわす
 
-  //ノイズ画面
-  vec3 noiseColor = vec3(0.0) + rand(fullScreenUv + mod(uTime, 1.0) + 24.0) * 0.7;
-  // vec3 noiseColor = vec3(0.0) + rand(fullScreenUv + mod(uTime, 1.0) + 24.0) * 0.7;
-  noiseColor += step(0.0, sin(uTime * 0.51 - fullScreenUv.y) * sin(uTime * 0.56 - fullScreenUv.y * 1.0)) * 0.05;
-  // noiseColor += step(0.0, sin(uTime * 0.51 - fullScreenUv.y) * sin(uTime * 0.56 - fullScreenUv.y * 1.0)) * 0.05;
+  //----------ユーティリティ-----------
+
+  float colorIntensity;//明度の調節用
+
+  float activepage = floor(uActivePage);//ページ判定 0:top 1:about 2:gallery系
+
+  //汎用ノイズ
+  float noise = cnoise(vec3(vUv.y * 60.0, sin(uTime * 40.0), vUv.y));
+
+  //hash値
+  float hashValue = hash(singleScreenUv + uTime);
+
+  // ---------- 汎用画像 ----------
+
+  //汎用 ノイズ色
+  vec3 noiseColor = vec3(0.0) + rand(singleScreenUv + mod(uTime, 1.0) + 24.0) * 0.7;//ベースとなる砂嵐
+
+  //汎用 等高線画面
+  vec4 waveColor;
+
+  float waveIntensity = wave(singleScreenUv.x, singleScreenUv.y) + 2.0;
+
+  waveIntensity *= 1.23 * abs(sin(PI / 2.0 + uTime * 0.2) + 1.5);
+
+  float waveDiffuse = fract(waveIntensity);
+
+  if(mod(waveIntensity, 2.0) > 1.0) {
+    waveDiffuse = 1.0 - waveDiffuse;
+  }
+
+  waveDiffuse = waveDiffuse / fwidth(waveIntensity);
+
+  waveDiffuse = clamp(waveDiffuse, 0.0, 0.5);
+
+  waveColor = vec4(vec3(waveDiffuse), 1.0);
+
+  //汎用 心電図画面
+  vec4 cardiogramColor = vec4(cardiogram(singleScreenUv, vec2(4.0, 3.0), uTime), 1.0);
+
+  testcolor = cardiogramColor.rgb;
+
+  //汎用 matrix画面
+
+  //グリッド線画面(aboutページ用)
+
+  //--------画面切替えアニメーション---------
 
   //画面切り替えの設定
   float totalDuration = 5.0;
@@ -109,6 +147,7 @@ void main() {
 
   //ノイズ強度の変遷
   float noiseIntensity;
+
   if(shouldShowNoise) {
     noiseIntensity = 1.0;
     if(normalizedCycle < noiseStartThreshold) {
@@ -125,6 +164,7 @@ void main() {
   }
 
   float transition = smoothstep(0.0, transitionDuration, normalizedCycle);//transitionDurationの時点で1.0になるから、その時点で切り替わるということ。
+
   float progress;
 
   if(EvenOdd == 0.0) {//fullscreen
@@ -134,93 +174,98 @@ void main() {
   }
 
   vec2 glitchOffset;
+
   if(shouldShowNoise) {
-    glitchOffset = vec2(cnoise(vec3(vUv.y * 100.0, sin(uTime * 240.0), fullScreenUv.y)), 0.0) * noiseIntensity;
+    glitchOffset = vec2(noise, noise);
+
+    glitchOffset *= noiseIntensity;
   }
 
   vec4 ProgressDiffuse;//サイクルによって切り替わる最終的な出力の土台
 
    //チェッカーボードのレイアウト
   vec4 checkerBoardDiffuseColor;
-  vec4 diffuseForCheckerBoard;
 
-  float index = floor(vIndex + 0.5);
+  float index = floor(vIndex + 0.1);
 
   if(activepage == 0.0) {
-    if(mod(index, 3.0) == 0.0) {
-      diffuseForCheckerBoard = texture2D(uTextures[0], singleOptimizedUv0 + glitchOffset);
 
-      checkerBoardDiffuseColor = diffuseForCheckerBoard;
-    } else if(mod(index, 3.0) == 1.0) {
-      diffuseForCheckerBoard = texture2D(uTextures[1], singleOptimizedUv1 + glitchOffset);
+    index = floor(index + uTime / totalDuration);//切り替わる度に表示画面が変わる
 
-      checkerBoardDiffuseColor = diffuseForCheckerBoard;
-    } else if(mod(index, 3.0) == 2.0) {
-      diffuseForCheckerBoard = texture2D(uTextures[1], singleOptimizedUv1 + glitchOffset);
-
-      checkerBoardDiffuseColor = diffuseForCheckerBoard;
+    if(mod(index, 24.0) == 0.0) {
+      checkerBoardDiffuseColor = texture2D(uTextures[0], singleOptimizedUv0 + glitchOffset);
+    } else if(mod(index, 19.0) == 0.0) {
+      checkerBoardDiffuseColor = texture2D(uTextures[1], singleOptimizedUv1 + glitchOffset);
+    } else if(mod(index, 24.0) == 0.0) {
+      checkerBoardDiffuseColor = texture2D(uTextures[2], singleOptimizedUv2 + glitchOffset);
+    } else if(mod(index, 15.0) == 0.0) {
+      checkerBoardDiffuseColor = texture2D(uTextures[3], singleOptimizedUv3 + glitchOffset);
+    } else if(mod(index, 13.0) == 0.0) {
+      checkerBoardDiffuseColor = cardiogramColor;
+    } else if(mod(index, 17.0) == 0.0) {
+      checkerBoardDiffuseColor = waveColor;
+    } else {
+      checkerBoardDiffuseColor = vec4(noiseColor, 1.0);
     }
   } else if(activepage == 1.0) {
-    if(mod(index, 3.0) == 0.0) {
-      diffuseForCheckerBoard = texture2D(uTextures[0], singleOptimizedUv0 + glitchOffset);
-
-      checkerBoardDiffuseColor = diffuseForCheckerBoard;
-    } else if(mod(index, 3.0) == 1.0) {
-      diffuseForCheckerBoard = texture2D(uTextures[1], singleOptimizedUv1 + glitchOffset);
-
-      checkerBoardDiffuseColor = diffuseForCheckerBoard;
-    } else if(mod(index, 3.0) == 2.0) {
-      diffuseForCheckerBoard = texture2D(uTextures[1], singleOptimizedUv1 + glitchOffset);
-
-      checkerBoardDiffuseColor = diffuseForCheckerBoard;
-    }
-  } else {
     if(mod(index, 10.0) == 0.0) {
-      diffuseForCheckerBoard = texture2D(uTextures[0], singleOptimizedUv0 + glitchOffset);
-
-      checkerBoardDiffuseColor = diffuseForCheckerBoard;
+      checkerBoardDiffuseColor = texture2D(uTextures[0], singleOptimizedUv0 + glitchOffset);
     } else if(mod(index, 10.0) == 1.0) {
-      diffuseForCheckerBoard = texture2D(uTextures[1], singleOptimizedUv1 + glitchOffset);
-
-      checkerBoardDiffuseColor = diffuseForCheckerBoard;
+      checkerBoardDiffuseColor = texture2D(uTextures[1], singleOptimizedUv1 + glitchOffset);
     } else if(mod(index, 10.0) == 2.0) {
-      diffuseForCheckerBoard = texture2D(uTextures[2], singleOptimizedUv2 + glitchOffset);
-
-      checkerBoardDiffuseColor = diffuseForCheckerBoard;
+      checkerBoardDiffuseColor = texture2D(uTextures[2], singleOptimizedUv2 + glitchOffset);
     } else if(mod(index, 10.0) == 3.0) {
-      diffuseForCheckerBoard = texture2D(uTextures[3], singleOptimizedUv3 + glitchOffset);
-
-      checkerBoardDiffuseColor = diffuseForCheckerBoard;
+      checkerBoardDiffuseColor = texture2D(uTextures[3], singleOptimizedUv3 + glitchOffset);
     } else if(mod(index, 10.0) == 4.0) {
-      diffuseForCheckerBoard = texture2D(uTextures[4], singleOptimizedUv4 + glitchOffset);
-
-      checkerBoardDiffuseColor = diffuseForCheckerBoard;
+      checkerBoardDiffuseColor = texture2D(uTextures[4], singleOptimizedUv4 + glitchOffset);
     } else if(mod(index, 10.0) == 5.0) {
-      diffuseForCheckerBoard = texture2D(uTextures[5], singleOptimizedUv5 + glitchOffset);
-
-      checkerBoardDiffuseColor = diffuseForCheckerBoard;
+      checkerBoardDiffuseColor = texture2D(uTextures[5], singleOptimizedUv5 + glitchOffset);
     } else if(mod(index, 10.0) == 6.0) {
-      diffuseForCheckerBoard = texture2D(uTextures[6], singleOptimizedUv6 + glitchOffset);
-
-      checkerBoardDiffuseColor = diffuseForCheckerBoard;
+      checkerBoardDiffuseColor = texture2D(uTextures[6], singleOptimizedUv6 + glitchOffset);
     } else if(mod(index, 10.0) == 7.0) {
-      diffuseForCheckerBoard = texture2D(uTextures[7], singleOptimizedUv7 + glitchOffset);
-
-      checkerBoardDiffuseColor = diffuseForCheckerBoard;
+      checkerBoardDiffuseColor = texture2D(uTextures[7], singleOptimizedUv7 + glitchOffset);
     } else if(mod(index, 10.0) == 8.0) {
-      diffuseForCheckerBoard = texture2D(uTextures[8], singleOptimizedUv8 + glitchOffset);
-
-      checkerBoardDiffuseColor = diffuseForCheckerBoard;
+      checkerBoardDiffuseColor = texture2D(uTextures[8], singleOptimizedUv8 + glitchOffset);
     } else if(mod(index, 10.0) == 9.0) {
-      diffuseForCheckerBoard = texture2D(uTextures[9], singleOptimizedUv9 + glitchOffset);
+      checkerBoardDiffuseColor = texture2D(uTextures[9], singleOptimizedUv9 + glitchOffset);
+    }
+  } else if(activepage == 2.0) {
 
-      checkerBoardDiffuseColor = diffuseForCheckerBoard;
+    // index = floor(index + uTime / totalDuration);//切り替わる度に表示画面が変わる
+    vec4 testDissuse = vec4(0.0);
+    if(mod(index, 10.0) == 0.0) {
+      checkerBoardDiffuseColor = texture2D(uTextures[0], singleOptimizedUv0 + glitchOffset);
+
+      // checkerBoardDiffuseColor = testDissuse;
+    } else if(mod(index, 10.0) == 1.0) {
+      checkerBoardDiffuseColor = texture2D(uTextures[1], singleOptimizedUv1 + glitchOffset);
+    } else if(mod(index, 10.0) == 2.0) {
+      checkerBoardDiffuseColor = texture2D(uTextures[2], singleOptimizedUv2 + glitchOffset);
+    } else if(mod(index, 10.0) == 3.0) {
+      checkerBoardDiffuseColor = texture2D(uTextures[3], singleOptimizedUv3 + glitchOffset);
+    } else if(mod(index, 10.0) == 4.0) {
+      checkerBoardDiffuseColor = texture2D(uTextures[4], singleOptimizedUv4 + glitchOffset);
+    } else if(mod(index, 10.0) == 5.0) {
+      checkerBoardDiffuseColor = texture2D(uTextures[5], singleOptimizedUv5 + glitchOffset);
+    } else if(mod(index, 10.0) == 6.0) {
+      checkerBoardDiffuseColor = texture2D(uTextures[6], singleOptimizedUv6 + glitchOffset);
+    } else if(mod(index, 10.0) == 7.0) {
+      checkerBoardDiffuseColor = texture2D(uTextures[7], singleOptimizedUv7 + glitchOffset);
+    } else if(mod(index, 10.0) == 8.0) {
+      checkerBoardDiffuseColor = texture2D(uTextures[8], singleOptimizedUv8 + glitchOffset);
+    } else if(mod(index, 10.0) == 9.0) {
+      checkerBoardDiffuseColor = texture2D(uTextures[9], singleOptimizedUv9 + glitchOffset);
     }
   }
 
+  //テロップ
   vec4 scrollingDiffuseColorNoise = texture2D(uTelopTexture, scrollingUv + glitchOffset);
+
+  scrollingDiffuseColorNoise.rgb = crtEffect(fullScreenUv, vec2(1280, 960), scrollingDiffuseColorNoise.rgb, 1.0);
+
   vec4 scrollingDiffuseColor = texture2D(uTelopTexture, scrollingUv);
 
+  //----------画面切替えアニメーションの実行----------
   vec4 oddProgressDiffuse = scrollingDiffuseColorNoise;
 
   vec4 evenProgressDiffuse = checkerBoardDiffuseColor;
@@ -234,18 +279,18 @@ void main() {
   }
 
   //----------------test------------
-  // ProgressDiffuse = checkerBoardDiffuseColor;
-  // ProgressDiffuse = scrollingDiffuseColor;
+  ProgressDiffuse = checkerBoardDiffuseColor;
+  // ProgressDiffuse = oddProgressDiffuse;
   //----------------test------------
 
   vec4 finalColor = ProgressDiffuse;
 
-  //最終的な色調整
-  colorIntensity = 0.6 + 0.2 * pow(uVelocity, 3.0) + 0.01 * abs(sin(uTime * noise));//明度の4調節用
+  //----------エフェクト----------
 
-  finalColor.rgb *= colorIntensity;
-
+  //グレイン
   vec3 color = finalColor.rgb;
+
+  color.rgb = blendOverlay(color.rgb, vec3(hashValue), 0.2);
 
   // 点滅
   color *= step(0.0, sin(vUv.y * 5.0 - uTime * 2.0 * noise)) * 0.05 + 0.95;
@@ -269,6 +314,14 @@ void main() {
       color = mix(color, noiseColor, noiseIntensity); // ノイズの強度を調整（0.8は調整可能）
     };
   }
+
+  //最終的な明度調整
+  colorIntensity = 0.33 + 0.2 * pow(uVelocity, 3.0) + 0.01 * abs(sin(uTime * noise));//明度の4調節用
+
+  //テスト用
+  // color = testcolor;
+
+  color *= colorIntensity;
 
   gl_FragColor = vec4(color, finalColor.a);
 }

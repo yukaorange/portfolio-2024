@@ -86,7 +86,8 @@ export const Panels = ({
         uTelopTexture: { value: telopTexture },
         uTextureAspectRatios: { value: [] },
         uTime: { value: 0 },
-        uSpeed: { value: 0.02 },
+        uResolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
+        uSpeed: { value: 0.004 }, //テロップの流れるスピード
         uRowLengths: { value: [0.82, 0.64, 0.76, 0.82, 0.98] }, //テロップのサンプリングに使用
         uCount: { value: count },
         uAspect: { value: aspect },
@@ -117,15 +118,37 @@ export const Panels = ({
       activePage = 2;
     }
 
-    console.log(loadedTextures);
+    console.log(`texutres↓ active page :${currentPage.title} - (${activePage})`);
+    if (loadedTextures.length > 0) {
+      loadedTextures.forEach((t, index) => {
+        console.log(`nuber_${index}`, t);
+      });
+    } else {
+      console.log(`single_`, loadedTextures);
+    }
 
-    if (shaderMaterial && loadedTextures.length > 0) {
+    if (shaderMaterial) {
+      // let textures;
+      // let aspectRatios;
+      console.log(loadedTextures);
+
       const textures = loadedTextures.map((t) => t.texture);
       const aspectRatios = loadedTextures.map((t) => t.aspectRatio);
+      // if (loadedTextures.length > 0) {
+
+      // } else {
+      //   console.log(loadedTextures);
+
+      //   // textures = loadedTextures.texture;
+      //   // aspectRatios = loadedTextures.aspectRatio;
+      // }
 
       shaderMaterial.uniforms.uTextures.value = textures;
+
       shaderMaterial.uniforms.uTextureAspectRatios.value = aspectRatios;
+
       shaderMaterial.uniforms.uActivePage.value = activePage;
+
       shaderMaterial.needsUpdate = true;
     }
   }, [shaderMaterial, loadedTextures, currentPage]);

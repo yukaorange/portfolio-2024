@@ -33,21 +33,21 @@ export const Lights = () => {
   const light1 = {
     x: 0,
     y: 7,
-    z: 0,
+    z: 2.5,
     intensity: 150,
     color: '#ffffff',
   };
   const light2 = {
     x: -4,
     y: 7,
-    z: 0,
+    z: 2.5,
     intensity: 150,
     color: '#ffffff',
   };
   const light3 = {
     x: 4,
     y: 7,
-    z: 0,
+    z: 2.5,
     intensity: 150,
     color: '#ffffff',
   };
