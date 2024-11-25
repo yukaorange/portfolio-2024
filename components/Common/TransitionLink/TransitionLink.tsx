@@ -49,6 +49,11 @@ export const TransitionLink = ({
       const title = path === '/' ? 'portfolio' : path.split('/')[1];
 
       setCurrentPage({ title, path }); //DOMのページ現在のページを管理する
+
+      // console.log(`---------transition----------`);
+
+      // console.log(`update webgl page:`, path);
+
       setWebGLCurrentPage(path); //これがtextureのリロードを行うための契機となる
     },
     [setCurrentPage, setWebGLCurrentPage]

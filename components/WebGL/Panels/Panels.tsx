@@ -4,9 +4,11 @@ import React, { useMemo, useRef, useEffect, useState } from 'react';
 import { useRecoilValue } from 'recoil';
 import * as THREE from 'three';
 
+import { useScroll } from '@/app/ScrollContextProvider';
 import panelFragment from '@/shaders/panel/fragment-panel.glsl';
 import panelVertex from '@/shaders/panel/vertex-panel.glsl';
 import { currentPageState } from '@/store/pageTitleAtom';
+import { deviceState } from '@/store/userAgentAtom';
 import { AnimationControls } from '@/types/animation';
 
 interface PanelsProps {
@@ -28,8 +30,11 @@ export const Panels = ({
   const ref = useRef<THREE.InstancedMesh>(null);
   const count = 7;
   const aspect = 4 / 3;
+  const device = useRecoilValue(deviceState);
   const [shaderMaterial, setShaderMaterial] = useState<THREE.ShaderMaterial>();
   const currentPage = useRecoilValue(currentPageState);
+
+  const { indicatorOfGallerySection } = useScroll();
 
   const { positions, scales, matrices, totalWidth, totalHeight } = useMemo(() => {
     const positions = [];
@@ -81,10 +86,14 @@ export const Panels = ({
         uTotalHeight: { value: totalHeight },
         uTelopAspect: { value: 3.4 },
         uTextures: { value: [] },
+        uDevice: { value: null },
         uActivePage: { value: null },
         uNoiseTexture: { value: noiseTexture },
         uTelopTexture: { value: telopTexture },
         uTextureAspectRatios: { value: [] },
+        uIsGallerySection: {
+          value: null,
+        },
         uTime: { value: 0 },
         uResolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
         uSpeed: { value: 0.004 }, //テロップの流れるスピード
@@ -118,40 +127,44 @@ export const Panels = ({
       activePage = 2;
     }
 
-    console.log(`texutres↓ active page :${currentPage.title} - (${activePage})`);
+    // console.log(`texutres↓ active page :${currentPage.title} - (${activePage})`);
+    // if (loadedTextures.length > 0) {
+    //   loadedTextures.forEach((t, index) => {
+    //     console.log(`nuber_${index}`, t);
+    //   });
+    // } else {
+    //   console.log(`single_`, loadedTextures);
+    // }
+
+    if (!shaderMaterial) return;
+
+    let textures;
+    let aspectRatios;
+
     if (loadedTextures.length > 0) {
-      loadedTextures.forEach((t, index) => {
-        console.log(`nuber_${index}`, t);
-      });
+      // console.log(loadedTextures.length);
+
+      textures = loadedTextures.map((t) => t.texture);
+      aspectRatios = loadedTextures.map((t) => t.aspectRatio);
+    }
+
+    shaderMaterial.uniforms.uTextures.value = textures;
+
+    shaderMaterial.uniforms.uTextureAspectRatios.value = aspectRatios;
+
+    shaderMaterial.uniforms.uIsGallerySection.value = indicatorOfGallerySection == true ? 1 : 0;
+    console.log(`isGallerySection :`, indicatorOfGallerySection);
+
+    shaderMaterial.uniforms.uActivePage.value = activePage;
+
+    if (device == 'mobile' || device == 'tablet') {
+      shaderMaterial.uniforms.uDevice.value = 1;
     } else {
-      console.log(`single_`, loadedTextures);
+      shaderMaterial.uniforms.uDevice.value = 0;
     }
 
-    if (shaderMaterial) {
-      // let textures;
-      // let aspectRatios;
-      console.log(loadedTextures);
-
-      const textures = loadedTextures.map((t) => t.texture);
-      const aspectRatios = loadedTextures.map((t) => t.aspectRatio);
-      // if (loadedTextures.length > 0) {
-
-      // } else {
-      //   console.log(loadedTextures);
-
-      //   // textures = loadedTextures.texture;
-      //   // aspectRatios = loadedTextures.aspectRatio;
-      // }
-
-      shaderMaterial.uniforms.uTextures.value = textures;
-
-      shaderMaterial.uniforms.uTextureAspectRatios.value = aspectRatios;
-
-      shaderMaterial.uniforms.uActivePage.value = activePage;
-
-      shaderMaterial.needsUpdate = true;
-    }
-  }, [shaderMaterial, loadedTextures, currentPage]);
+    shaderMaterial.needsUpdate = true;
+  }, [shaderMaterial, loadedTextures, currentPage, device, indicatorOfGallerySection]);
 
   const geometry = useMemo(() => {
     const baseGeometry = new THREE.PlaneGeometry(1, 1);

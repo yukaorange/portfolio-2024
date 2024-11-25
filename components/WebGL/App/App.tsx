@@ -1,5 +1,6 @@
-import React, { Suspense } from 'react';
 import { Canvas } from '@react-three/fiber';
+import React, { Suspense } from 'react';
+
 import { Experience } from '@/components/WebGL/Experience/Experience';
 import { useScene } from '@/store/textureAtom';
 

@@ -118,20 +118,33 @@ const currentTexturesSelector = selector<TextureInfo[]>({
     const currentPage = get(currentPageAtom);
     const contents = get(galleryContentsAtom);
 
+    // console.log(`currentPage :`, contents, currentPage);
+    // console.log(`contents  :`, currentPage);
+
     if (currentPage === '/' || currentPage === '/about') {
+      // console.log('top or about');
+
       return get(topPageGalleryTexturesAtom);
     } else if (currentPage.startsWith('/gallery')) {
+      // console.log('gallery --');
+
       if (contents.length === 0) {
+        // console.log('no contents');
         return [];
       }
 
       if (Array.isArray(contents)) {
+        // console.log(`contents lenght:`, contents.length);
+
         return contents.map((content) => ({
           url: content.images[0].url,
           aspectRatio: content.images[0].width / content.images[0].height,
         }));
       } else {
         const item = contents as Content;
+
+        // console.log(`item :`, item);
+
         return [
           {
             url: item.images[0].url,
@@ -154,11 +167,13 @@ export const useNoiseTexture = () => useRecoilValue(noiseTextureAtom);
 export const useTelopTexture = () => useRecoilValue(telopTextureAtom);
 export const useFloorRoughnessTexture = () => useRecoilValue(floorRoughnessTextureAtom);
 
-export const useSetCurrentPage = () => useSetRecoilState(currentPageAtom); //現在のページをセット
+export const useSetCurrentPage = () => useSetRecoilState(currentPageAtom); //WebGLにおける現在のページをセット
 
 export const useLoadTextures = () => {
   const setLoadedTextures = useSetRecoilState(loadedTexturesAtom);
   const currentTextures = useCurrentTextures();
+
+  // console.log(`currentTextures :`, currentTextures);
 
   const textures = useTexture(currentTextures.map((t) => t.url));
 
@@ -256,8 +271,12 @@ export const useScene = () => {
   const setCurrentPage = useSetCurrentPage();
   const currentTextures = useCurrentTextures();
   const loadedTextures = useLoadTextures();
+
+  // console.log(`loadedTextures : `, loadedTextures);
+
   const [characterTexture, suitcaseTexture] = useLoadCharacterAndSuitcaseTextures();
   const [floorNormalTexture, floorRoughnessTexture] = useLoadFloorTextures();
+
   const noiseTexture = useLoadNoiseTexture();
   const telopTexture = useLoadTelopTexture();
 

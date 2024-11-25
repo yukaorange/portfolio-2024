@@ -16,8 +16,8 @@ interface ResponsiveCameraProps {
 
 export const ResponsiveCamera = ({ position, lookAt, near, far }: ResponsiveCameraProps) => {
   const { camera } = useThree();
-  const { indicatorIsGallerySection } = useScroll();
-  const isScrolled = indicatorIsGallerySection;
+  const { indicatorOfGallerySection } = useScroll();
+  const isScrolled = indicatorOfGallerySection;
   const currentPage = useRecoilValue(currentPageState);
   const cameraRef = useRef(camera as THREE.PerspectiveCamera);
   const { isTransitioning } = useTransitionProgress();

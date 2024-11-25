@@ -5,8 +5,8 @@ export type AnimationControls = {
   velocityRef: React.MutableRefObject<number>;
   currentProgressRef: React.MutableRefObject<number>;
   targetProgressRef: React.MutableRefObject<number>;
-  indicatorOfScrollStart: boolean;
-  indicatorOfScrollEnd: boolean;
-  indicatorIsGallerySection: boolean;
+  indicatorOfScrollStart?: boolean;
+  indicatorOfScrollEnd?: boolean;
+  indicatorIsGallerySection?: boolean;
   observePageTransitionRef: React.MutableRefObject<number>;
 };

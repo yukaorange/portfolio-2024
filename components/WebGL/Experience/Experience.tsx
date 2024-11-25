@@ -9,7 +9,6 @@ import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass';
 import { SMAAPass } from 'three/examples/jsm/postprocessing/SMAAPass';
 
-import { useScroll } from '@/app/ScrollContextProvider';
 import { useScrollVelocity } from '@/app/ScrollVelocityProvider';
 import { useTransitionProgress } from '@/app/TransitionContextProvider';
 import { Floor } from '@/components/WebGL/Floor/Floor';
@@ -25,7 +24,6 @@ import { ResponsiveCamera } from './ResponsiveCamera';
 //current page が変更されるたびにテクスチャを再生成するロジックはtetureAtom.tsにある
 
 export const Experience = () => {
-  const { indicatorOfScrollEnd, indicatorOfScrollStart, indicatorIsGallerySection } = useScroll();
   const { velocityRef, currentProgressRef, targetProgressRef } = useScrollVelocity();
   const { decreaseProgress, increaseProgress, singleProgress } = useTransitionProgress();
   const { gl, scene, camera } = useThree();
@@ -185,9 +183,6 @@ export const Experience = () => {
     velocityRef,
     currentProgressRef,
     targetProgressRef,
-    indicatorOfScrollStart,
-    indicatorOfScrollEnd,
-    indicatorIsGallerySection,
     observePageTransitionRef,
   };
 

@@ -33,7 +33,7 @@ export const Archive = () => {
       {archive.map((item, index) => {
         return (
           <TransitionLink
-            href={`gallery/${item.href}`}
+            href={`/gallery/${item.href}`}
             className={`${styles.item} ${item.available == false && styles.unavailable}`}
             key={index}
           >

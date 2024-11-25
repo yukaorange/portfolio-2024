@@ -1,15 +1,12 @@
 import React, { createContext, useContext, useRef, useEffect, useState } from 'react';
-import { useRecoilValue } from 'recoil';
 import * as THREE from 'three';
-
-import { currentPageState } from '@/store/pageTitleAtom';
 
 const ScrollContext = createContext({
   position: { current: 0 },
   ratio: { current: 0 },
   indicatorOfScrollStart: false,
   indicatorOfScrollEnd: false,
-  indicatorIsGallerySection: false,
+  indicatorOfGallerySection: false,
 }); //position,ratioはRefオブジェクトなので、再レンダリングを望まないコンポーネントで使用（DrumRoll等）
 
 interface ScrollProviderProps {
@@ -22,11 +19,11 @@ export const ScrollProvider = ({ children }: ScrollProviderProps) => {
   const scrollRatioRef = useRef<number>(0);
   // const indicatorOfScrollStartRef = useRef<boolean>(false);
   const [indicatorOfScrollStart, setIndicatorOfScrollStart] = useState<boolean>(false);
-  const [indicatorIsGallerySection, setIndicatorIsGallerySection] = useState<boolean>(false);
+  const [indicatorOfGallerySection, setIndicatorOfGallerySection] = useState<boolean>(false);
   const [indicatorOfScrollEnd, setIndicatorOfScrollEnd] = useState<boolean>(false);
 
   const gallerySectionScrollYRef = useRef<number>(0);
-  const currentPage = useRecoilValue(currentPageState);
+  // const currentPage = useRecoilValue(currentPageState);
 
   const calculateGalleryScrollY = () => {
     const gallerySection = document.querySelector('[data-section="gallery"]') || null;
@@ -47,7 +44,7 @@ export const ScrollProvider = ({ children }: ScrollProviderProps) => {
     setIndicatorOfScrollStart(scrollRatioRef.current >= 1);
 
     //galleryセクションに到達したか監視
-    setIndicatorIsGallerySection(scrollRef.current >= gallerySectionScrollYRef.current);
+    setIndicatorOfGallerySection(scrollRef.current >= gallerySectionScrollYRef.current);
 
     //ページの下部に到達したか監視
     setIndicatorOfScrollEnd(
@@ -58,7 +55,7 @@ export const ScrollProvider = ({ children }: ScrollProviderProps) => {
   useEffect(() => {
     calculateGalleryScrollY();
     updateScrollValues();
-  }, [currentPage]);
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -76,7 +73,7 @@ export const ScrollProvider = ({ children }: ScrollProviderProps) => {
         ratio: scrollRatioRef,
         indicatorOfScrollStart: indicatorOfScrollStart,
         indicatorOfScrollEnd: indicatorOfScrollEnd,
-        indicatorIsGallerySection: indicatorIsGallerySection,
+        indicatorOfGallerySection: indicatorOfGallerySection,
       }}
     >
       {children}
