@@ -129,37 +129,40 @@ const currentTexturesSelector = selector<TextureInfo[]>({
 
     if (currentPage === '/' || currentPage === '/about') {
       // console.log('top or about');
-
       return get(topPageGalleryTexturesAtom);
     } else if (currentPage.startsWith('/gallery')) {
       // console.log('gallery --');
 
+      let galleryTextures: TextureInfo[] = [];
+
       if (contents.length === 0) {
         // console.log('no contents');
-        return [];
-      }
-
-      if (Array.isArray(contents)) {
+        galleryTextures = [];
+      } else if (Array.isArray(contents)) {
         // console.log(`contents lenght:`, contents.length);
-
-        return contents.map((content) => ({
+        galleryTextures = contents.map((content) => ({
           url: content.images[0].url,
           aspectRatio: content.images[0].width / content.images[0].height,
         }));
       } else {
         const item = contents as Content;
-
         // console.log(`item :`, item);
-
-        return [
+        galleryTextures = [
           {
             url: item.images[0].url,
             aspectRatio: item.images[0].width / item.images[0].height,
           },
         ];
       }
+
+      while (galleryTextures.length < TOTAL_TEXTURES) {
+        galleryTextures.push(NO_ITEM_TEXTURE);
+      }
+
+      return galleryTextures;
     }
-    return [];
+
+    return Array(TOTAL_TEXTURES).fill(NO_ITEM_TEXTURE);
   },
 });
 // const currentTexturesSelector = selector<TextureInfo[]>({
