@@ -95,12 +95,18 @@ export const Panels = ({
           value: null,
         },
         uTime: { value: 0 },
-        uResolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
+        uTransition: {
+          value: 0,
+        },
+        uIsTransitioning: {
+          value: 0,
+        },
         uSpeed: { value: 0.004 }, //テロップの流れるスピード
+        uResolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
         uRowLengths: { value: [0.82, 0.64, 0.76, 0.82, 0.98] }, //テロップのサンプリングに使用
-        uCount: { value: count },
-        uAspect: { value: aspect },
-        uVelocity: { value: 0.0 },
+        uCount: { value: count }, //パネルの枚数
+        uAspect: { value: aspect }, //全体のアス比
+        uVelocity: { value: 0.0 }, //スクロール速度
       },
       vertexShader: panelVertex,
       fragmentShader: panelFragment,
@@ -176,9 +182,21 @@ export const Panels = ({
 
   useFrame((state) => {
     if (shaderMaterial) {
-      const { velocityRef } = animationControls;
+      const { velocityRef, singleProgress, isTransitioning } = animationControls;
+
+      // console.log(
+      //   'single transition : ',
+      //   singleProgress.current,
+      //   'is Transition  :',
+      //   isTransitioning?.current,
+      //   '\n'
+      // );
 
       shaderMaterial.uniforms.uTime.value = state.clock.elapsedTime;
+
+      shaderMaterial.uniforms.uTransition.value = singleProgress.current;
+
+      shaderMaterial.uniforms.uIsTransitioning.value = isTransitioning?.current == true ? 1 : 0;
 
       shaderMaterial.uniforms.uVelocity.value = Math.abs(velocityRef.current);
     }

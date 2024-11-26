@@ -1,7 +1,7 @@
 'use client';
 
 import { useFrame, useThree } from '@react-three/fiber';
-// import { useControls, folder } from 'leva';
+import { useControls, folder } from 'leva';
 import React, { useEffect, useState, useRef } from 'react';
 import { useRecoilValue } from 'recoil';
 import * as THREE from 'three';
@@ -16,9 +16,9 @@ import { Lights } from '@/components/WebGL/Lights/Lights';
 import { Model } from '@/components/WebGL/Model/Model';
 import { Panels } from '@/components/WebGL/Panels/Panels';
 import { useTransitionAnimation } from '@/hooks/useTransitionAnimation';
-import { currentPageState } from '@/store/pageTitleAtom';
-import { deviceState } from '@/store/userAgentAtom';
+// import { currentPageState } from '@/store/pageTitleAtom';
 import { useScene } from '@/store/textureAtom';
+import { deviceState } from '@/store/userAgentAtom';
 import { AnimationControls } from '@/types/animation';
 
 import { ResponsiveCamera } from './ResponsiveCamera';
@@ -26,7 +26,8 @@ import { ResponsiveCamera } from './ResponsiveCamera';
 
 export const Experience = () => {
   const { velocityRef, currentProgressRef, targetProgressRef } = useScrollVelocity();
-  const { decreaseProgress, increaseProgress, singleProgress } = useTransitionProgress();
+  const { decreaseProgress, increaseProgress, singleProgress, isTransitioning } =
+    useTransitionProgress();
   const { gl, scene, camera } = useThree();
   const observePageTransitionRef = useTransitionAnimation();
   const lastTimeRef = useRef(0);
@@ -97,8 +98,7 @@ export const Experience = () => {
   //   }),
   // });
 
-  //LEVAで決めた値、確定後
-
+  //LEVAで決めた値、確定後はこっちに入れる
   const controls = {
     position: { x: 0, y: 1.0, z: 10 },
     lookAt: { x: 0, y: 3.0, z: 0 },
@@ -133,12 +133,12 @@ export const Experience = () => {
     // console.log(
     //   'check status : ',
     //   '\n',
-    //   'delta time',
-    //   deltaTime,
-    //   '\n',
-    //   'current page : ',
-    //   currentPage,
-    //   '\n',
+    //   // 'delta time',
+    //   // deltaTime,
+    //   // '\n',
+    //   // 'current page : ',
+    //   // currentPage,
+    //   // '\n',
     //   'velocity : ',
     //   velocityRef.current, //スピードメーター
     //   'increase Progress : ',
@@ -152,12 +152,12 @@ export const Experience = () => {
     //   '\n',
     //   'obsever page change :',
     //   observePageTransitionRef.current, //ページ切り替わり検知で0->1（duration 1000ms）,その後0
-    //   '\n',
-    //   'indicatorOfScrollStart : ',
-    //   indicatorOfScrollStart, //メインビューエリアを離れたらtrue
-    //   '\n',
-    //   'indicatorOfScrollEnd : ',
-    //   indicatorOfScrollEnd, //フッターに到達したらtrue
+    //   // '\n',
+    //   // 'indicatorOfScrollStart : ',
+    //   // indicatorOfScrollStart, //メインビューエリアを離れたらtrue
+    //   // '\n',
+    //   // 'indicatorOfScrollEnd : ',
+    //   // indicatorOfScrollEnd, //フッターに到達したらtrue
     //   '\n',
     //   'gallery current progress : ',
     //   currentProgressRef.current, //top pageのgalleryの進行度
@@ -168,13 +168,6 @@ export const Experience = () => {
     //   'gallery current : ',
     //   Math.round(currentProgressRef.current) //top pageのgalleryのインデックス
     // );
-
-    // if (indicatorOfScrollEnd.current) {
-    //   // フッターセクション付近まで到達したときの処理
-    // }
-    // if (indicatorOfScrollStart.current) {
-    //   // ヘッダーセクション付近から離れたときの処理
-    // }
 
     composer.render(delta);
   }, 1);
@@ -187,6 +180,7 @@ export const Experience = () => {
     currentProgressRef,
     targetProgressRef,
     observePageTransitionRef,
+    isTransitioning,
   };
 
   return (

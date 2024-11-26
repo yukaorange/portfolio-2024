@@ -1,7 +1,8 @@
-import { currentPageState } from '@/store/pageTitleAtom';
-import { useRecoilValue } from 'recoil';
 import React, { createContext, useContext, useRef, useEffect, useState, useCallback } from 'react';
+import { useRecoilValue } from 'recoil';
 import * as THREE from 'three';
+
+import { currentPageState } from '@/store/pageTitleAtom';
 
 const ScrollContext = createContext({
   position: { current: 0 },
@@ -27,7 +28,10 @@ export const ScrollProvider = ({ children }: ScrollProviderProps) => {
 
   const calculateGalleryScrollY = useCallback(() => {
     const gallerySection = document.querySelector('[data-section="gallery"]') || null;
-    const gallerySectionY = gallerySection?.getBoundingClientRect().top;
+
+    let gallerySectionY = gallerySection?.getBoundingClientRect().top ?? 0;
+
+    gallerySectionY += window.scrollY; //ページ遷移時に再計算されるから、その時点でのスクロール量を加算
 
     gallerySectionScrollYRef.current = gallerySectionY || 0;
   }, []);
@@ -43,8 +47,16 @@ export const ScrollProvider = ({ children }: ScrollProviderProps) => {
     //ページの上部から抜けたか監視
     setIndicatorOfScrollStart(scrollRatioRef.current >= 1);
 
+    // console.log('scroll start: ', scrollRatioRef.current >= 1);
+
     //galleryセクションに到達したか監視
     setIndicatorOfGallerySection(scrollRef.current >= gallerySectionScrollYRef.current);
+
+    // console.log('gallery section :', scrollRef.current >= gallerySectionScrollYRef.current);
+
+    // console.log('scroll positon y :', scrollRef.current);
+
+    // console.log('gallery section y :', gallerySectionScrollYRef.current);
 
     //ページの下部に到達したか監視
     setIndicatorOfScrollEnd(
@@ -53,9 +65,11 @@ export const ScrollProvider = ({ children }: ScrollProviderProps) => {
   }, []);
 
   useEffect(() => {
+    // console.log(currentPage);
+
     calculateGalleryScrollY();
     updateScrollValues();
-  }, [currentPage]);
+  }, [currentPage, calculateGalleryScrollY, updateScrollValues]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -64,7 +78,7 @@ export const ScrollProvider = ({ children }: ScrollProviderProps) => {
 
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [updateScrollValues]);
 
   return (
     <ScrollContext.Provider

@@ -226,7 +226,7 @@ export const useLoadTextures = () => {
   const setLoadedTextures = useSetRecoilState(loadedTexturesAtom);
   const currentTextures = useCurrentTextures();
 
-  console.log(`currentTextures :`, currentTextures);
+  // console.log(`currentTextures :`, currentTextures);
 
   const textures = useTexture(currentTextures.map((t) => t.url));
 

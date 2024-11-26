@@ -96,11 +96,13 @@ export const TransitionLink = ({
     document.body.classList.remove('is-transition-unmounting');
     document.body.classList.add('is-transition-mounting');
 
+    //別のページへの遷移時には、mountCompletePromise.currentが存在するため、解決されるまで待機することになる。
     if (mountCompletePromise.current) {
       // console.log('Waiting for page mount to complete');
       await mountCompletePromise.current;
     }
     // console.log('//////page mounted////// : ', href);
+
     await Promise.all([decreaseTransition(), increaseTransition(), singleTransitionIn()]);
 
     document.body.classList.remove('is-transition-mounting');

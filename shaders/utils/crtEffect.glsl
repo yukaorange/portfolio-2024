@@ -41,12 +41,19 @@ vec3 crtEffect(
   //ベースの色からRGBを取り出し、
   //指定したセグメント内でのみ、そのRGBを表示する。
 
+  //各色の強度を調整
+  float redIntensity = 0.72;
+  float greenIntensity = 0.96;
+  float blueIntensity = 0.48;
+
   //３段階
-  color.r = color.r * (step(1.0, (judgeLessThan(uvStep.x, 1.0) + judgeLessThan(uvStep.y, 1.0))));
+  color.r = color.r * redIntensity * (step(1.0, (judgeLessThan(uvStep.x, 1.0) + judgeLessThan(uvStep.y, 1.0))));
 
-  color.g = color.g * step(1.0, (between(uvStep.x, 1.0, 2.0) + between(uvStep.y, 1.0, 2.0)));
+  color.g = color.g * greenIntensity * step(1.0, (between(uvStep.x, 1.0, 2.0) + between(uvStep.y, 1.0, 2.0)));
 
-  color.b = color.b * step(1.0, (judgeGreaterEqual(uvStep.x, 2.0) + judgeGreaterEqual(uvStep.y, 2.0)));
+  color.b = color.b * blueIntensity * step(1.0, (judgeGreaterEqual(uvStep.x, 2.0) + judgeGreaterEqual(uvStep.y, 2.0)));
+
+  color = mix(color, vec3(dot(color, vec3(0.299, 0.587, 0.114))), 0.16); //モノクロに寄せる
 
   return color * brightness;
 }
