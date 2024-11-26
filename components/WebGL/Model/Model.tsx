@@ -126,8 +126,9 @@ export const Model = ({ textures, animationControls, ...props }: ModelProps) => 
     };
 
     const POSITIONS = {
+      // mobile: [-0.6, 3.6, -1.5],
       mobile: [-0.6, 3.6, -1.5],
-      desktop: [-0.6, 3.2, 2.0],
+      desktop: [-0.6, 3.2, 1.0],
     };
 
     //画面幅に応じて、0 - 1の範囲をとる
@@ -156,7 +157,7 @@ export const Model = ({ textures, animationControls, ...props }: ModelProps) => 
     if (suitcaseRef.current) {
       if (indicatorOfScrollEnd) {
         suitcaseRef.current.rotation.x = (Math.PI * 1) / 16;
-        suitcaseRef.current.rotation.y += (delta * Math.PI * 1) / 2;
+        suitcaseRef.current.rotation.y += (delta * Math.PI * 1) / 16;
         suitcaseRef.current.rotation.z = (Math.PI * 1) / 8;
 
         // 画面幅に基づいて位置を計算

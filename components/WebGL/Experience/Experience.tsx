@@ -30,10 +30,13 @@ export const Experience = () => {
     useTransitionProgress();
   const { gl, scene, camera } = useThree();
   const observePageTransitionRef = useTransitionAnimation();
-  const lastTimeRef = useRef(0);
+  const lastTimeRef = useRef<number>(0);
+  const lastFrameTimeRef = useRef<number>(0);
   const [composer, setComposer] = useState<EffectComposer | null>(null);
   // const currentPage = useRecoilValue(currentPageState);
   const device = useRecoilValue(deviceState);
+  const FPS = 45;
+  const frameInterval = 1 / FPS;
 
   const {
     loadedTextures,
@@ -104,7 +107,7 @@ export const Experience = () => {
     lookAt: { x: 0, y: 3.0, z: 0 },
     near: 0.1,
     far: 1000,
-    modelPosition: { x: 0, y: 0, z: device == 'mobile' ? 12.5 : 10 },
+    modelPosition: { x: 0, y: 0, z: 11 },
     modelRotation: { x: 0, y: 0, z: 0 },
   };
 
@@ -124,10 +127,21 @@ export const Experience = () => {
 
   // render
   useFrame((state, delta) => {
+    //フレームレート制限ロジック
+    const currentTime = state.clock.getElapsedTime();
+
+    const elapsed = currentTime - lastFrameTimeRef.current;
+
+    if (elapsed < frameInterval) return;
+
+    lastFrameTimeRef.current = currentTime - (elapsed % frameInterval);
+
     if (!composer) return;
 
-    const currentTime = state.clock.getElapsedTime();
+    //時間経過を記録
+
     const deltaTime = currentTime - lastTimeRef.current;
+
     lastTimeRef.current = currentTime;
 
     // console.log(
