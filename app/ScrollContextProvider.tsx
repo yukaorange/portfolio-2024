@@ -1,4 +1,6 @@
-import React, { createContext, useContext, useRef, useEffect, useState } from 'react';
+import { currentPageState } from '@/store/pageTitleAtom';
+import { useRecoilValue } from 'recoil';
+import React, { createContext, useContext, useRef, useEffect, useState, useCallback } from 'react';
 import * as THREE from 'three';
 
 const ScrollContext = createContext({
@@ -17,22 +19,20 @@ interface ScrollProviderProps {
 export const ScrollProvider = ({ children }: ScrollProviderProps) => {
   const scrollRef = useRef<number>(0);
   const scrollRatioRef = useRef<number>(0);
-  // const indicatorOfScrollStartRef = useRef<boolean>(false);
   const [indicatorOfScrollStart, setIndicatorOfScrollStart] = useState<boolean>(false);
   const [indicatorOfGallerySection, setIndicatorOfGallerySection] = useState<boolean>(false);
   const [indicatorOfScrollEnd, setIndicatorOfScrollEnd] = useState<boolean>(false);
-
   const gallerySectionScrollYRef = useRef<number>(0);
-  // const currentPage = useRecoilValue(currentPageState);
+  const currentPage = useRecoilValue(currentPageState);
 
-  const calculateGalleryScrollY = () => {
+  const calculateGalleryScrollY = useCallback(() => {
     const gallerySection = document.querySelector('[data-section="gallery"]') || null;
     const gallerySectionY = gallerySection?.getBoundingClientRect().top;
 
     gallerySectionScrollYRef.current = gallerySectionY || 0;
-  };
+  }, []);
 
-  const updateScrollValues = () => {
+  const updateScrollValues = useCallback(() => {
     const viewportHeight = document.documentElement.clientHeight;
     const documentHeight = document.documentElement.scrollHeight;
 
@@ -50,12 +50,12 @@ export const ScrollProvider = ({ children }: ScrollProviderProps) => {
     setIndicatorOfScrollEnd(
       scrollRef.current >= documentHeight - viewportHeight - viewportHeight * 0.5
     );
-  };
+  }, []);
 
   useEffect(() => {
     calculateGalleryScrollY();
     updateScrollValues();
-  }, []);
+  }, [currentPage]);
 
   useEffect(() => {
     const handleScroll = () => {

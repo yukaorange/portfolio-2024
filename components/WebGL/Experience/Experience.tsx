@@ -17,6 +17,7 @@ import { Model } from '@/components/WebGL/Model/Model';
 import { Panels } from '@/components/WebGL/Panels/Panels';
 import { useTransitionAnimation } from '@/hooks/useTransitionAnimation';
 import { currentPageState } from '@/store/pageTitleAtom';
+import { deviceState } from '@/store/userAgentAtom';
 import { useScene } from '@/store/textureAtom';
 import { AnimationControls } from '@/types/animation';
 
@@ -30,7 +31,8 @@ export const Experience = () => {
   const observePageTransitionRef = useTransitionAnimation();
   const lastTimeRef = useRef(0);
   const [composer, setComposer] = useState<EffectComposer | null>(null);
-  const currentPage = useRecoilValue(currentPageState);
+  // const currentPage = useRecoilValue(currentPageState);
+  const device = useRecoilValue(deviceState);
 
   const {
     loadedTextures,
@@ -96,12 +98,13 @@ export const Experience = () => {
   // });
 
   //LEVAで決めた値、確定後
+
   const controls = {
     position: { x: 0, y: 1.0, z: 10 },
     lookAt: { x: 0, y: 3.0, z: 0 },
     near: 0.1,
     far: 1000,
-    modelPosition: { x: 0, y: 0, z: 10 },
+    modelPosition: { x: 0, y: 0, z: device == 'mobile' ? 12.5 : 10 },
     modelRotation: { x: 0, y: 0, z: 0 },
   };
 
@@ -189,8 +192,8 @@ export const Experience = () => {
   return (
     <>
       <ResponsiveCamera position={position} lookAt={lookAt} near={near} far={far} />
-      <ambientLight intensity={0.5} />
-      <Lights />
+      <ambientLight intensity={device == 'mobile' ? 0.5 : 0.15} />
+      <Lights device={device} />
       <Model
         textures={modelTextureMap}
         animationControls={animationControls}

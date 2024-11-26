@@ -1,11 +1,11 @@
 'use client';
 
-import { useControls } from 'leva';
-import { Canvas } from '@react-three/fiber';
-import { OrbitControls } from '@react-three/drei';
+interface LightProps {
+  device: string;
+}
 
 //キャラクターにあたるライト
-export const Lights = () => {
+export const Lights = ({ device }: LightProps) => {
   // const light1 = useControls('Light 1', {
   //   x: { value: 0, min: -10, max: 10, step: 0.1 },
   //   y: { value: 7, min: -10, max: 10, step: 0.1 },
@@ -30,25 +30,28 @@ export const Lights = () => {
   //   color: '#ffffff',
   // });
 
+  const responsiveIntentsity = device == 'mobile' ? 200 : 100;
+  const responsivePositionZ = device == 'mobile' ? 4 : 2.5;
+
   const light1 = {
     x: 0,
     y: 7,
-    z: 2.5,
-    intensity: 150,
+    z: responsivePositionZ,
+    intensity: responsiveIntentsity,
     color: '#ffffff',
   };
   const light2 = {
     x: -4,
     y: 7,
-    z: 2.5,
-    intensity: 150,
+    z: responsivePositionZ,
+    intensity: responsiveIntentsity,
     color: '#ffffff',
   };
   const light3 = {
     x: 4,
     y: 7,
-    z: 2.5,
-    intensity: 150,
+    z: responsivePositionZ,
+    intensity: responsiveIntentsity,
     color: '#ffffff',
   };
 
@@ -72,18 +75,3 @@ export const Lights = () => {
     </>
   );
 };
-
-export default function ThreeLights() {
-  return (
-    <div style={{ width: '100%', height: '100vh' }}>
-      <Canvas>
-        <Lights />
-        <OrbitControls />
-        <mesh>
-          <boxGeometry args={[1, 1, 1]} />
-          <meshStandardMaterial />
-        </mesh>
-      </Canvas>
-    </div>
-  );
-}

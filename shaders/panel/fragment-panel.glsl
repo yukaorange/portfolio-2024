@@ -26,9 +26,10 @@ varying vec3 vInstacePosition;
 #pragma glslify: hash = require('../utils/hash.glsl');
 // #pragma glslify: cnoise = require('../utils/cnoise.glsl');
 #pragma glslify: snoise = require('../utils/snoise.glsl');
-#pragma glslify: rand = require('../utils/random.glsl');
+// #pragma glslify: rand = require('../utils/random.glsl');
 #pragma glslify: wave = require('../utils/wave.glsl');
 #pragma glslify: cardiogram = require('../utils/electrocardiogram.glsl');
+#pragma glslify: createGrid = require('../utils/grid.glsl');
 #pragma glslify: blendOverlay = require('../utils/blend.glsl');
 #pragma glslify: crtEffect = require('../utils/crtEffect.glsl');
 
@@ -92,12 +93,12 @@ void main() {
   float noise = snoise(vec2(vUv.y * 60.0, sin(uTime * 40.0)));
 
   //hash値
-  float hashValue = hash(singleScreenUv + uTime);
+  float hashValue = hash(singleScreenUv + mod(uTime, 1.0) + 214.0) * 0.7;
 
   // ---------- 汎用画像 ----------
 
-  //汎用 ノイズ色
-  vec3 noiseColor = vec3(0.0) + rand(singleScreenUv + mod(uTime, 1.0) + 24.0) * 0.7;//ベースとなる砂嵐
+  //汎用 ノイズ画面
+  vec3 noiseColor = vec3(hashValue);//ベースとなる砂嵐
 
   //汎用 等高線画面
   vec4 waveColor;
@@ -121,11 +122,9 @@ void main() {
   //汎用 心電図画面
   vec4 cardiogramColor = vec4(cardiogram(singleScreenUv, vec2(4.0, 3.0), uTime), 1.0);
 
-  testcolor = cardiogramColor.rgb;
-
-  //汎用 matrix画面
-
   //グリッド線画面(aboutページ用)
+  vec4 gridColor = vec4(createGrid(fullScreenUv, vec2(8.0, 6.0), uTime), 1.0);
+  vec4 gridColorSingle = vec4(createGrid(singleScreenUv, vec2(4.0, 3.0), uTime * 3.0), 1.0);
 
   //--------画面切替えアニメーション---------
 
@@ -192,49 +191,58 @@ void main() {
   float index = floor(vIndex + 0.1);
 
   if(activepage == 0.0) {
+    float changeStep = 7.0 * floor(uTime / (totalDuration * 1.0));//基本変化（横方向）
 
-    index = floor(index + uTime / totalDuration);//切り替わる度に表示画面が変わる
+    changeStep *= sin(PI * 0.4269 * index);//ランダム
 
-    if(mod(index, 20.0) == 0.0) {
+    index = floor(index - changeStep);//切り替わる度に表画面が変わる
+
+    if(mod(index, 24.0) == 0.0) {
       checkerBoardDiffuseColor = texture2D(uTextures[0], singleOptimizedUv0 + glitchOffset);
-    } else if(mod(index, 6.0) == 0.0) {
-      checkerBoardDiffuseColor = cardiogramColor;
-    } else if(mod(index, 8.0) == 0.0) {
-      checkerBoardDiffuseColor = waveColor;
-    } else if(mod(index, 15.0) == 0.0) {
-      checkerBoardDiffuseColor = texture2D(uTextures[1], singleOptimizedUv1 + glitchOffset);
     } else if(mod(index, 18.0) == 0.0) {
+      checkerBoardDiffuseColor = texture2D(uTextures[1], singleOptimizedUv1 + glitchOffset);
+    } else if(mod(index, 15.0) == 0.0) {
       checkerBoardDiffuseColor = texture2D(uTextures[2], singleOptimizedUv2 + glitchOffset);
+    } else if(mod(index, 10.0) == 0.0) {
+      checkerBoardDiffuseColor = gridColorSingle;
+    } else if(mod(index, 8.0) == 0.0) {
+      checkerBoardDiffuseColor = cardiogramColor;
+    } else if(mod(index, 5.0) == 0.0) {
+      checkerBoardDiffuseColor = waveColor;
     } else if(mod(index, 3.0) == 0.0) {
       checkerBoardDiffuseColor = texture2D(uTextures[3], singleOptimizedUv3 + glitchOffset);
     } else {
       checkerBoardDiffuseColor = vec4(noiseColor, 1.0);
     }
   } else if(activepage == 1.0) {
-    if(mod(index, 10.0) == 0.0) {
-      checkerBoardDiffuseColor = texture2D(uTextures[0], singleOptimizedUv0 + glitchOffset);
-    } else if(mod(index, 10.0) == 1.0) {
-      checkerBoardDiffuseColor = texture2D(uTextures[1], singleOptimizedUv1 + glitchOffset);
-    } else if(mod(index, 10.0) == 2.0) {
-      checkerBoardDiffuseColor = texture2D(uTextures[2], singleOptimizedUv2 + glitchOffset);
-    } else if(mod(index, 10.0) == 3.0) {
-      checkerBoardDiffuseColor = texture2D(uTextures[3], singleOptimizedUv3 + glitchOffset);
-    } else if(mod(index, 10.0) == 4.0) {
-      checkerBoardDiffuseColor = texture2D(uTextures[4], singleOptimizedUv4 + glitchOffset);
-    } else if(mod(index, 10.0) == 5.0) {
-      checkerBoardDiffuseColor = texture2D(uTextures[5], singleOptimizedUv5 + glitchOffset);
-    } else if(mod(index, 10.0) == 6.0) {
-      checkerBoardDiffuseColor = texture2D(uTextures[6], singleOptimizedUv6 + glitchOffset);
-    } else if(mod(index, 10.0) == 7.0) {
-      checkerBoardDiffuseColor = texture2D(uTextures[7], singleOptimizedUv7 + glitchOffset);
-    } else if(mod(index, 10.0) == 8.0) {
-      checkerBoardDiffuseColor = texture2D(uTextures[8], singleOptimizedUv8 + glitchOffset);
-    } else if(mod(index, 10.0) == 9.0) {
-      checkerBoardDiffuseColor = texture2D(uTextures[9], singleOptimizedUv9 + glitchOffset);
-    }
+    // if(mod(index, 10.0) == 0.0) {
+    //   checkerBoardDiffuseColor = texture2D(uTextures[0], singleOptimizedUv0 + glitchOffset);
+    // } else if(mod(index, 10.0) == 1.0) {
+    //   checkerBoardDiffuseColor = texture2D(uTextures[1], singleOptimizedUv1 + glitchOffset);
+    // } else if(mod(index, 10.0) == 2.0) {
+    //   checkerBoardDiffuseColor = texture2D(uTextures[2], singleOptimizedUv2 + glitchOffset);
+    // } else if(mod(index, 10.0) == 3.0) {
+    //   checkerBoardDiffuseColor = texture2D(uTextures[3], singleOptimizedUv3 + glitchOffset);
+    // } else if(mod(index, 10.0) == 4.0) {
+    //   checkerBoardDiffuseColor = texture2D(uTextures[4], singleOptimizedUv4 + glitchOffset);
+    // } else if(mod(index, 10.0) == 5.0) {
+    //   checkerBoardDiffuseColor = texture2D(uTextures[5], singleOptimizedUv5 + glitchOffset);
+    // } else if(mod(index, 10.0) == 6.0) {
+    //   checkerBoardDiffuseColor = texture2D(uTextures[6], singleOptimizedUv6 + glitchOffset);
+    // } else if(mod(index, 10.0) == 7.0) {
+    //   checkerBoardDiffuseColor = texture2D(uTextures[7], singleOptimizedUv7 + glitchOffset);
+    // } else if(mod(index, 10.0) == 8.0) {
+    //   checkerBoardDiffuseColor = texture2D(uTextures[8], singleOptimizedUv8 + glitchOffset);
+    // } else if(mod(index, 10.0) == 9.0) {
+    //   checkerBoardDiffuseColor = texture2D(uTextures[9], singleOptimizedUv9 + glitchOffset);
+    // }
+
+    checkerBoardDiffuseColor = gridColor;
+
   } else if(activepage == 2.0) {
+    float changeStep = floor(uTime / (totalDuration * 2.0));
 
-    // index = floor(index + uTime / totalDuration);//切り替わる度に表示画面が変わる
+    index = floor(index - 7.0 * changeStep);//切り替わる度に表示画面が変わる(水平方向)
 
     if(mod(index, 10.0) == 0.0) {
       checkerBoardDiffuseColor = texture2D(uTextures[0], singleOptimizedUv0 + glitchOffset);
@@ -259,12 +267,14 @@ void main() {
     } else if(mod(index, 10.0) == 9.0) {
       checkerBoardDiffuseColor = texture2D(uTextures[9], singleOptimizedUv9 + glitchOffset);
     }
+
   }
 
   //----------テロップ画像アニメーション----------
   vec4 scrollingDiffuseColorNoise = texture2D(uTelopTexture, scrollingUv + glitchOffset);
 
-  scrollingDiffuseColorNoise.rgb = crtEffect(fullScreenUv, vec2(1280, 960), scrollingDiffuseColorNoise.rgb, 0.95);
+  //簡易crt加工
+  scrollingDiffuseColorNoise.rgb = crtEffect(fullScreenUv, vec2(1280, 960), scrollingDiffuseColorNoise.rgb, 0.98);
 
   vec4 scrollingDiffuseColor = texture2D(uTelopTexture, scrollingUv);
 
@@ -273,24 +283,26 @@ void main() {
 
   vec4 evenProgressDiffuse = checkerBoardDiffuseColor;
 
-  if(activepage == 0.0) {
-    ProgressDiffuse = mix(evenProgressDiffuse, oddProgressDiffuse, progress);
-  } else if(activepage == 1.0) {
-    ProgressDiffuse = checkerBoardDiffuseColor;
-  } else {
-    ProgressDiffuse = checkerBoardDiffuseColor;
-  }
+  ProgressDiffuse = mix(evenProgressDiffuse, oddProgressDiffuse, progress);
 
   //----------------test------------
-  // ProgressDiffuse = checkerBoardDiffuseColor;
+  ProgressDiffuse = checkerBoardDiffuseColor;
   // ProgressDiffuse = oddProgressDiffuse;
   //----------------test------------
 
-//----------最終的な出力のベースを選択   ----------
-  vec4 finalColor = ProgressDiffuse;
+//----------最終的な出力のベースを調整   ----------
+  vec4 finalColor;
+
+  if(activepage == 0.0) {
+    finalColor = ProgressDiffuse;
+  } else if(activepage == 1.0) {
+    finalColor = checkerBoardDiffuseColor;
+  } else {
+    finalColor = checkerBoardDiffuseColor;
+  }
 
   if(uIsGallerySection == 1.0) {//ギャラリーのセクションに差し掛かっている
-    finalColor = scrollingDiffuseColor;
+    finalColor = gridColor;
   }
 
   //----------エフェクト----------
@@ -298,7 +310,7 @@ void main() {
   //グレイン
   vec3 color = finalColor.rgb;
 
-  color.rgb = blendOverlay(color.rgb, vec3(hashValue), 0.06);
+  color.rgb = blendOverlay(color.rgb, vec3(hashValue), 0.05);
 
   // 点滅
   color *= step(0.0, sin(vUv.y * 5.0 - uTime * 2.0 * noise)) * 0.05 + 0.95;
@@ -327,7 +339,7 @@ void main() {
   colorIntensity = 0.5 + 0.2 * pow(uVelocity, 3.0) + 0.01 * abs(sin(uTime * noise));//明度の4調節用
 
   if(uDevice == 1.0) {
-    colorIntensity *= 1.20;
+    colorIntensity *= 1.18;
   }
 
   //テスト用

@@ -41,18 +41,7 @@ vec3 crtEffect(
   //ベースの色からRGBを取り出し、
   //指定したセグメント内でのみ、そのRGBを表示する。
 
-  //5段階を想定したセグメント
-  // float segment1 = step(1.0, (judgeLessThan(uvStep.x, 0.6) + judgeLessThan(uvStep.y, 0.6)));
-  // float segment2 = step(1.0, (between(uvStep.x, 0.6, 1.2) + between(uvStep.y, 0.6, 1.2)));
-  // float segment3 = step(1.0, (between(uvStep.x, 1.2, 1.8) + between(uvStep.y, 1.2, 1.8)));
-  // float segment4 = step(1.0, (between(uvStep.x, 1.8, 2.4) + between(uvStep.y, 1.8, 2.4)));
-  // float segment5 = step(1.0, (judgeGreaterEqual(uvStep.x, 2.4) + judgeGreaterEqual(uvStep.y, 2.4)));
-
-  // color.r = color.r * (segment1 + segment4);
-  // color.g = color.g * (segment2 + segment5);
-  // color.b = color.b * (segment3 + segment1); 
-
-  //原案（３段階）
+  //３段階
   color.r = color.r * (step(1.0, (judgeLessThan(uvStep.x, 1.0) + judgeLessThan(uvStep.y, 1.0))));
 
   color.g = color.g * step(1.0, (between(uvStep.x, 1.0, 2.0) + between(uvStep.y, 1.0, 2.0)));

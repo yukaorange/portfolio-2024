@@ -152,8 +152,11 @@ export const Panels = ({
 
     shaderMaterial.uniforms.uTextureAspectRatios.value = aspectRatios;
 
-    shaderMaterial.uniforms.uIsGallerySection.value = indicatorOfGallerySection == true ? 1 : 0;
-    console.log(`isGallerySection :`, indicatorOfGallerySection);
+    if (currentPage.title == 'portfolio') {
+      //galleryセクションへの0到達判定はtopページでのみ行う。
+      // console.log('gallery section : ' + indicatorOfGallerySection);
+      shaderMaterial.uniforms.uIsGallerySection.value = indicatorOfGallerySection == true ? 1 : 0;
+    }
 
     shaderMaterial.uniforms.uActivePage.value = activePage;
 

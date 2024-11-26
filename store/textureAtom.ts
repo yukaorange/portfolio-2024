@@ -21,6 +21,12 @@ import { Content } from '@/lib/microcms';
 //currentPageAtomが変更→currentTexturesSelectorが変更→useLoadTexturesが変更、結果として、loadedTexturesAtomが変更となり、テクスチャセットが更新される
 //App.tsxでuseSceneを使っているので、WebGLマウント時にテクスチャがロードされる
 
+const TOTAL_TEXTURES = 10;
+const NO_ITEM_TEXTURE: TextureInfo = {
+  url: '/images/textures/no-item.jpg',
+  aspectRatio: 4 / 3,
+};
+
 const currentPageAtom = atom<string>({
   key: 'currentPageAtom',
   default: '/',
@@ -156,6 +162,50 @@ const currentTexturesSelector = selector<TextureInfo[]>({
     return [];
   },
 });
+// const currentTexturesSelector = selector<TextureInfo[]>({
+//   key: 'currentTexturesSelector',
+//   get: ({ get }) => {
+//     const currentPage = get(currentPageAtom);
+//     const contents = get(galleryContentsAtom);
+
+//     // console.log(`currentPage :`, contents, currentPage);
+//     // console.log(`contents  :`, currentPage);
+
+//     if (currentPage === '/' || currentPage === '/about') {
+//       // console.log('top or about');
+
+//       return get(topPageGalleryTexturesAtom);
+//     } else if (currentPage.startsWith('/gallery')) {
+//       // console.log('gallery --');
+
+//       if (contents.length === 0) {
+//         // console.log('no contents');
+//         return [];
+//       }
+
+//       if (Array.isArray(contents)) {
+//         // console.log(`contents lenght:`, contents.length);
+
+//         return contents.map((content) => ({
+//           url: content.images[0].url,
+//           aspectRatio: content.images[0].width / content.images[0].height,
+//         }));
+//       } else {
+//         const item = contents as Content;
+
+//         // console.log(`item :`, item);
+
+//         return [
+//           {
+//             url: item.images[0].url,
+//             aspectRatio: item.images[0].width / item.images[0].height,
+//           },
+//         ];
+//       }
+//     }
+//     return [];
+//   },
+// });
 
 export const useCurrentPage = () => useRecoilValue(currentPageAtom);
 export const useCurrentTextures = () => useRecoilValue(currentTexturesSelector);
@@ -173,7 +223,7 @@ export const useLoadTextures = () => {
   const setLoadedTextures = useSetRecoilState(loadedTexturesAtom);
   const currentTextures = useCurrentTextures();
 
-  // console.log(`currentTextures :`, currentTextures);
+  console.log(`currentTextures :`, currentTextures);
 
   const textures = useTexture(currentTextures.map((t) => t.url));
 
@@ -182,6 +232,7 @@ export const useLoadTextures = () => {
       texture,
       aspectRatio: currentTextures[index].aspectRatio,
     }));
+
     setLoadedTextures(texturesWithAspectRatio);
   }, [textures, currentTextures, setLoadedTextures]);
 
