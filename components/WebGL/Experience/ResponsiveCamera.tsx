@@ -6,6 +6,7 @@ import * as THREE from 'three';
 import { useScroll } from '@/app/ScrollContextProvider';
 import { useTransitionProgress } from '@/app/TransitionContextProvider';
 import { currentPageState } from '@/store/pageTitleAtom';
+import { isGallerySectionAtom } from '@/store/scrollAtom';
 
 interface ResponsiveCameraProps {
   position: { x: number; y: number; z: number };
@@ -18,8 +19,8 @@ export const ResponsiveCamera = ({ position, lookAt, near, far }: ResponsiveCame
   console.log('re rendered : responsive camera' + performance.now());
 
   const { camera } = useThree();
-  const { indicatorOfGallerySection } = useScroll();
-  const isScrolled = indicatorOfGallerySection;
+  const isGallerySection = useRecoilValue(isGallerySectionAtom);
+  const isScrolled = isGallerySection;
   const currentPage = useRecoilValue(currentPageState);
   const cameraRef = useRef(camera as THREE.PerspectiveCamera);
   const { isTransitioning } = useTransitionProgress();

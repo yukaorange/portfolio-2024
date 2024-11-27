@@ -142,10 +142,8 @@ export const Experience = () => {
 
     if (!composer) return;
 
-    //時間経過を記録
-
+    //時間経過を記録する変数:delta timeを作成。
     const deltaTime = currentTime - lastTimeRef.current;
-
     lastTimeRef.current = currentTime;
 
     // console.log(

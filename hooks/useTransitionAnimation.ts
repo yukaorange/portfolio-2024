@@ -5,8 +5,10 @@ import { currentPageState } from '@/store/pageTitleAtom';
 
 export const useTransitionAnimation = () => {
   const currentPage = useRecoilValue(currentPageState);
-  const observePageTransitionRef = useRef<number>(0);
   const animationFrameRef = useRef<number | null>(null);
+
+  //このRefオブジェクトはページ遷移を検知して、0->1に変化する。
+  const observePageTransitionRef = useRef<number>(0);
 
   useEffect(() => {
     let startTime: number | null = null;

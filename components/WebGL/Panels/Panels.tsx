@@ -10,6 +10,7 @@ import panelVertex from '@/shaders/panel/vertex-panel.glsl';
 import { currentPageState } from '@/store/pageTitleAtom';
 import { deviceState } from '@/store/userAgentAtom';
 import { AnimationControls } from '@/types/animation';
+import { isGallerySectionAtom } from '@/store/scrollAtom';
 
 interface PanelsProps {
   loadedTextures: {
@@ -36,7 +37,7 @@ export const Panels = ({
   const [shaderMaterial, setShaderMaterial] = useState<THREE.ShaderMaterial>();
   const currentPage = useRecoilValue(currentPageState);
 
-  const { indicatorOfGallerySection } = useScroll();
+  const isGallerySection = useRecoilValue(isGallerySectionAtom);
 
   const { positions, scales, matrices, totalWidth, totalHeight } = useMemo(() => {
     const positions = [];
@@ -163,7 +164,7 @@ export const Panels = ({
     if (currentPage.title == 'portfolio') {
       //galleryセクションへの0到達判定はtopページでのみ行う。
       // console.log('gallery section : ' + indicatorOfGallerySection);
-      shaderMaterial.uniforms.uIsGallerySection.value = indicatorOfGallerySection == true ? 1 : 0;
+      shaderMaterial.uniforms.uIsGallerySection.value = isGallerySection == true ? 1 : 0;
     }
 
     shaderMaterial.uniforms.uActivePage.value = activePage;
@@ -175,7 +176,7 @@ export const Panels = ({
     }
 
     shaderMaterial.needsUpdate = true;
-  }, [shaderMaterial, loadedTextures, currentPage, device, indicatorOfGallerySection]);
+  }, [shaderMaterial, loadedTextures, currentPage, device, isGallerySection]);
 
   const geometry = useMemo(() => {
     const baseGeometry = new THREE.PlaneGeometry(1, 1);

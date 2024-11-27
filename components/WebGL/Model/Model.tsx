@@ -12,8 +12,10 @@ import { useScroll } from '@/app/ScrollContextProvider';
 import suitcaseFragment from '@/shaders/suitcase/fragment-suitcase.glsl';
 import suitcaseVertex from '@/shaders/suitcase/vertex-suitcase.glsl';
 import { AnimationControls } from '@/types/animation';
+import { isScrollEndAtom } from '@/store/scrollAtom';
 
 import { ExtendedMaterial } from './ExtendedMaterial';
+import { useRecoilValue } from 'recoil';
 
 type GLTFResult = GLTF & {
   nodes: {
@@ -59,7 +61,7 @@ export const Model = ({ textures, animationControls, ...props }: ModelProps) => 
   const { actions } = useAnimations(animations, group);
   const suitcaseRef = useRef<THREE.Group>(null);
   const suitcaseTargetPosition = useRef<THREE.Vector3>(new THREE.Vector3());
-  const { indicatorOfScrollEnd } = useScroll();
+  const isScrollEnd = useRecoilValue(isScrollEndAtom);
 
   //キャラクター用の拡張マテリアルへの参照
   const extendedMaterials = useRef<{ [key: string]: ExtendedMaterial }>({});
@@ -157,7 +159,7 @@ export const Model = ({ textures, animationControls, ...props }: ModelProps) => 
     };
 
     if (suitcaseRef.current) {
-      if (indicatorOfScrollEnd) {
+      if (isScrollEnd) {
         suitcaseRef.current.rotation.x = (Math.PI * 1) / 16;
         suitcaseRef.current.rotation.y += (delta * Math.PI * 1) / 16;
         suitcaseRef.current.rotation.z = (Math.PI * 1) / 8;
