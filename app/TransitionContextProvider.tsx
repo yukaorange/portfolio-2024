@@ -3,16 +3,16 @@
 import React, { createContext, useContext, useCallback, useRef } from 'react';
 
 interface TransitionContextType {
-  increaseProgress: React.RefObject<number>;
-  decreaseProgress: React.RefObject<number>;
+  // increaseProgress: React.RefObject<number>;
+  // decreaseProgress: React.RefObject<number>;
   singleProgress: React.RefObject<number>;
   isUnmounting: React.MutableRefObject<boolean>;
   isMounting: React.MutableRefObject<boolean>;
   isTransitioning: React.MutableRefObject<boolean>;
   currentPageTitle: React.MutableRefObject<string>;
   arrivaledPageTitle: React.MutableRefObject<string>;
-  decreaseTransition: () => Promise<void>;
-  increaseTransition: () => Promise<void>;
+  // decreaseTransition: () => Promise<void>;
+  // increaseTransition: () => Promise<void>;
   singleTransitionOut: () => Promise<void>;
   singleTransitionIn: () => Promise<void>;
   notifyMountComplete: () => void;
@@ -29,6 +29,7 @@ const TransitionContext = createContext<TransitionContextType | undefined>(undef
 interface TransitionProviderProps {
   children: React.ReactNode;
 }
+
 interface AnimateProps {
   progressRef: React.MutableRefObject<number>;
   start: number;
@@ -37,8 +38,8 @@ interface AnimateProps {
 }
 
 export const TransitionContextProvider = ({ children }: TransitionProviderProps) => {
-  const increaseProgress = useRef<number>(0);
-  const decreaseProgress = useRef<number>(1);
+  // const increaseProgress = useRef<number>(0);
+  // const decreaseProgress = useRef<number>(1);
   const singleProgress = useRef<number>(0);
   const isUnmounting = useRef<boolean>(false);
   const isMounting = useRef<boolean>(false);
@@ -79,26 +80,26 @@ export const TransitionContextProvider = ({ children }: TransitionProviderProps)
     });
   }, []);
 
-  const increaseTransition = useCallback(() => {
-    // console.log('increase transition');
-    return animateProgress({
-      progressRef: increaseProgress,
-      start: 0,
-      end: 1,
-      duration: 500,
-    });
-  }, []);
+  // const increaseTransition = useCallback(() => {
+  //   // console.log('increase transition');
+  //   return animateProgress({
+  //     progressRef: increaseProgress,
+  //     start: 0,
+  //     end: 1,
+  //     duration: 500,
+  //   });
+  // }, []);
 
-  const decreaseTransition = useCallback(() => {
-    // console.log('decrease transition');
+  // const decreaseTransition = useCallback(() => {
+  //   // console.log('decrease transition');
 
-    return animateProgress({
-      progressRef: decreaseProgress,
-      start: 1,
-      end: 0,
-      duration: 500,
-    });
-  }, []);
+  //   return animateProgress({
+  //     progressRef: decreaseProgress,
+  //     start: 1,
+  //     end: 0,
+  //     duration: 500,
+  //   });
+  // }, []);
 
   const singleTransitionOut = useCallback(() => {
     return animateProgress({
@@ -129,8 +130,8 @@ export const TransitionContextProvider = ({ children }: TransitionProviderProps)
   }, []);
 
   const value = {
-    increaseProgress,
-    decreaseProgress,
+    // increaseProgress,
+    // decreaseProgress,
     singleProgress,
     isUnmounting,
     isMounting,
@@ -138,8 +139,8 @@ export const TransitionContextProvider = ({ children }: TransitionProviderProps)
     currentPageTitle,
     arrivaledPageTitle,
     startTransition,
-    increaseTransition,
-    decreaseTransition,
+    // increaseTransition,
+    // decreaseTransition,
     singleTransitionOut,
     singleTransitionIn,
     notifyMountComplete,

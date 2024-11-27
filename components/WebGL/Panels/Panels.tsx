@@ -27,6 +27,8 @@ export const Panels = ({
   noiseTexture,
   telopTexture,
 }: PanelsProps) => {
+  console.log('re rendered : panels' + performance.now());
+
   const ref = useRef<THREE.InstancedMesh>(null);
   const count = 7;
   const aspect = 4 / 3;

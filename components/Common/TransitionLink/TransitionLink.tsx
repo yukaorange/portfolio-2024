@@ -27,8 +27,8 @@ export const TransitionLink = ({
 }: TransitionLinkProps) => {
   const router = useRouter();
   const {
-    increaseTransition,
-    decreaseTransition,
+    // increaseTransition,
+    // decreaseTransition,
     singleTransitionOut,
     singleTransitionIn,
     isMounting,
@@ -72,8 +72,14 @@ export const TransitionLink = ({
     document.body.classList.add('is-transitioning');
     document.body.classList.add('is-transition-unmounting');
     isUnmounting.current = true;
-    await Promise.all([decreaseTransition(), increaseTransition(), singleTransitionOut()]);
-  }, [decreaseTransition, increaseTransition, isUnmounting, singleTransitionOut]);
+    // await Promise.all([decreaseTransition(), increaseTransition(), singleTransitionOut()]);
+    await singleTransitionOut();
+  }, [
+    // decreaseTransition,
+    //  increaseTransition,
+    isUnmounting,
+    singleTransitionOut,
+  ]);
 
   const executePageTransition = useCallback(
     async (isSamePage: boolean) => {
@@ -103,15 +109,16 @@ export const TransitionLink = ({
     }
     // console.log('//////page mounted////// : ', href);
 
-    await Promise.all([decreaseTransition(), increaseTransition(), singleTransitionIn()]);
+    // await Promise.all([decreaseTransition(), increaseTransition(), singleTransitionIn()]);
+    await singleTransitionIn();
 
     document.body.classList.remove('is-transition-mounting');
     document.body.classList.remove('is-transitioning');
     isMounting.current = false;
     isTransitioning.current = false;
   }, [
-    decreaseTransition,
-    increaseTransition,
+    // decreaseTransition,
+    // increaseTransition,
     singleTransitionIn,
     isMounting,
     isTransitioning,

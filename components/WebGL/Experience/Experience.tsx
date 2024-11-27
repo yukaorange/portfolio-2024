@@ -26,8 +26,12 @@ import { ResponsiveCamera } from './ResponsiveCamera';
 
 export const Experience = () => {
   const { velocityRef, currentProgressRef, targetProgressRef } = useScrollVelocity();
-  const { decreaseProgress, increaseProgress, singleProgress, isTransitioning } =
-    useTransitionProgress();
+  const {
+    // decreaseProgress,
+    //  increaseProgress,
+    singleProgress,
+    isTransitioning,
+  } = useTransitionProgress();
   const { gl, scene, camera } = useThree();
   const observePageTransitionRef = useTransitionAnimation();
   const lastTimeRef = useRef<number>(0);
@@ -187,8 +191,8 @@ export const Experience = () => {
   }, 1);
 
   const animationControls: AnimationControls = {
-    increaseProgress,
-    decreaseProgress,
+    // increaseProgress,
+    // decreaseProgress,
     singleProgress,
     velocityRef,
     currentProgressRef,

@@ -52,6 +52,8 @@ interface ModelProps extends GroupProps {
 }
 
 export const Model = ({ textures, animationControls, ...props }: ModelProps) => {
+  console.log('re rendered : model' + performance.now());
+
   const group = useRef<THREE.Group>(null);
   const { nodes, materials, animations } = useGLTF('/models/scene_animation_02.glb') as GLTFResult;
   const { actions } = useAnimations(animations, group);
@@ -127,7 +129,7 @@ export const Model = ({ textures, animationControls, ...props }: ModelProps) => 
 
     const POSITIONS = {
       // mobile: [-0.6, 3.6, -1.5],
-      mobile: [-0.6, 3.6, -1.5],
+      mobile: [-0.6, 3.5, -2.05],
       desktop: [-0.6, 3.2, 1.0],
     };
 

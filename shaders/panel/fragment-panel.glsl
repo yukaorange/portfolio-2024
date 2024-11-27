@@ -29,7 +29,7 @@ varying vec3 vInstacePosition;
 // #pragma glslify: cnoise = require('../utils/cnoise.glsl');
 #pragma glslify: snoise = require('../utils/snoise.glsl');
 // #pragma glslify: rand = require('../utils/random.glsl');
-#pragma glslify: wave = require('../utils/wave.glsl');
+// #pragma glslify: wave = require('../utils/wave.glsl');
 #pragma glslify: cardiogram = require('../utils/electrocardiogram.glsl');
 #pragma glslify: createGrid = require('../utils/grid.glsl');
 #pragma glslify: blendOverlay = require('../utils/blend.glsl');
@@ -94,6 +94,10 @@ void main() {
   //汎用ノイズ
   float noise = snoise(vec2(vUv.y * 60.0, sin(uTime * 40.0)));
 
+  // float baseNoise = texture2D(uNoiseTexture, singleScreenUv).r;
+  // float variation = hash(singleScreenUv + uTime);
+  // noise = mix(baseNoise, variation, 0.2);
+
   //hash値
   float hashValue = hash(singleScreenUv + mod(uTime, 1.0) + 214.0) * 0.7;
 
@@ -103,23 +107,23 @@ void main() {
   vec3 noiseColor = vec3(hashValue);//ベースとなる砂嵐
 
   //汎用 等高線画面
-  vec4 waveColor;
+  // vec4 waveColor;
 
-  float waveIntensity = wave(singleScreenUv.x, singleScreenUv.y) + 2.0;
+  // float waveIntensity = wave(singleScreenUv.x, singleScreenUv.y) + 2.0;
 
-  waveIntensity *= 1.23 * abs(sin(PI / 2.0 + uTime * 0.2) + 1.5);
+  // waveIntensity *= 1.23 * abs(sin(PI / 2.0 + uTime * 0.2) + 1.5);
 
-  float waveDiffuse = fract(waveIntensity);
+  // float waveDiffuse = fract(waveIntensity);
 
-  if(mod(waveIntensity, 2.0) > 1.0) {
-    waveDiffuse = 1.0 - waveDiffuse;
-  }
+  // if(mod(waveIntensity, 2.0) > 1.0) {
+  //   waveDiffuse = 1.0 - waveDiffuse;
+  // }
 
-  waveDiffuse = waveDiffuse / fwidth(waveIntensity);
+  // waveDiffuse = waveDiffuse / fwidth(waveIntensity);
 
-  waveDiffuse = clamp(waveDiffuse, 0.0, 0.5);
+  // waveDiffuse = clamp(waveDiffuse, 0.0, 0.5);
 
-  waveColor = vec4(vec3(waveDiffuse), 1.0);
+  // waveColor = vec4(vec3(waveDiffuse), 1.0);
 
   //汎用 心電図画面
   vec4 cardiogramColor = vec4(cardiogram(singleScreenUv, vec2(4.0, 3.0), uTime), 1.0);
@@ -182,7 +186,7 @@ void main() {
   vec2 glitchOffset;
 
   if(shouldShowNoise) {
-    glitchOffset = vec2(0.0, noise * hashValue);
+    glitchOffset = vec2(0.0, 2.0 * noise);
 
     glitchOffset *= noiseIntensity;
   }
@@ -195,7 +199,6 @@ void main() {
   float index = floor(vIndex + 0.1);
 
   if(activepage == 0.0) {
-    // changeStep *= sin(PI * 0.4269 * fullScreenUv.x);//ランダム
 
     index = floor(index - changeStep);//切り替わる度に表画面が変わる
 
@@ -205,16 +208,18 @@ void main() {
       checkerBoardDiffuseColor = texture2D(uTextures[1], singleOptimizedUv1 + glitchOffset);
     } else if(mod(index, 12.0) == 0.0) {
       checkerBoardDiffuseColor = texture2D(uTextures[2], singleOptimizedUv2 + glitchOffset);
-    } else if(mod(index, 10.0) == 0.0) {
-      checkerBoardDiffuseColor = gridColorSingle;
     } else if(mod(index, 8.0) == 0.0) {
-      checkerBoardDiffuseColor = waveColor;
-    } else if(mod(index, 5.0) == 0.0) {
-      checkerBoardDiffuseColor = cardiogramColor;
-    } else if(mod(index, 3.0) == 0.0) {
-      checkerBoardDiffuseColor = vec4(noiseColor, 1.0);
-    } else {
+      checkerBoardDiffuseColor = gridColorSingle;
+    } 
+    // else if(mod(index, 8.0) == 0.0) {
+      // checkerBoardDiffuseColor = waveColor;
+    // } 
+    else if(mod(index, 5.0) == 0.0) {
       checkerBoardDiffuseColor = texture2D(uTextures[3], singleOptimizedUv3 + glitchOffset);
+    } else if(mod(index, 3.0) == 0.0) {
+      checkerBoardDiffuseColor = cardiogramColor;
+    } else {
+      checkerBoardDiffuseColor = vec4(noiseColor, 3.0);
     }
   } else if(activepage == 1.0) {
 
@@ -256,7 +261,7 @@ void main() {
   //簡易crt加工
   scrollingDiffuseColorNoise.rgb = crtEffect(fullScreenUv, vec2(1280, 960), scrollingDiffuseColorNoise.rgb, 1.7);
 
-  vec4 scrollingDiffuseColor = texture2D(uTelopTexture, scrollingUv);
+  // vec4 scrollingDiffuseColor = texture2D(uTelopTexture, scrollingUv);
 
   //----------画面切替えアニメーションの実行----------
   vec4 oddProgressDiffuse = scrollingDiffuseColorNoise;
@@ -291,19 +296,19 @@ void main() {
 
   //----------エフェクト----------
 
-  //グレイン
   vec3 color = finalDiffuse.rgb;
 
-  color.rgb = blendOverlay(color.rgb, vec3(hashValue), 0.05);
+  //グレイン
+  // color.rgb = blendOverlay(color.rgb, vec3(hashValue), 0.2);
 
   // 点滅
-  color *= step(0.0, sin(vUv.y * 5.0 - uTime * 2.0 * noise)) * 0.05 + 0.95;
+  // color *= step(0.0, sin(vUv.y * 5.0 - uTime * 2.0 * noise)) * 0.05 + 0.95;
 
   //走査線（画面全体）
-  color *= step(0.0, sin(fullScreenUv.y * 4.0 - uTime * 0.9)) * 0.05 + 1.98;
+  // color *= step(0.0, sin(fullScreenUv.y * 4.0 - uTime * 0.9)) * 0.05 + 1.98;
 
 	// 走査線（シングル）
-  color *= 0.78 - sin(fullScreenUv.y * 200.0 - uTime * 100.0) * 0.01;
+  color *= 0.98 - sin(fullScreenUv.y * 200.0 - uTime * 100.0) * 0.01;
 
 	// ヴィネット
   if(EvenOdd == 0.0) {
@@ -319,10 +324,10 @@ void main() {
     };
   }
 
-  //最終的な明度調整
-  colorIntensity = 0.5 + 0.2 * pow(uVelocity, 3.0) + 0.01 * abs(sin(uTime * noise));//明度の4調節用
+  //最終的な明度調整(スクロール速度による明度強化も含む)
+  colorIntensity = 0.6 + 0.4 * clamp(uVelocity, 0.0, 1.0);
 
-  if(uDevice == 1.0) {
+  if(uDevice == 1.0) {//@mobile
     colorIntensity *= 1.18;
   }
 

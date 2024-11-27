@@ -8,6 +8,8 @@ import { currentPageState, isManualNavigationState } from '@/store/pageTitleAtom
 export const useNavigationAtomUpdater = () => {
   const pathname = usePathname();
 
+  // console.log('re rendered : useNavigationAtomUpdater' + `${pathname}` + performance.now());
+
   const setCurrentPage = useSetRecoilState(currentPageState);
 
   const isManualNavigation = useRecoilValue(isManualNavigationState);

@@ -17,7 +17,13 @@ import { useTransitionProgress } from '@/app/TransitionContextProvider';
 // };
 
 export const Filters = () => {
-  const { decreaseProgress, increaseProgress, isUnmounting, isMounting } = useTransitionProgress();
+  const {
+    // decreaseProgress,
+    //  increaseProgress,
+    isUnmounting,
+    isMounting,
+    singleProgress,
+  } = useTransitionProgress();
 
   const turbRef = useRef<SVGFETurbulenceElement>(null);
   const lastUpdateTimeRef = useRef(0);
@@ -28,29 +34,35 @@ export const Filters = () => {
 
   useEffect(() => {
     const updateNoiseEffect = (currentTime: number) => {
-      if (!turbRef.current || !increaseProgress.current) return;
+      // if (!turbRef.current || !increaseProgress.current) return;
+      if (!turbRef.current || !singleProgress.current) return;
 
-      if (currentTime - lastUpdateTimeRef.current < 1000 / 15) {
+      if (currentTime - lastUpdateTimeRef.current < 1000 / 10) {
         return;
       }
 
       lastUpdateTimeRef.current = currentTime;
 
-      const rawIncreaseProgress = increaseProgress.current; //0->1
-      const rawDecreaseProgress = decreaseProgress.current; //1->0
+      // const rawIncreaseProgress = increaseProgress.current; //0->1
+      // const rawDecreaseProgress = decreaseProgress.current; //1->0
 
-      const easedIncreaseProgress = ease(rawIncreaseProgress as number);
-      const easedDecreaseProgress = ease(rawDecreaseProgress as number);
+      const rawSingleProgress = singleProgress.current;
 
-      const increasingProgress = easedIncreaseProgress;
-      const decreasingProgress = easedDecreaseProgress;
+      // const easedIncreaseProgress = ease(rawIncreaseProgress as number);
+      // const easedDecreaseProgress = ease(rawDecreaseProgress as number);
+
+      // const increasingProgress = easedIncreaseProgress;
+      // const decreasingProgress = easedDecreaseProgress;
 
       let baseFrequency = 0;
 
-      if (isUnmounting.current == true) {
-        baseFrequency = 0.000001 + (0.99 - 0.000001) * increasingProgress;
-      } else if (isMounting.current == true) {
-        baseFrequency = 0.000001 + (0.99 - 0.000001) * decreasingProgress;
+      // if (isUnmounting.current == true) {
+      //   baseFrequency = 0.000001 + (0.99 - 0.000001) * increasingProgress;
+      // } else if (isMounting.current == true) {
+      //   baseFrequency = 0.000001 + (0.99 - 0.000001) * decreasingProgress;
+      // }
+      if (rawSingleProgress) {
+        baseFrequency = 0.000001 + (0.99 - 0.000001) * rawSingleProgress;
       }
 
       // console.log(
@@ -86,7 +98,13 @@ export const Filters = () => {
     return () => {
       cancelAnimationFrame(animationFrameId);
     };
-  }, [increaseProgress, decreaseProgress, isUnmounting, isMounting]);
+  }, [
+    // increaseProgress,
+    // decreaseProgress,
+    singleProgress,
+    isUnmounting,
+    isMounting,
+  ]);
 
   return (
     <svg width="0" height="0" style={{ position: 'absolute' }}>
@@ -137,7 +155,7 @@ export const Filters = () => {
           <feDisplacementMap
             xChannelSelector="R"
             yChannelSelector="G"
-            scale="8"
+            scale="4"
             in="SourceGraphic"
             in2="warp"
           />

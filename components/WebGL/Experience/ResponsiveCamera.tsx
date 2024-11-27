@@ -15,6 +15,8 @@ interface ResponsiveCameraProps {
 }
 
 export const ResponsiveCamera = ({ position, lookAt, near, far }: ResponsiveCameraProps) => {
+  console.log('re rendered : responsive camera' + performance.now());
+
   const { camera } = useThree();
   const { indicatorOfGallerySection } = useScroll();
   const isScrolled = indicatorOfGallerySection;
