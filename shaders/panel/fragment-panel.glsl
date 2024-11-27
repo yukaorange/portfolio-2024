@@ -65,6 +65,7 @@ void main() {
   vec2 singleOptimizedUv9 = optimizationTextureUv(singleScreenUv, uAspect, uTextureAspectRatios[9]);
   //全体で一つのパネルと捉えた際のテクスチャのアスペクト比を考慮したUV
   vec2 fullScreenOptimizedTelopUv = optimizationTextureUv(fullScreenUv, uAspect, uTelopAspect);
+  vec2 singleScreenOptimizedTelopUv = optimizationTextureUv(singleScreenUv, uAspect, uTelopAspect);
   // vec2 fullScreenOptimizedUv0 = optimizationTextureUv(fullScreenUv, uAspect, uTextureAspectRatios[0]);
 
  //各パネルを使用する場合のテクスチャを取得する場合
@@ -77,11 +78,21 @@ void main() {
   vec2 scrollingUv = fullScreenOptimizedTelopUv;
   int row = int(floor(scrollingUv.y * 5.0));//テクスチャは5行に分かれたテキストであるため。
   float speed = uSpeed * (1.0 / uRowLengths[row]);//各行にふさわしいスピードを設定
-  float scrollingOffset = fract(uTime * speed);
-  scrollingUv.x = fract((scrollingUv.x + scrollingOffset));
   float rowLength = uRowLengths[row];
+  float scrollingOffset = fract(uTime * speed);
+
+  scrollingUv.x = fract((scrollingUv.x + scrollingOffset));
   float compressdX = scrollingUv.x * rowLength;//各行の空白部分はサンプリングしないので、その部分を圧縮
   scrollingUv.x = mod(compressdX + scrollingOffset, rowLength);//圧縮した部分を元に戻す。例えば、0.7の幅だとしたら、0.7の長さが1.0の長さになるようにする。（自分用のメモです）
+
+  //singleScreenのテロップに合っても同様(速度は調整)
+  vec2 singleScrollingUv = singleScreenOptimizedTelopUv;
+  int singleRow = int(floor(singleScrollingUv.y * 5.0));//テクスチャは5行に分かれたテキストであるため。
+  speed = uSpeed * (2.4 / uRowLengths[row]);
+  scrollingOffset = fract(uTime * speed);
+  singleScrollingUv.x = fract((singleScrollingUv.x + scrollingOffset));
+  float singleCompressdX = singleScrollingUv.x * rowLength;
+  singleScrollingUv.x = mod(singleCompressdX + scrollingOffset, rowLength);
 
   // vec4 scrollingDiffuseColor = texture2D(uTextures[0], scrollingUv);//glitchでサンプリングをずらすため、diffuseの決定は後述にまわす(下記テロップ画像アニメーション)
 
@@ -186,7 +197,7 @@ void main() {
   vec2 glitchOffset;
 
   if(shouldShowNoise) {
-    glitchOffset = vec2(0.0, 2.0 * noise);
+    glitchOffset = vec2(0.0, mod(uTime * 3.0, 1.0) * noise);
 
     glitchOffset *= noiseIntensity;
   }
@@ -199,22 +210,18 @@ void main() {
   float index = floor(vIndex + 0.1);
 
   if(activepage == 0.0) {
-
     index = floor(index - changeStep);//切り替わる度に表画面が変わる
-
     if(mod(index, 24.0) == 0.0) {
       checkerBoardDiffuseColor = texture2D(uTextures[0], singleOptimizedUv0 + glitchOffset);
     } else if(mod(index, 14.0) == 0.0) {
       checkerBoardDiffuseColor = texture2D(uTextures[1], singleOptimizedUv1 + glitchOffset);
     } else if(mod(index, 12.0) == 0.0) {
       checkerBoardDiffuseColor = texture2D(uTextures[2], singleOptimizedUv2 + glitchOffset);
+    } else if(mod(index, 10.0) == 0.0) {
+      checkerBoardDiffuseColor = texture2D(uTelopTexture, singleScrollingUv + glitchOffset);
     } else if(mod(index, 8.0) == 0.0) {
       checkerBoardDiffuseColor = gridColorSingle;
-    } 
-    // else if(mod(index, 8.0) == 0.0) {
-      // checkerBoardDiffuseColor = waveColor;
-    // } 
-    else if(mod(index, 5.0) == 0.0) {
+    } else if(mod(index, 5.0) == 0.0) {
       checkerBoardDiffuseColor = texture2D(uTextures[3], singleOptimizedUv3 + glitchOffset);
     } else if(mod(index, 3.0) == 0.0) {
       checkerBoardDiffuseColor = cardiogramColor;
@@ -299,10 +306,10 @@ void main() {
   vec3 color = finalDiffuse.rgb;
 
   //グレイン
-  // color.rgb = blendOverlay(color.rgb, vec3(hashValue), 0.2);
+  color.rgb = blendOverlay(color.rgb, vec3(hashValue), 0.16);
 
   // 点滅
-  // color *= step(0.0, sin(vUv.y * 5.0 - uTime * 2.0 * noise)) * 0.05 + 0.95;
+  // color *= step(0.0, sin(fullScreenUv.y * 5.0 - uTime * 2.0 * noise)) * 0.05 + 0.98;
 
   //走査線（画面全体）
   // color *= step(0.0, sin(fullScreenUv.y * 4.0 - uTime * 0.9)) * 0.05 + 1.98;
@@ -317,14 +324,23 @@ void main() {
     color *= smoothstep(1.0, 0.3, length(singleScreenUv - 0.5));
   }
 
-  //画面切り替え時のノイズの表示
-  if(activepage == 0.0 && uIsGallerySection == 0.0) {
+  //----------画面切り替え時のノイズの表示----------
+  if(activepage == 0.0 && uIsGallerySection == 0.0 // top page
+  ) {
     if(shouldShowNoise) {
-      color = mix(color, noiseColor, noiseIntensity); // ノイズの強度を調整（0.8は調整可能）
+      color = mix(color, noiseColor, noiseIntensity * 0.3);
+    };//係数は実物を見ながら微調整
+  }
+
+  if(activepage == 2.0 // gallery page
+  ) {
+    if(shouldShowNoise) {
+      color = mix(color, noiseColor, noiseIntensity * 0.6);
     };
   }
 
-  //最終的な明度調整(スクロール速度による明度強化も含む)
+  //----------最終的な明度調整----------
+  //(スクロール速度による明度強化も含む)
   colorIntensity = 0.6 + 0.4 * clamp(uVelocity, 0.0, 1.0);
 
   if(uDevice == 1.0) {//@mobile

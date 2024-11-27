@@ -3,7 +3,6 @@ import { useRef, useEffect, useCallback } from 'react';
 import { useRecoilValue } from 'recoil';
 import * as THREE from 'three';
 
-import { useScroll } from '@/app/ScrollContextProvider';
 import { useTransitionProgress } from '@/app/TransitionContextProvider';
 import { currentPageState } from '@/store/pageTitleAtom';
 import { isGallerySectionAtom } from '@/store/scrollAtom';
@@ -16,7 +15,7 @@ interface ResponsiveCameraProps {
 }
 
 export const ResponsiveCamera = ({ position, lookAt, near, far }: ResponsiveCameraProps) => {
-  console.log('re rendered : responsive camera' + performance.now());
+  // console.log('re rendered : responsive camera' + performance.now());
 
   const { camera } = useThree();
   const isGallerySection = useRecoilValue(isGallerySectionAtom);

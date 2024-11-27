@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useRef, useEffect, useState, useCallback } from 'react';
+import React, { createContext, useContext, useRef, useEffect, useCallback } from 'react';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 import * as THREE from 'three';
 

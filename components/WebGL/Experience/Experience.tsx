@@ -146,6 +146,8 @@ export const Experience = () => {
     const deltaTime = currentTime - lastTimeRef.current;
     lastTimeRef.current = currentTime;
 
+    // console.log(deltaTime);
+
     // console.log(
     //   'check status : ',
     //   '\n',

@@ -4,13 +4,12 @@ import React, { useMemo, useRef, useEffect, useState } from 'react';
 import { useRecoilValue } from 'recoil';
 import * as THREE from 'three';
 
-import { useScroll } from '@/app/ScrollContextProvider';
 import panelFragment from '@/shaders/panel/fragment-panel.glsl';
 import panelVertex from '@/shaders/panel/vertex-panel.glsl';
 import { currentPageState } from '@/store/pageTitleAtom';
+import { isGallerySectionAtom } from '@/store/scrollAtom';
 import { deviceState } from '@/store/userAgentAtom';
 import { AnimationControls } from '@/types/animation';
-import { isGallerySectionAtom } from '@/store/scrollAtom';
 
 interface PanelsProps {
   loadedTextures: {
@@ -28,7 +27,7 @@ export const Panels = ({
   noiseTexture,
   telopTexture,
 }: PanelsProps) => {
-  console.log('re rendered : panels' + performance.now());
+  // console.log('re rendered : panels' + performance.now());
 
   const ref = useRef<THREE.InstancedMesh>(null);
   const count = 7;
@@ -105,7 +104,12 @@ export const Panels = ({
           value: 0,
         },
         uSpeed: { value: 0.004 }, //テロップの流れるスピード
-        uResolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
+        uResolution: {
+          value: new THREE.Vector2(
+            window.innerWidth * devicePixelRatio,
+            window.innerHeight * devicePixelRatio
+          ),
+        },
         uRowLengths: { value: [0.82, 0.64, 0.76, 0.82, 0.98] }, //テロップのサンプリングに使用
         uCount: { value: count }, //パネルの枚数
         uAspect: { value: aspect }, //全体のアス比
@@ -117,6 +121,7 @@ export const Panels = ({
     setShaderMaterial(material);
   }, [totalWidth, totalHeight, count, aspect, noiseTexture, telopTexture]);
 
+  //インスタンスマトリクスの生成
   useEffect(() => {
     if (ref.current) {
       matrices.forEach((matrix, i) => {
@@ -126,6 +131,7 @@ export const Panels = ({
     }
   }, [matrices]);
 
+  //ユニフォームの更新
   useEffect(() => {
     let activePage;
     if (currentPage.title === 'portfolio') {
@@ -178,10 +184,28 @@ export const Panels = ({
     shaderMaterial.needsUpdate = true;
   }, [shaderMaterial, loadedTextures, currentPage, device, isGallerySection]);
 
+  //ベースとなる板ポリの生成
   const geometry = useMemo(() => {
     const baseGeometry = new THREE.PlaneGeometry(1, 1);
     return baseGeometry;
   }, []);
+
+  //リサイズ時の更新
+  useEffect(() => {
+    const handleResize = () => {
+      if (!shaderMaterial) return;
+      shaderMaterial.uniforms.uResolution.value.set(
+        window.innerWidth * devicePixelRatio,
+        window.innerHeight * devicePixelRatio
+      );
+    };
+
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, [shaderMaterial]);
 
   useFrame((state) => {
     if (shaderMaterial) {
