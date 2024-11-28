@@ -1,12 +1,11 @@
 import React, { useMemo } from 'react';
+import { useRecoilValue } from 'recoil';
 import * as THREE from 'three';
-
-import { AnimationControls } from '@/types/animation';
 
 import floorFragment from '@/shaders/floor/fragment-floor.glsl';
 import floorVertex from '@/shaders/floor/vertex-floor.glsl';
-import { useRecoilValue } from 'recoil';
-import { browserState, osState, iphoneState } from '@/store/userAgentAtom';
+import { iphoneState } from '@/store/userAgentAtom';
+import { AnimationControls } from '@/types/animation';
 
 interface FloorProps {
   textures: {
@@ -54,7 +53,7 @@ export const Floor = ({ textures }: FloorProps) => {
     });
 
     return shaderMaterial;
-  }, [textures]);
+  }, [textures, deviceState]);
 
   return (
     <mesh

@@ -9,9 +9,12 @@ import { useRecoilValue } from 'recoil';
 import * as THREE from 'three';
 import { GLTF } from 'three-stdlib';
 
+import { useFrameRate } from '@/hooks/useFrameRate';
 import suitcaseFragment from '@/shaders/suitcase/fragment-suitcase.glsl';
 import suitcaseVertex from '@/shaders/suitcase/vertex-suitcase.glsl';
+import { fps } from '@/store/fpsAtom';
 import { isScrollEndAtom } from '@/store/scrollAtom';
+import { deviceState } from '@/store/userAgentAtom';
 import { AnimationControls } from '@/types/animation';
 
 import { ExtendedMaterial } from './ExtendedMaterial';
@@ -54,13 +57,23 @@ interface ModelProps extends GroupProps {
 
 export const Model = ({ textures, animationControls, ...props }: ModelProps) => {
   // console.log('re rendered : model' + performance.now());
-
-  const group = useRef<THREE.Group>(null);
   const { nodes, materials, animations } = useGLTF('/models/scene_animation_02.glb') as GLTFResult;
+  const device = useRecoilValue(deviceState);
+
+  //フレームレート制限ロジック導入
+  const frameRate = useRecoilValue(fps);
+  const { createFrameCallback } = useFrameRate({ fps: frameRate });
+
+  //キャラクターに使用するもの
+  const group = useRef<THREE.Group>(null);
   const { actions } = useAnimations(animations, group);
+
+  //スーツケースに使用するもの
   const suitcaseRef = useRef<THREE.Mesh>(null);
   const suitcaseTargetPosition = useRef<THREE.Vector3>(new THREE.Vector3());
   const isScrollEnd = useRecoilValue(isScrollEndAtom);
+  // const backRenderTarget = useFBO();
+  // const mainRenderTarget = useFBO();
 
   //キャラクター用の拡張マテリアルへの参照
   const extendedMaterials = useRef<{ [key: string]: ExtendedMaterial }>({});
@@ -98,12 +111,17 @@ export const Model = ({ textures, animationControls, ...props }: ModelProps) => 
   const suitcaseMaterial = useMemo(() => {
     if (!textures) return;
 
+    const dpr = Math.min(window.devicePixelRatio, 2);
+
     const { suitcaseTexture } = textures;
 
     const shaderMaterial = new THREE.ShaderMaterial({
       uniforms: {
         uTexture: {
           value: suitcaseTexture,
+        },
+        uEffectTexture: {
+          value: null,
         },
         uLightPosition: {
           value: new THREE.Vector3(0.0, 1.0, 1.0),
@@ -115,10 +133,7 @@ export const Model = ({ textures, animationControls, ...props }: ModelProps) => 
           value: 0,
         },
         uResolution: {
-          value: new THREE.Vector2(
-            window.innerWidth * devicePixelRatio,
-            window.innerHeight * devicePixelRatio
-          ),
+          value: new THREE.Vector2(window.innerWidth * dpr, window.innerHeight * dpr),
         },
         // uTextureResolution: {
         //   value: null,
@@ -141,22 +156,31 @@ export const Model = ({ textures, animationControls, ...props }: ModelProps) => 
     }
   }, [isScrollEnd, suitcaseMaterial]);
 
-  //リサイズ時の更新
-  useEffect(() => {
-    const handleResize = () => {
-      if (!suitcaseMaterial) return;
-      suitcaseMaterial.uniforms.uResolution.value.set(
-        window.innerWidth * devicePixelRatio,
-        window.innerHeight * devicePixelRatio
-      );
-    };
+  //リサイズ時の更新(スーツケースのマテリアル)
+  // useEffect(() => {
+  //   const handleResize = () => {
+  //     console.log('resize @ suitcase in Model  ');
 
-    window.addEventListener('resize', handleResize);
+  //     if (!suitcaseMaterial) return;
 
-    return () => {
-      window.removeEventListener('resize', handleResize);
-    };
-  }, [suitcaseMaterial]);
+  //     const dpr = Math.min(window.devicePixelRatio, 2);
+
+  //     suitcaseMaterial.uniforms.uResolution.value.set(
+  //       window.innerWidth * dpr,
+  //       window.innerHeight * dpr
+  //     );
+
+  //     backRenderTarget.setSize(window.innerWidth, window.innerHeight);
+
+  //     mainRenderTarget.setSize(window.innerWidth, window.innerHeight);
+  //   };
+
+  //   window.addEventListener('resize', handleResize);
+
+  //   return () => {
+  //     window.removeEventListener('resize', handleResize);
+  //   };
+  // }, [suitcaseMaterial, camera, backRenderTarget, mainRenderTarget]);
 
   //スーツケースの位置算出につかう
   const calculateSuitcasePosition = useCallback((width: number): [number, number, number] => {
@@ -166,8 +190,7 @@ export const Model = ({ textures, animationControls, ...props }: ModelProps) => 
     };
 
     const POSITIONS = {
-      // mobile: [-0.6, 3.6, -1.5],
-      mobile: [-0.6, 3.5, -2.05],
+      mobile: [-0.6, 3.6, -2.05],
       desktop: [-0.6, 3.2, 1.05],
     };
 
@@ -185,47 +208,84 @@ export const Model = ({ textures, animationControls, ...props }: ModelProps) => 
     ];
   }, []);
 
-  useFrame((state, delta) => {
-    const lerpFactor = 1.0 - Math.pow(0.05, delta);
+  useFrame(
+    createFrameCallback((state, delta) => {
+      const { clock } = state;
 
-    const originalSuitcasePosition = {
-      x: 0.551,
-      y: 0.282,
-      z: -4.68,
-    };
+      const elapsedTime = clock.getElapsedTime();
 
-    if (suitcaseRef.current) {
-      const shaderMaterial = suitcaseRef.current.material as THREE.ShaderMaterial;
+      //線形補完の係数
+      const lerpFactor = 1.0 - Math.pow(0.01, delta);
 
-      shaderMaterial.uniforms.uTime.value = delta;
+      //スーツケースの初期位置
+      const originalSuitcasePosition = {
+        x: 0.551,
+        y: 0.302,
+        z: -4.68,
+      };
 
-      if (isScrollEnd) {
+      if (suitcaseRef.current) {
+        //条件に応じてスーツケースを移動させる
+        const suitcaseShaderMaterial = suitcaseRef.current.material as THREE.ShaderMaterial;
+
+        suitcaseShaderMaterial.uniforms.uTime.value = elapsedTime;
+
         //----------スーツケースの位置決定----------
-        suitcaseRef.current.rotation.x = (Math.PI * 1) / 16;
-        suitcaseRef.current.rotation.y += (delta * Math.PI * 1) / 16;
-        suitcaseRef.current.rotation.z = (Math.PI * 1) / 8;
+        if (isScrollEnd) {
+          //フッター付近でのふるまい
+          //回転を加える
+          suitcaseRef.current.rotation.x = (Math.PI * 1) / 16;
+          if (device === 'mobile') {
+            suitcaseRef.current.rotation.y += (delta * Math.PI * 1) / 8;
+          } else {
+            suitcaseRef.current.rotation.y += (delta * Math.PI * 1) / 4;
+          }
+          // suitcaseRef.current.rotation.y += (delta * Math.PI * 1) / 2;//色の確認時に早く回転させたい
+          suitcaseRef.current.rotation.z = (Math.PI * 1) / 8;
 
-        // 画面幅に基づいて位置を計算
-        const calculatedPosition = calculateSuitcasePosition(window.innerWidth);
+          // 画面幅に基づいて位置を計算
+          const calculatedPosition = calculateSuitcasePosition(window.innerWidth);
 
-        suitcaseTargetPosition.current.x = calculatedPosition[0] + originalSuitcasePosition.x;
-        suitcaseTargetPosition.current.y = calculatedPosition[1] + originalSuitcasePosition.y;
-        suitcaseTargetPosition.current.z = calculatedPosition[2] + originalSuitcasePosition.z;
+          suitcaseTargetPosition.current.x = calculatedPosition[0] + originalSuitcasePosition.x;
+          suitcaseTargetPosition.current.y = calculatedPosition[1] + originalSuitcasePosition.y;
+          suitcaseTargetPosition.current.z = calculatedPosition[2] + originalSuitcasePosition.z;
+        } else {
+          suitcaseTargetPosition.current.x = originalSuitcasePosition.x;
+          suitcaseTargetPosition.current.y = originalSuitcasePosition.y;
+          suitcaseTargetPosition.current.z = originalSuitcasePosition.z;
 
-        //----------スーツケースのuniforms設定----------
-      } else {
-        suitcaseTargetPosition.current.x = originalSuitcasePosition.x;
-        suitcaseTargetPosition.current.y = originalSuitcasePosition.y;
-        suitcaseTargetPosition.current.z = originalSuitcasePosition.z;
+          suitcaseRef.current.rotation.x = 0;
+          suitcaseRef.current.rotation.y = 0;
+          suitcaseRef.current.rotation.z = 0;
+        }
 
-        suitcaseRef.current.rotation.x = 0;
-        suitcaseRef.current.rotation.y = 0;
-        suitcaseRef.current.rotation.z = 0;
+        suitcaseRef.current.position.lerp(suitcaseTargetPosition.current, lerpFactor);
+
+        //テクスチャの交換など
+
+        //スーツケースを消して、背景を描画
+        // suitcaseShaderMaterial.visible = false;
+        // gl.setRenderTarget(backRenderTarget);
+        // gl.render(scene, camera);
+        // suitcaseShaderMaterial.uniforms.uEffectTexture.value = backRenderTarget.texture;
+
+        //スーツケースの背面を描画
+        // suitcaseShaderMaterial.side = THREE.BackSide;
+        // suitcaseShaderMaterial.visible = true;
+        // gl.setRenderTarget(mainRenderTarget);
+        // gl.render(scene, camera);
+        // suitcaseShaderMaterial.uniforms.uEffectTexture.value = mainRenderTarget.texture;
+        // suitcaseShaderMaterial.side = THREE.FrontSide;
+
+        //最終的にスーツケースは可視化
+        // suitcaseShaderMaterial.visible = true;
       }
-    }
+      // gl.setRenderTarget(null);
 
-    suitcaseRef.current?.position.lerp(suitcaseTargetPosition.current, lerpFactor);
-  });
+      // gl.render(scene, camera);
+    }),
+    1
+  );
 
   return (
     <group ref={group} {...props} dispose={null}>

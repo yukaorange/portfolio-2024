@@ -79,7 +79,8 @@ void main() {
   int row = int(floor(scrollingUv.y * 5.0));//テクスチャは5行に分かれたテキストであるため。
   float speed = uSpeed * (1.0 / uRowLengths[row]);//各行にふさわしいスピードを設定
   float rowLength = uRowLengths[row];
-  float scrollingOffset = fract(uTime * speed);
+
+  float scrollingOffset = fract(uTime * 2.0 * speed);
 
   scrollingUv.x = fract((scrollingUv.x + scrollingOffset));
   float compressdX = scrollingUv.x * rowLength;//各行の空白部分はサンプリングしないので、その部分を圧縮
@@ -87,11 +88,14 @@ void main() {
 
   //singleScreenのテロップに合っても同様(速度は調整)
   vec2 singleScrollingUv = singleScreenOptimizedTelopUv;
+
   int singleRow = int(floor(singleScrollingUv.y * 5.0));//テクスチャは5行に分かれたテキストであるため。
-  speed = uSpeed * (2.4 / uRowLengths[row]);
-  scrollingOffset = fract(uTime * speed);
+  speed = uSpeed * (1.0 / uRowLengths[singleRow]);
+
   singleScrollingUv.x = fract((singleScrollingUv.x + scrollingOffset));
+
   float singleCompressdX = singleScrollingUv.x * rowLength;
+
   singleScrollingUv.x = mod(singleCompressdX + scrollingOffset, rowLength);
 
   // vec4 scrollingDiffuseColor = texture2D(uTextures[0], scrollingUv);//glitchでサンプリングをずらすため、diffuseの決定は後述にまわす(下記テロップ画像アニメーション)
@@ -266,7 +270,7 @@ void main() {
   vec4 scrollingDiffuseColorNoise = texture2D(uTelopTexture, scrollingUv + glitchOffset);
 
   //簡易crt加工
-  scrollingDiffuseColorNoise.rgb = crtEffect(fullScreenUv, vec2(1280, 960), scrollingDiffuseColorNoise.rgb, 1.7);
+  scrollingDiffuseColorNoise.rgb = crtEffect(fullScreenUv, vec2(1280, 960), scrollingDiffuseColorNoise.rgb, 1.67);
 
   // vec4 scrollingDiffuseColor = texture2D(uTelopTexture, scrollingUv);
 
@@ -335,13 +339,13 @@ void main() {
   if(activepage == 2.0 // gallery page
   ) {
     if(shouldShowNoise) {
-      color = mix(color, noiseColor, noiseIntensity * 0.6);
+      color = mix(color, mix(color, noiseColor, 0.5), noiseIntensity * 0.25);
     };
   }
 
   //----------最終的な明度調整----------
-  //(スクロール速度による明度強化も含む)
-  colorIntensity = 0.6 + 0.4 * clamp(uVelocity, 0.0, 1.0);
+  //(スクロール速度による明度強化も含む)・・・ｋはあってもなくてもいい
+  colorIntensity = 0.9 + 0.1 * clamp(uVelocity, 0.0, 1.0);
 
   if(uDevice == 1.0) {//@mobile
     colorIntensity *= 1.18;

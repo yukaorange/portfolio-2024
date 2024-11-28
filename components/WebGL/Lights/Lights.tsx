@@ -31,7 +31,7 @@ export const Lights = ({ device }: LightProps) => {
   // });
 
   const responsiveIntentsity = device == 'mobile' ? 200 : 100;
-  const responsivePositionZ = device == 'mobile' ? 4 : 2.5;
+  const responsivePositionZ = device == 'mobile' ? 1.25 : 2.5;
 
   const light1 = {
     x: 0,

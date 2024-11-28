@@ -9,8 +9,10 @@ uniform float uFrasnelBias;
 uniform vec2 uResolution;
 // uniform vec2 uTextureResolution;
 uniform sampler2D uTexture;
+uniform sampler2D uEffectTexture;
 
 #pragma glslify: fresnel = require('../utils/fresnel.glsl');
+#pragma glslify: radialRainbow = require('../utils/radialRainbow.glsl');
 
 void main() {
   vec2 fragCoord = gl_FragCoord.xy / uResolution.xy;
@@ -24,30 +26,33 @@ void main() {
 
   //ベースとなる色
   vec3 textureColor = texture2D(uTexture, suitcaseUv).rgb;
+
   //法線カラー
   vec3 normalColor = vec3(normal);
 
-  //----------エッジ検出----------
+  //虹色
+  vec4 rainbow = radialRainbow(fragCoord, uTime * 0.1);
+
+  //----------エッジ検出と色の作成----------
 
   vec3 dx = dFdx(normalColor);
   vec3 dy = dFdy(normalColor);
+
   float edgeIntensity = length(dx) + length(dy);
-  edgeIntensity = smoothstep(0.0, 1.0, edgeIntensity * 4.0);
+
+  edgeIntensity = smoothstep(0.0, 1.0, edgeIntensity * 10.0);
+
+  //エッジカラー作成
+  vec3 edgeColor = rainbow.rgb * edgeIntensity * 0.64;
 
   //----------最終出力の決定----------
   vec3 color;
 
-  if(floor(uIsScrollEnd) == 1.0) {
-    color = vec3(fresnelValue);
+  if(uIsScrollEnd == 1.0) {
+    color = mix(edgeColor, vec3(fresnelValue) + textureColor + vec3(fresnelValue * rainbow.r * 0.162 * 0.4, fresnelValue * rainbow.g * 0.22 * 0.4, fresnelValue * rainbow.b * 0.08 * 0.4), fresnelValue);//フレネルの値が高い部分（反射が強い部分）は、なんちゃってゲーミングデバイスの光を出している。
   } else {
     color = textureColor;
   }
-
-  vec3 test;
-
-  test = vec3(edgeIntensity + fresnelValue);
-
-  color = test;
 
   gl_FragColor = vec4(color, 1.0);
 

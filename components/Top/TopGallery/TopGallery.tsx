@@ -12,6 +12,8 @@ import { SpeedMeter } from '@/components/Top/TopGallery/SpeedMeter/SpeedMeter';
 import { galleryRoundedIndex } from '@/store/galleryProgressAtom';
 
 export const Topgallery = () => {
+  // console.log('re rendered : top gallery');
+
   const sectionRef = useRef<HTMLDivElement>(null);
   const lastRoundedIndexRef = useRef<number>(0);
   const { currentProgressRef, targetProgressRef, setTargetProgress } = useScrollVelocity();

@@ -4,6 +4,8 @@ import { useRecoilValue } from 'recoil';
 import * as THREE from 'three';
 
 import { useTransitionProgress } from '@/app/TransitionContextProvider';
+import { useFrameRate } from '@/hooks/useFrameRate';
+import { fps } from '@/store/fpsAtom';
 import { currentPageState } from '@/store/pageTitleAtom';
 import { isGallerySectionAtom } from '@/store/scrollAtom';
 
@@ -16,6 +18,10 @@ interface ResponsiveCameraProps {
 
 export const ResponsiveCamera = ({ position, lookAt, near, far }: ResponsiveCameraProps) => {
   // console.log('re rendered : responsive camera' + performance.now());
+
+  //フレームレート制限ロジック導入
+  const frameRate = useRecoilValue(fps);
+  const { createFrameCallback } = useFrameRate({ fps: frameRate });
 
   const { camera } = useThree();
   const isGallerySection = useRecoilValue(isGallerySectionAtom);
@@ -85,30 +91,32 @@ export const ResponsiveCamera = ({ position, lookAt, near, far }: ResponsiveCame
     cameraRef.current.updateProjectionMatrix();
   }, [near, far]);
 
-  useFrame((state, delta) => {
-    const lerpFactor = 1.0 - Math.pow(0.1, delta);
-    //0.0秒: 1.0 - Math.pow(0.2, 0.0) = 0.0  // 開始
-    //0.2秒: 1.0 - Math.pow(0.2, 0.2) ≈ 0.63 // 残り37%
-    //0.4秒: 1.0 - Math.pow(0.2, 0.4) ≈ 0.86 // 残り14%
-    //0.6秒: 1.0 - Math.pow(0.2, 0.6) ≈ 0.95 // 残り5%
+  useFrame(
+    createFrameCallback((state, delta) => {
+      const lerpFactor = 1.0 - Math.pow(0.1, delta);
+      //0.0秒: 1.0 - Math.pow(0.2, 0.0) = 0.0  // 開始
+      //0.2秒: 1.0 - Math.pow(0.2, 0.2) ≈ 0.63 // 残り37%
+      //0.4秒: 1.0 - Math.pow(0.2, 0.4) ≈ 0.86 // 残り14%
+      //0.6秒: 1.0 - Math.pow(0.2, 0.6) ≈ 0.95 // 残り5%
 
-    //ページトランジション中はカメラの位置を動かさな
-    if (isTransitioning.current == true) {
-      return;
-    }
+      //ページトランジション中はカメラの位置を動かさな
+      if (isTransitioning.current == true) {
+        return;
+      }
 
-    cameraRef.current.position.lerp(targetPosition.current, lerpFactor);
+      cameraRef.current.position.lerp(targetPosition.current, lerpFactor);
 
-    cameraRef.current.lookAt(targetLookAt.current);
+      cameraRef.current.lookAt(targetLookAt.current);
 
-    cameraRef.current.fov = THREE.MathUtils.lerp(
-      cameraRef.current.fov,
-      targetFov.current,
-      lerpFactor
-    );
+      cameraRef.current.fov = THREE.MathUtils.lerp(
+        cameraRef.current.fov,
+        targetFov.current,
+        lerpFactor
+      );
 
-    cameraRef.current.updateProjectionMatrix();
-  });
+      cameraRef.current.updateProjectionMatrix();
+    })
+  );
 
   return null;
 };

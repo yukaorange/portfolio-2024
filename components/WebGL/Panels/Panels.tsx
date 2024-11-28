@@ -4,8 +4,10 @@ import React, { useMemo, useRef, useEffect, useState } from 'react';
 import { useRecoilValue } from 'recoil';
 import * as THREE from 'three';
 
+import { useFrameRate } from '@/hooks/useFrameRate';
 import panelFragment from '@/shaders/panel/fragment-panel.glsl';
 import panelVertex from '@/shaders/panel/vertex-panel.glsl';
+import { fps } from '@/store/fpsAtom';
 import { currentPageState } from '@/store/pageTitleAtom';
 import { isGallerySectionAtom } from '@/store/scrollAtom';
 import { deviceState } from '@/store/userAgentAtom';
@@ -35,8 +37,11 @@ export const Panels = ({
   const device = useRecoilValue(deviceState);
   const [shaderMaterial, setShaderMaterial] = useState<THREE.ShaderMaterial>();
   const currentPage = useRecoilValue(currentPageState);
-
   const isGallerySection = useRecoilValue(isGallerySectionAtom);
+
+  //フレームレート制限ロジック導入
+  const frameRate = useRecoilValue(fps);
+  const { createFrameCallback } = useFrameRate({ fps: frameRate });
 
   const { positions, scales, matrices, totalWidth, totalHeight } = useMemo(() => {
     const positions = [];
@@ -81,6 +86,7 @@ export const Panels = ({
     };
   }, [count, aspect]);
 
+  //パネル用マテリアルの生成と装着
   useEffect(() => {
     const material = new THREE.ShaderMaterial({
       uniforms: {
@@ -194,10 +200,14 @@ export const Panels = ({
   useEffect(() => {
     const handleResize = () => {
       if (!shaderMaterial) return;
-      shaderMaterial.uniforms.uResolution.value.set(
-        window.innerWidth * devicePixelRatio,
-        window.innerHeight * devicePixelRatio
+
+      const dpr = Math.min(window.devicePixelRatio, 2);
+
+      const resolution = new THREE.Vector2(window.innerWidth, window.innerHeight).multiplyScalar(
+        dpr
       );
+
+      shaderMaterial.uniforms.uResolution.value = resolution;
     };
 
     window.addEventListener('resize', handleResize);
@@ -207,27 +217,29 @@ export const Panels = ({
     };
   }, [shaderMaterial]);
 
-  useFrame((state) => {
-    if (shaderMaterial) {
-      const { velocityRef, singleProgress, isTransitioning } = animationControls;
+  useFrame(
+    createFrameCallback((state) => {
+      if (shaderMaterial) {
+        const { velocityRef, singleProgress, isTransitioning } = animationControls;
 
-      // console.log(
-      //   'single transition : ',
-      //   singleProgress.current,
-      //   'is Transition  :',
-      //   isTransitioning?.current,
-      //   '\n'
-      // );
+        // console.log(
+        //   'single transition : ',
+        //   singleProgress.current,
+        //   'is Transition  :',
+        //   isTransitioning?.current,
+        //   '\n'
+        // );
 
-      shaderMaterial.uniforms.uTime.value = state.clock.elapsedTime;
+        shaderMaterial.uniforms.uTime.value = state.clock.elapsedTime;
 
-      shaderMaterial.uniforms.uTransition.value = singleProgress.current;
+        shaderMaterial.uniforms.uTransition.value = singleProgress.current;
 
-      shaderMaterial.uniforms.uIsTransitioning.value = isTransitioning?.current == true ? 1 : 0;
+        shaderMaterial.uniforms.uIsTransitioning.value = isTransitioning?.current == true ? 1 : 0;
 
-      shaderMaterial.uniforms.uVelocity.value = Math.abs(velocityRef.current);
-    }
-  });
+        shaderMaterial.uniforms.uVelocity.value = Math.abs(velocityRef.current);
+      }
+    })
+  );
 
   if (!shaderMaterial) return null;
 

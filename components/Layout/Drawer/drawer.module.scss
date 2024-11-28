@@ -299,7 +299,7 @@
     position: absolute;
     top: 0;
     left: 0;
-    translate: 0% 0;
+    translate: calc(0% + 1px) 0; //+1pxは境界のスジを消すため
     z-index: -1;
   }
 

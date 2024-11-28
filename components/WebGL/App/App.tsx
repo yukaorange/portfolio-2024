@@ -11,7 +11,7 @@ const TextureLoader = () => {
 
 export const App = () => {
   return (
-    <Canvas gl={{ antialias: true, alpha: false }} shadows>
+    <Canvas  gl={{ antialias: true, alpha: false }} shadows>
       <Suspense fallback={null}>
         <TextureLoader />
         <Experience />
