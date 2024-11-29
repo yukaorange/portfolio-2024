@@ -10,15 +10,15 @@ import * as THREE from 'three';
 import { GLTF } from 'three-stdlib';
 
 import { useFrameRate } from '@/hooks/useFrameRate';
+import { useTransitionAnimation } from '@/hooks/useTransitionAnimation';
 import suitcaseFragment from '@/shaders/suitcase/fragment-suitcase.glsl';
 import suitcaseVertex from '@/shaders/suitcase/vertex-suitcase.glsl';
 import { fps } from '@/store/fpsAtom';
 import { isScrollEndAtom, isScrollStartAtom } from '@/store/scrollAtom';
+import { useSetModelLoaded } from '@/store/textureAtom';
 import { deviceState } from '@/store/userAgentAtom';
-import { AnimationControls } from '@/types/animation';
 
 import { ExtendedMaterial } from './ExtendedMaterial';
-import { useTransitionAnimation } from '@/hooks/useTransitionAnimation';
 
 type GLTFResult = GLTF & {
   nodes: {
@@ -56,9 +56,20 @@ interface ModelProps extends GroupProps {
 }
 
 export const Model = ({ textures, ...props }: ModelProps) => {
+  const device = useRecoilValue(deviceState);
   // console.log('re rendered : model' + performance.now());
   const { nodes, materials, animations } = useGLTF('/models/scene_animation_02.glb') as GLTFResult;
-  const device = useRecoilValue(deviceState);
+
+  //ロード完了を通知
+  const setModelLoaded = useSetModelLoaded();
+  useEffect(() => {
+    //ロード完了を通知（useGLTFによるnodesの変更はロード完了時に発生するので、この通知は一度だけ起こる算段）
+    if (nodes && Object.keys(nodes).length > 0) {
+      console.log('loaded', Object.keys(nodes).length);
+      setModelLoaded(true);
+      console.log('model loaded  initialize is going to be standby');
+    }
+  }, [nodes, setModelLoaded]);
 
   //ページ状態の変化を検知して動くアニメーションの制御
   const scrollStartTransitionef = useTransitionAnimation({
@@ -196,7 +207,7 @@ export const Model = ({ textures, ...props }: ModelProps) => {
   useEffect(() => {
     const handleResize = () => {
       if (!suitcaseMaterial) return;
-      console.log('resize @ suitcase in Model  ');
+      // console.log('resize @ suitcase in Model  ');
       const dpr = Math.min(window.devicePixelRatio, 2);
       suitcaseMaterial.uniforms.uResolution.value.set(
         window.innerWidth * dpr,
@@ -220,7 +231,7 @@ export const Model = ({ textures, ...props }: ModelProps) => {
     };
 
     const POSITIONS = {
-      mobile: [-0.55, 3.45, -1.80],
+      mobile: [-0.55, 3.45, -1.8],
       desktop: [-0.55, 3.15, 1.35],
     };
 
@@ -246,7 +257,7 @@ export const Model = ({ textures, ...props }: ModelProps) => {
 
       //線形補完の係数
       // const lerpFactor = 1.0 - Math.pow(0.001, delta);
-      const lerpFactor = 0.4;
+      const lerpFactor = 0.1; //スーツケースの移動は早くていい
 
       //スーツケースの初期位置
       const originalSuitcasePosition = {
@@ -264,7 +275,7 @@ export const Model = ({ textures, ...props }: ModelProps) => {
         suitcaseShaderMaterial.uniforms.uIsScrollEnd.value = scrollendTransitionef.current;
 
         //----------スーツケースの位置決定----------
-        if (scrollendTransitionef.current == 1) {
+        if (scrollendTransitionef.current >= 0.25) {
           //1だと遅く感じる。まあこの辺は微調整で
 
           //フッター付近でのふるまい

@@ -51,22 +51,29 @@ class ExtendedMaterial extends THREE.MeshStandardMaterial {
       //y方向で差を設ける
       vec4 worldPosition = modelMatrix * vec4(transformed, 1.0);
       
-      float worldHeight = (worldPosition.y - uBoundsMin.y) / (uBoundsMax.y - uBoundsMin.y);
+      float normalizedWorldHeight = (worldPosition.y - uBoundsMin.y) / (uBoundsMax.y - uBoundsMin.y);
+
+      float noise = snoise(worldPosition.xz * 0.1 + uTime);
       
       float glitchTime = uTime * 10.0;
       
-      float glitchStrength = sin(glitchTime) + sin(glitchTime * 3.4) + sin(glitchTime * 8.7);
+      float glitchStrength = sin(glitchTime) + sin(glitchTime * 3.4) + sin(glitchTime * 8.7) + sin(glitchTime * 19.3) + sin(glitchTime * 30.2);
 
-      glitchStrength *= 0.15;//強度を調整
+      float applyStrength = fract(normalizedWorldHeight + uTime * 100.0);//下から上に行くほど強くなるようにする & 時間経過でずらす
+
+      glitchStrength *= 0.1;//強度を調整
       glitchStrength *= uEffectProgress;//進行度に応じて適用していく
+      glitchStrength *= applyStrength;
+      glitchStrength *= noise;
+
+
+
 
       float glitchRandom = random2D(worldPosition.xz + uTime);//0 - 1のランダム値
 
       worldPosition.x += (glitchRandom - 0.5) *  glitchStrength;//0.5を引くことで、ランダム値の範囲を-0.5~0.5にする
-      // worldPosition.z += (random2D(worldPosition.xz + uTime) - 0.5) *  glitchStrength;
-      
-      // worldPosition.z += (random2D(worldPosition.zx + uTime) - 0.5) * glitchStrength;     
-      
+      worldPosition.z += (random2D(worldPosition.xz + uTime) - 0.5) *  glitchStrength;
+            
       // #ifdef USE_BATCHING
       
       // mvPosition = batchingMatrix * mvPosition;

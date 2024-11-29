@@ -5,6 +5,8 @@ uniform float uAspect;
 uniform float uStrength;
 uniform float uRadius;
 uniform float uThreshold;
+uniform float uTime;
+uniform float uLoadingTransition;
 uniform vec2 uResolution;
 uniform sampler2D tDiffuse;
 varying vec2 vUv;
@@ -56,7 +58,7 @@ void main() {
   float brightness = getLuminance(blurred);
 
   brightness = brightness > uThreshold ? 1.0 : 0.0;
-  
+
   vec3 blend = color + blurred * uStrength * step(uThreshold, brightness);
   color = blend;
 

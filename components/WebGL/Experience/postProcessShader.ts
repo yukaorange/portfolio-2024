@@ -14,6 +14,8 @@ export const postProcessShader = (widdh: number, height: number, device: string)
       uRadius: { value: checkDevice == 1.0 ? 1.98 : 1.4 }, //bloom範囲
       uAspect: { value: widdh / height },
       uResolution: { value: { x: widdh, y: height } },
+      uLoadingTransition: { value: 0 },
+      uTime: { value: 0 },
     },
     vertexShader: `
     varying vec2 vUv;

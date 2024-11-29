@@ -5,17 +5,19 @@ import { useFrame, useThree } from '@react-three/fiber';
 import React, { useEffect, useState, useRef } from 'react';
 import { useRecoilValue } from 'recoil';
 import * as THREE from 'three';
+import { SMAAPass, ShaderPass } from 'three/examples/jsm/Addons.js';
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer';
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass';
-import { ShaderPass } from 'three/examples/jsm/Addons.js';
+
 import { postProcessShader } from '@/components/WebGL/Experience/postProcessShader';
-import { SMAAPass } from 'three/examples/jsm/Addons.js';
 import { Floor } from '@/components/WebGL/Floor/Floor';
 import { Lights } from '@/components/WebGL/Lights/Lights';
 import { Model } from '@/components/WebGL/Model/Model';
 import { Panels } from '@/components/WebGL/Panels/Panels';
 import { useFrameRate } from '@/hooks/useFrameRate';
+import { useTransitionAnimation } from '@/hooks/useTransitionAnimation';
 import { fps } from '@/store/fpsAtom';
+import { intializedCompletedAtom } from '@/store/initializedAtom';
 import { useScene } from '@/store/textureAtom';
 import { deviceState } from '@/store/userAgentAtom';
 
@@ -28,8 +30,15 @@ export const Experience = () => {
   const lastWidthRef = useRef<number>(window.innerWidth);
   const lastTimeRef = useRef<number>(0);
 
+  //ローディング完了を検知して動くアニメーションの制御
+  const loadingTransitionRef = useTransitionAnimation({
+    trigger: intializedCompletedAtom,
+    duration: 1,
+  });
+
   //ポストプロセス
   const [composer, setComposer] = useState<EffectComposer | null>(null);
+  const customPassRef = useRef<ShaderPass | null>(null);
 
   //フレームレート制限ロジック導入
   const device = useRecoilValue(deviceState);
@@ -52,7 +61,6 @@ export const Experience = () => {
     suitcaseTexture: suitcaseTexture || new THREE.Texture(),
     noiseTexture: noiseTexture || new THREE.Texture(),
   };
-
   const floorTextureMap = {
     roughness: floorRoughnessTexture || new THREE.Texture(),
     normal: floorNormalTexture || new THREE.Texture(),
@@ -98,6 +106,7 @@ export const Experience = () => {
         device
       )
     );
+    customPassRef.current = customPass;
 
     //出力
     //アンチエイリアス
@@ -132,7 +141,7 @@ export const Experience = () => {
     return () => {
       window.removeEventListener('resize', handleResize);
     };
-  }, [gl, scene, camera]);
+  }, [gl, scene, camera, device]);
 
   // render
   useFrame(
@@ -143,50 +152,28 @@ export const Experience = () => {
       //時間経過を記録する変数:delta timeを作成。
       const currentTime = state.clock.getElapsedTime();
 
-      // const deltaTime = currentTime - lastTimeRef.current;
+      const deltaTime = currentTime - lastTimeRef.current;
 
       lastTimeRef.current = currentTime;
 
-      // console.log(deltaTime);
+      if (customPassRef.current) {
+        customPassRef.current.uniforms.uTime.value = currentTime;
 
-      // console.log(
-      //   'check status : ',
-      //   '\n',
-      //   // 'delta time',
-      //   // deltaTime,
-      //   // '\n',
-      //   // 'current page : ',
-      //   // currentPage,
-      //   // '\n',
-      //   'velocity : ',
-      //   velocityRef.current, //スピードメーター
-      //   'increase Progress : ',
-      //   increaseProgress.current, //トランジション時に0->1
-      //   '\n',
-      //   'decrease progress : ',
-      //   decreaseProgress.current, //トランジション時に1->0
-      //   '\n',
-      //   'single Progress :',
-      //   singleProgress.current, //トランジション時に0->1->0
-      //   '\n',
-      //   'obsever page change :',
-      //   observePageTransitionRef.current, //ページ切り替わり検知で0->1（duration 1000ms）,その後0
-      //   // '\n',
-      //   // 'indicatorOfScrollStart : ',
-      //   // indicatorOfScrollStart, //メインビューエリアを離れたらtrue
-      //   // '\n',
-      //   // 'indicatorOfScrollEnd : ',
-      //   // indicatorOfScrollEnd, //フッターに到達したらtrue
-      //   '\n',
-      //   'gallery current progress : ',
-      //   currentProgressRef.current, //top pageのgalleryの進行度
-      //   '\n',
-      //   'gallery target progress : ',
-      //   targetProgressRef.current, //top pageのgalleryのインデックス(target)
-      //   '\n',
-      //   'gallery current : ',
-      //   Math.round(currentProgressRef.current) //top pageのgalleryのインデックス
-      // );
+        customPassRef.current.uniforms.uLoadingTransition.value = loadingTransitionRef.current;
+      }
+
+      console.log(
+        'check status : ',
+        '\n',
+        'currentTime : ',
+        currentTime,
+        '\n',
+        'deltaTime : ',
+        deltaTime,
+        '\n',
+        'loadingTransitionRef :',
+        loadingTransitionRef.current
+      );
 
       composer.render(delta);
     }),

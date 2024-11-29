@@ -8,9 +8,6 @@ import { isScrollStartAtom, isGallerySectionAtom, isScrollEndAtom } from '@/stor
 const ScrollContext = createContext({
   position: { current: 0 },
   ratio: { current: 0 },
-  // indicatorOfScrollStart: false,
-  // indicatorOfScrollEnd: false,
-  // indicatorOfGallerySection: false,
 }); //position,ratioはRefオブジェクトなので、再レンダリングを望まないコンポーネントで使用（DrumRoll等）
 
 interface ScrollProviderProps {
@@ -19,6 +16,7 @@ interface ScrollProviderProps {
 
 //スクロール進捗とセクションへの侵入を監視する
 export const ScrollProvider = ({ children }: ScrollProviderProps) => {
+  //--------供給するのはRef。コンポーネントの再レンダリングを望まないため--------
   const scrollRef = useRef<number>(0);
   const scrollRatioRef = useRef<number>(0);
   const gallerySectionScrollYRef = useRef<number>(0);
@@ -28,14 +26,13 @@ export const ScrollProvider = ({ children }: ScrollProviderProps) => {
   const prevScrollEndRef = useRef(false);
 
   const currentPage = useRecoilValue(currentPageState);
+
+  //----------Recoilの状態を更新するための関数を取得----------
   const setIsScrollStart = useSetRecoilState(isScrollStartAtom);
   const setIsGallerySection = useSetRecoilState(isGallerySectionAtom);
   const setIsScrollEnd = useSetRecoilState(isScrollEndAtom);
 
-  // const [indicatorOfScrollStart, setIndicatorOfScrollStart] = useState<boolean>(false);
-  // const [indicatorOfGallerySection, setIndicatorOfGallerySection] = useState<boolean>(false);
-  // const [indicatorOfScrollEnd, setIndicatorOfScrollEnd] = useState<boolean>(false);
-
+  //----------ギャラリーセクションのY座標を計算----------
   const calculateGalleryScrollY = useCallback(() => {
     const gallerySection = document.querySelector('[data-section="gallery"]') || null;
 
@@ -46,6 +43,7 @@ export const ScrollProvider = ({ children }: ScrollProviderProps) => {
     gallerySectionScrollYRef.current = gallerySectionY || 0;
   }, []);
 
+  //----------スクロール連動のメソッドはコチラ ----------
   const updateScrollValues = useCallback(() => {
     const viewportHeight = document.documentElement.clientHeight;
     const documentHeight = document.documentElement.scrollHeight;
@@ -82,6 +80,7 @@ export const ScrollProvider = ({ children }: ScrollProviderProps) => {
     // console.log('gallery section y :', gallerySectionScrollYRef.current);
   }, [setIsScrollStart, setIsGallerySection, setIsScrollEnd]);
 
+  //----------主にページ遷移時にリセットするため---------
   useEffect(() => {
     // console.log(currentPage);
 
@@ -89,6 +88,7 @@ export const ScrollProvider = ({ children }: ScrollProviderProps) => {
     updateScrollValues();
   }, [currentPage, calculateGalleryScrollY, updateScrollValues]);
 
+  //----------リスナへの登録----------
   useEffect(() => {
     const handleScroll = () => {
       updateScrollValues();
@@ -103,9 +103,6 @@ export const ScrollProvider = ({ children }: ScrollProviderProps) => {
       value={{
         position: scrollRef,
         ratio: scrollRatioRef,
-        // indicatorOfScrollStart: indicatorOfScrollStart,
-        // indicatorOfScrollEnd: indicatorOfScrollEnd,
-        // indicatorOfGallerySection: indicatorOfGallerySection,
       }}
     >
       {children}

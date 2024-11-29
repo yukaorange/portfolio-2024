@@ -1,7 +1,6 @@
 'use client';
 
-import GSAP from 'gsap';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { RecoilRoot } from 'recoil';
 
 import styles from '@/app/layout.module.scss';
@@ -22,8 +21,6 @@ import { useNavigationAtomUpdater } from '@/hooks/useNavigationAtomUpdater';
 import { ScrollVelocityProvider } from './ScrollVelocityProvider';
 
 export const LayoutClient = ({ children }: Readonly<{ children: React.ReactNode }>) => {
-  const loadingRef = useRef<HTMLDivElement>(null);
-  const [isLoading, setIsLoading] = useState(true);
   const [isMounted, setIsMounted] = useState(false);
 
   const NavigationHandler = () => {
@@ -32,54 +29,33 @@ export const LayoutClient = ({ children }: Readonly<{ children: React.ReactNode 
   };
 
   useEffect(() => {
-    const loadData = async () => {
-      try {
-        // ここにデータ取得のロジックを追加
-      } catch (err) {
-        console.error('Error fetching data:', err);
-      } finally {
-        if (loadingRef.current) {
-          GSAP.to(loadingRef.current, {
-            opacity: 0,
-            duration: 0.5,
-            onComplete: () => {
-              setIsLoading(false);
-              setIsMounted(true);
-            },
-          });
-        }
-      }
-    };
-    loadData();
+    setIsMounted(true);
   }, []);
 
   return (
     <>
       <RecoilRoot>
-        {isLoading ? (
-          <Loading ref={loadingRef} />
-        ) : (
-          <TransitionContextProvider>
-            <ScrollProvider>
-              <ScrollVelocityProvider>
-                <NavigationHandler />
-                <div className={styles.layout}>
-                  <UserAgent />
-                  {isMounted && <ViewPortCalculator />}
-                  <Header />
-                  <Drawer />
-                  <Filters />
-                  <TransitionOverlay />
-                  <div className={`${styles.layout__content} layout__content`}>{children}</div>
-                  <div className={styles.layout__webgl}>
-                    <App />
-                  </div>
-                  <Footer />
+        <TransitionContextProvider>
+          <ScrollProvider>
+            <ScrollVelocityProvider>
+              <NavigationHandler />
+              <div className={styles.layout}>
+                <UserAgent />
+                {isMounted && <ViewPortCalculator />}
+                <Loading />
+                <Header />
+                <Drawer />
+                <Filters />
+                <TransitionOverlay />
+                <div className={`${styles.layout__content} layout__content`}>{children}</div>
+                <div className={styles.layout__webgl}>
+                  <App />
                 </div>
-              </ScrollVelocityProvider>
-            </ScrollProvider>
-          </TransitionContextProvider>
-        )}
+                <Footer />
+              </div>
+            </ScrollVelocityProvider>
+          </ScrollProvider>
+        </TransitionContextProvider>
       </RecoilRoot>
     </>
   );

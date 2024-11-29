@@ -9,6 +9,8 @@
   --header-height: 0; //this value will be changed by js
 
   //z-index
+  --z-index-loading-overlay: 30000;
+  --z-index-loading: 31000;
   --z-index-header: 10000;
   --z-index-drawer: 1500;
   --z-index-menuarea: 1000;

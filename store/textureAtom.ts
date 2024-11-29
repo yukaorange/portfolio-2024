@@ -18,6 +18,9 @@ interface LoadedTextureInfo {
 
 import { Content } from '@/lib/microcms';
 
+//2024/11/29
+//blenderモデルのロード完了を管理するatomを追加
+
 //currentPageAtomが変更→currentTexturesSelectorが変更→useLoadTexturesが変更、結果として、loadedTexturesAtomが変更となり、テクスチャセットが更新される
 //App.tsxでuseSceneを使っているので、WebGLマウント時にテクスチャがロードされる
 
@@ -116,6 +119,16 @@ const noiseTextureAtom = atom<THREE.Texture | null>({
 const telopTextureAtom = atom<THREE.Texture | null>({
   key: 'telopTextureAtom',
   default: null,
+});
+
+export const modelLoadedAtom = atom<boolean>({
+  key: 'modelLoadedAtom',
+  default: false,
+});
+
+export const initialLoadingAtom = atom<boolean>({
+  key: 'initialLoadingAtom',
+  default: false,
 });
 
 const currentTexturesSelector = selector<TextureInfo[]>({
@@ -219,8 +232,10 @@ export const useFloorNormalTexture = () => useRecoilValue(floorNormalTextureAtom
 export const useNoiseTexture = () => useRecoilValue(noiseTextureAtom);
 export const useTelopTexture = () => useRecoilValue(telopTextureAtom);
 export const useFloorRoughnessTexture = () => useRecoilValue(floorRoughnessTextureAtom);
-
 export const useSetCurrentPage = () => useSetRecoilState(currentPageAtom); //WebGLにおける現在のページをセット
+export const useInitialLoading = () => useRecoilValue(initialLoadingAtom);
+export const useSetInitialLoading = () => useSetRecoilState(initialLoadingAtom);
+export const useSetModelLoaded = () => useSetRecoilState(modelLoadedAtom);
 
 export const useLoadTextures = () => {
   const setLoadedTextures = useSetRecoilState(loadedTexturesAtom);
@@ -321,23 +336,54 @@ export const useInitializeCurrentPage = () => {
 };
 
 export const useScene = () => {
+  //基本的にはcurrentPageの変更を契機に後続処理が発火する
   const currentPage = useCurrentPage();
   const setCurrentPage = useSetCurrentPage();
   const currentTextures = useCurrentTextures();
   const loadedTextures = useLoadTextures();
+  const setInitialLoading = useSetInitialLoading();
 
   // console.log(`loadedTextures : `, loadedTextures);
 
+  //----------固定で使用するテクスチャの用意 ----------
   const [characterTexture, suitcaseTexture] = useLoadCharacterAndSuitcaseTextures();
   const [floorNormalTexture, floorRoughnessTexture] = useLoadFloorTextures();
-
   const noiseTexture = useLoadNoiseTexture();
   const telopTexture = useLoadTelopTexture();
 
+  //----------ページ毎に変化テクスチャの用意 ----------
   //ギャラリーのコンテンツをセットする
   const setGalleryContents = useSetGalleryContents() as SetterOrUpdater<Content[]>;
 
+  //----------初回アクセス時に発火する処理 ----------
   useInitializeCurrentPage(); //初回アクセス時currentPageを更新しする。いかなるページであっても、そのページにふさわしいテクスチャをセットする
+
+  //----------ローディングアニメーションの契機 ----------
+  useEffect(() => {
+    //全てのテクスチャがロードされたら、initialLoadingAtomがtrueとなる。ローディングアニメーションのコンポーネントはこのatomを監視している。
+    const allTextureLoaded =
+      loadedTextures.length === TOTAL_TEXTURES &&
+      characterTexture !== null &&
+      suitcaseTexture !== null &&
+      floorNormalTexture !== null &&
+      floorRoughnessTexture !== null &&
+      noiseTexture !== null &&
+      telopTexture !== null;
+
+    if (allTextureLoaded) {
+      console.log('All Texture Loaded , initialize is going to be standby');
+      setInitialLoading(true);
+    }
+  }, [
+    loadedTextures,
+    characterTexture,
+    suitcaseTexture,
+    floorNormalTexture,
+    floorRoughnessTexture,
+    noiseTexture,
+    telopTexture,
+    setInitialLoading,
+  ]);
 
   return {
     currentPage,
