@@ -4,6 +4,9 @@ import React, { useMemo, useRef, useEffect, useState } from 'react';
 import { useRecoilValue } from 'recoil';
 import * as THREE from 'three';
 
+import { useScrollVelocity } from '@/app/ScrollVelocityProvider';
+import { useTransitionProgress } from '@/app/TransitionContextProvider';
+
 import { useFrameRate } from '@/hooks/useFrameRate';
 import panelFragment from '@/shaders/panel/fragment-panel.glsl';
 import panelVertex from '@/shaders/panel/vertex-panel.glsl';
@@ -11,7 +14,6 @@ import { fps } from '@/store/fpsAtom';
 import { currentPageState } from '@/store/pageTitleAtom';
 import { isGallerySectionAtom } from '@/store/scrollAtom';
 import { deviceState } from '@/store/userAgentAtom';
-import { AnimationControls } from '@/types/animation';
 
 interface PanelsProps {
   loadedTextures: {
@@ -20,16 +22,18 @@ interface PanelsProps {
   }[];
   noiseTexture: THREE.Texture;
   telopTexture: THREE.Texture;
-  animationControls: AnimationControls;
 }
 
-export const Panels = ({
-  loadedTextures,
-  animationControls,
-  noiseTexture,
-  telopTexture,
-}: PanelsProps) => {
+export const Panels = ({ loadedTextures, noiseTexture, telopTexture }: PanelsProps) => {
   // console.log('re rendered : panels' + performance.now());
+  //リアルタイム操作の値
+  const { velocityRef } = useScrollVelocity();
+  //ページ遷移時の値
+
+  const {
+    singleProgress,
+    isTransitioning,
+  } = useTransitionProgress();
 
   const ref = useRef<THREE.InstancedMesh>(null);
   const count = 7;
@@ -220,7 +224,7 @@ export const Panels = ({
   useFrame(
     createFrameCallback((state) => {
       if (shaderMaterial) {
-        const { velocityRef, singleProgress, isTransitioning } = animationControls;
+        // const { velocityRef, singleProgress, isTransitioning } = animationControls;
 
         // console.log(
         //   'single transition : ',

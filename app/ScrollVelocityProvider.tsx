@@ -77,7 +77,7 @@ export const ScrollVelocityProvider = ({ children }: { children: React.ReactNode
     const animate = (currentTime: number) => {
       const diff = targetProgressRef.current - currentProgressRef.current;
 
-      currentProgressRef.current += diff * 0.1;
+      currentProgressRef.current += diff * 0.26; //0.2から0.3くらいが丁度いい補完スピード
 
       if (lastTimeRef.current !== 0) {
         deltaTimeRef.current = (currentTime - lastTimeRef.current) / 1000;

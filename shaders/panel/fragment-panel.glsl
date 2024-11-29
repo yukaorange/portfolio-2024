@@ -145,6 +145,7 @@ void main() {
 
   //グリッド線画面(aboutページ用)
   vec4 gridColor = vec4(createGrid(fullScreenUv, vec2(8.0, 6.0), uTime), 1.0);
+
   vec4 gridColorSingle = vec4(createGrid(singleScreenUv, vec2(4.0, 3.0), uTime * 3.0), 1.0);
 
   //--------画面切替えアニメーション---------
@@ -238,11 +239,10 @@ void main() {
 
   } else if(activepage == 2.0) {
 
-    index = floor(index - changeStep);//切り替わる度に表字画面が変わる
+    index = floor(index - changeStep * 2.0);//切り替わる度に表字画面が変わる
 
     if(mod(index, 10.0) == 0.0) {
       checkerBoardDiffuseColor = texture2D(uTextures[0], singleOptimizedUv0 + glitchOffset);
-
     } else if(mod(index, 10.0) == 1.0) {
       checkerBoardDiffuseColor = texture2D(uTextures[1], singleOptimizedUv1 + glitchOffset);
 
@@ -270,7 +270,7 @@ void main() {
   vec4 scrollingDiffuseColorNoise = texture2D(uTelopTexture, scrollingUv + glitchOffset);
 
   //簡易crt加工
-  scrollingDiffuseColorNoise.rgb = crtEffect(fullScreenUv, vec2(1280, 960), scrollingDiffuseColorNoise.rgb, 1.67);
+  scrollingDiffuseColorNoise.rgb = crtEffect(fullScreenUv, vec2(1280, 960), scrollingDiffuseColorNoise.rgb, 0.98);
 
   // vec4 scrollingDiffuseColor = texture2D(uTelopTexture, scrollingUv);
 
@@ -298,7 +298,7 @@ void main() {
     //モノクロに寄せる
     finalDiffuse.rgb = mix(finalDiffuse.rgb, vec3(dot(finalDiffuse.rgb, vec3(0.299, 0.587, 0.114))), 0.64);
     //明度を落とす（可読性の観点から）
-    finalDiffuse.rbg *= 0.25;
+    finalDiffuse.rbg *= 0.223;
   }
 
   if(uIsGallerySection == 1.0) {//ギャラリーのセクションに差し掛かっている
@@ -310,7 +310,7 @@ void main() {
   vec3 color = finalDiffuse.rgb;
 
   //グレイン
-  color.rgb = blendOverlay(color.rgb, vec3(hashValue), 0.16);
+  color.rgb = blendOverlay(color.rgb, vec3(hashValue), 0.14);
 
   // 点滅
   // color *= step(0.0, sin(fullScreenUv.y * 5.0 - uTime * 2.0 * noise)) * 0.05 + 0.98;
@@ -344,8 +344,9 @@ void main() {
   }
 
   //----------最終的な明度調整----------
-  //(スクロール速度による明度強化も含む)・・・ｋはあってもなくてもいい
-  colorIntensity = 0.9 + 0.1 * clamp(uVelocity, 0.0, 1.0);
+  //(スクロール速度による明度強化も含む)・・・あってもなくてもいい
+  colorIntensity = 0.80;
+  // colorIntensity = 0.9 + 0.1 * clamp(uVelocity, 0.0, 1.0);
 
   if(uDevice == 1.0) {//@mobile
     colorIntensity *= 1.18;

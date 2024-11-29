@@ -6,12 +6,12 @@ export const postProcessShader = (widdh: number, height: number, device: string)
   const config = {
     uniforms: {
       tDiffuse: { value: null },
-      uGamma: { value: 1.08 },
+      uGamma: { value: 1.3 },
       uOffset: { value: 0.5 },
       uDarkness: { value: 0.8 },
-      uThreshold: { value: checkDevice == 1.0 ? 0.1 : 0.1 }, //閾値(現在、ほぼ全域)
-      uStrength: { value: checkDevice == 1.0 ? 0.25 : 0.33 }, //bloom
-      uRadius: { value: checkDevice == 1.0 ? 2.2 : 1.1 }, //bloom
+      uThreshold: { value: checkDevice == 1.0 ? 0.1 : 0.2 }, //閾値(現在、ほぼ全域)
+      uStrength: { value: checkDevice == 1.0 ? 0.15 : 0.165 }, //bloom強度
+      uRadius: { value: checkDevice == 1.0 ? 1.98 : 1.4 }, //bloom範囲
       uAspect: { value: widdh / height },
       uResolution: { value: { x: widdh, y: height } },
     },

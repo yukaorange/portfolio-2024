@@ -7,44 +7,34 @@ import { useRecoilValue } from 'recoil';
 import * as THREE from 'three';
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer';
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass';
-// import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass';
-import { OutputPass, ShaderPass } from 'three/examples/jsm/Addons.js';
+import { ShaderPass } from 'three/examples/jsm/Addons.js';
 import { postProcessShader } from '@/components/WebGL/Experience/postProcessShader';
 import { SMAAPass } from 'three/examples/jsm/Addons.js';
-import { useScrollVelocity } from '@/app/ScrollVelocityProvider';
-import { useTransitionProgress } from '@/app/TransitionContextProvider';
 import { Floor } from '@/components/WebGL/Floor/Floor';
 import { Lights } from '@/components/WebGL/Lights/Lights';
 import { Model } from '@/components/WebGL/Model/Model';
 import { Panels } from '@/components/WebGL/Panels/Panels';
 import { useFrameRate } from '@/hooks/useFrameRate';
-import { useTransitionAnimation } from '@/hooks/useTransitionAnimation';
 import { fps } from '@/store/fpsAtom';
-// import { currentPageState } from '@/store/pageTitleAtom';
 import { useScene } from '@/store/textureAtom';
 import { deviceState } from '@/store/userAgentAtom';
-import { AnimationControls } from '@/types/animation';
 
 import { ResponsiveCamera } from './ResponsiveCamera';
 //current page が変更されるたびにテクスチャを再生成するロジックはtetureAtom.tsにある
 
 export const Experience = () => {
   const { gl, scene, camera } = useThree();
-  const { velocityRef, currentProgressRef, targetProgressRef } = useScrollVelocity();
-  const {
-    // decreaseProgress,
-    //  increaseProgress,
-    singleProgress,
-    isTransitioning,
-  } = useTransitionProgress();
-  const observePageTransitionRef = useTransitionAnimation();
+
+  const lastWidthRef = useRef<number>(window.innerWidth);
   const lastTimeRef = useRef<number>(0);
+
+  //ポストプロセス
   const [composer, setComposer] = useState<EffectComposer | null>(null);
-  // const currentPage = useRecoilValue(currentPageState);
 
   //フレームレート制限ロジック導入
   const device = useRecoilValue(deviceState);
   const frameRate = useRecoilValue(fps);
+
   const { createFrameCallback } = useFrameRate({ fps: frameRate });
 
   const {
@@ -120,7 +110,14 @@ export const Experience = () => {
     setComposer(effectComposer);
 
     const handleResize = () => {
-      const dpr = Math.min(window.devicePixelRatio, 2);
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+
+      if (lastWidthRef.current === width) return; //モバイルの場合、アドレスバーの開閉で頻繁にcoordが変更される。画面幅が変わってないくせにリサイズされるのを防ぐ（半ギレ）
+
+      gl.setSize(width, height);
+
+      effectComposer.setSize(width, height);
 
       customPass.uniforms.uAspect.value = window.innerWidth / window.innerHeight;
 
@@ -196,17 +193,6 @@ export const Experience = () => {
     2
   );
 
-  const animationControls: AnimationControls = {
-    // increaseProgress,
-    // decreaseProgress,
-    singleProgress,
-    velocityRef,
-    currentProgressRef,
-    targetProgressRef,
-    observePageTransitionRef,
-    isTransitioning,
-  };
-
   return (
     <>
       <ResponsiveCamera position={position} lookAt={lookAt} near={near} far={far} />
@@ -214,17 +200,15 @@ export const Experience = () => {
       <Lights device={device} />
       <Model
         textures={modelTextureMap}
-        animationControls={animationControls}
         position={[modelPosition.x, modelPosition.y, modelPosition.z]}
         rotation={[modelRotation.x, modelRotation.y, modelRotation.z]}
       />
       <Panels
         loadedTextures={loadedTextures}
-        animationControls={animationControls}
         noiseTexture={noiseTexture}
         telopTexture={telopTexture}
       />
-      <Floor textures={floorTextureMap} animationControls={animationControls} />
+      <Floor textures={floorTextureMap} />
     </>
   );
 };

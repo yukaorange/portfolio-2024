@@ -9,5 +9,5 @@ export type AnimationControls = {
   // indicatorOfScrollStart?: boolean;
   // indicatorOfScrollEnd?: boolean;
   // indicatorIsGallerySection?: boolean;
-  observePageTransitionRef: React.MutableRefObject<number>;
+  observePageTransitionRef?: React.MutableRefObject<number>;
 };

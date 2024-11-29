@@ -22,7 +22,8 @@ void main() {
 
   //light power
   vec3 totalLight;
-  for(int i = 0; i < 3; i++) {
+
+  for(int i = 0; i < 2; i++) {
     //ライトの方向と色
     vec3 lightDir = normalize(uLightPositions[i] - vWorldPosition);
     vec3 lightColor = uLightColors[i];
@@ -43,7 +44,7 @@ void main() {
     totalLight += (diff + spec * (1.0 - roughness)) * lightColor * attenuation * uLightIntensities[i];
   }
 
-  vec3 color = vec3(1.0, 1.0, 1.0);
+  vec3 color = vec3(0.2);
 
   vec3 ambient;
   if(uIsMobile == 1.0) {

@@ -93,7 +93,8 @@ export const ResponsiveCamera = ({ position, lookAt, near, far }: ResponsiveCame
 
   useFrame(
     createFrameCallback((state, delta) => {
-      const lerpFactor = 1.0 - Math.pow(0.1, delta);
+      const lerpFactor = 0.2;
+      // const lerpFactor = 1.0 - Math.pow(0.2, delta);
       //0.0秒: 1.0 - Math.pow(0.2, 0.0) = 0.0  // 開始
       //0.2秒: 1.0 - Math.pow(0.2, 0.2) ≈ 0.63 // 残り37%
       //0.4秒: 1.0 - Math.pow(0.2, 0.4) ≈ 0.86 // 残り14%

@@ -12,7 +12,6 @@ interface FloorProps {
     roughness: THREE.Texture;
     normal: THREE.Texture;
   };
-  animationControls: AnimationControls;
 }
 
 export const Floor = ({ textures }: FloorProps) => {

@@ -52,8 +52,11 @@ void main() {
 
   //------低負荷ブルームエフェクト------
   vec3 blurred = blur(tDiffuse, uv, uResolution, uRadius);
+
   float brightness = getLuminance(blurred);
+
   brightness = brightness > uThreshold ? 1.0 : 0.0;
+  
   vec3 blend = color + blurred * uStrength * step(uThreshold, brightness);
   color = blend;
 

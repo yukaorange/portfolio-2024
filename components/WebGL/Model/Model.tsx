@@ -13,11 +13,12 @@ import { useFrameRate } from '@/hooks/useFrameRate';
 import suitcaseFragment from '@/shaders/suitcase/fragment-suitcase.glsl';
 import suitcaseVertex from '@/shaders/suitcase/vertex-suitcase.glsl';
 import { fps } from '@/store/fpsAtom';
-import { isScrollEndAtom } from '@/store/scrollAtom';
+import { isScrollEndAtom, isScrollStartAtom } from '@/store/scrollAtom';
 import { deviceState } from '@/store/userAgentAtom';
 import { AnimationControls } from '@/types/animation';
 
 import { ExtendedMaterial } from './ExtendedMaterial';
+import { useTransitionAnimation } from '@/hooks/useTransitionAnimation';
 
 type GLTFResult = GLTF & {
   nodes: {
@@ -52,13 +53,22 @@ interface ModelProps extends GroupProps {
     characterTexture: THREE.Texture;
     suitcaseTexture: THREE.Texture;
   };
-  animationControls: AnimationControls;
 }
 
-export const Model = ({ textures, animationControls, ...props }: ModelProps) => {
+export const Model = ({ textures, ...props }: ModelProps) => {
   // console.log('re rendered : model' + performance.now());
   const { nodes, materials, animations } = useGLTF('/models/scene_animation_02.glb') as GLTFResult;
   const device = useRecoilValue(deviceState);
+
+  //ページ状態の変化を検知して動くアニメーションの制御
+  const scrollStartTransitionef = useTransitionAnimation({
+    trigger: isScrollStartAtom,
+    duration: 0.4,
+  });
+  const scrollendTransitionef = useTransitionAnimation({
+    trigger: isScrollEndAtom,
+    duration: 1.0,
+  });
 
   //フレームレート制限ロジック導入
   const frameRate = useRecoilValue(fps);
@@ -71,9 +81,6 @@ export const Model = ({ textures, animationControls, ...props }: ModelProps) => 
   //スーツケースに使用するもの
   const suitcaseRef = useRef<THREE.Mesh>(null);
   const suitcaseTargetPosition = useRef<THREE.Vector3>(new THREE.Vector3());
-  const isScrollEnd = useRecoilValue(isScrollEndAtom);
-  // const backRenderTarget = useFBO();
-  // const mainRenderTarget = useFBO();
 
   //キャラクター用の拡張マテリアルへの参照
   const extendedMaterials = useRef<{ [key: string]: ExtendedMaterial }>({});
@@ -81,12 +88,15 @@ export const Model = ({ textures, animationControls, ...props }: ModelProps) => 
   //キャラクター用のマテリアル
   useEffect(() => {
     Object.entries(materials).forEach(([name, material]) => {
+      //スーツケースのシェーダーはスクラッチするので除外
+      if (name === 'suitcase') return;
+
       const extendedMaterial = new ExtendedMaterial();
+
+      //ExtendedMaterialには独自のコードを追加してある。それに対して、blenderからエクスポートしたStandardMaterialの設定が上乗せされる（プロパティが被っている部分は上書きされる）
       extendedMaterial.copy(material as THREE.Material);
 
       extendedMaterials.current[name] = extendedMaterial;
-
-      // console.log('name : ', name, '\n', 'extended material : ', extendedMaterial);
     });
   }, [materials]);
 
@@ -124,22 +134,55 @@ export const Model = ({ textures, animationControls, ...props }: ModelProps) => 
           value: null,
         },
         uLightPosition: {
-          value: new THREE.Vector3(0.0, 1.0, 1.0),
-        },
-        uFrasnelBias: {
-          value: 2.0,
+          value: new THREE.Vector3(0.0, 6.0, 10.0),
         },
         uIsScrollEnd: {
           value: 0,
         },
+        uAspect: {
+          value: window.innerWidth / window.innerHeight,
+        },
         uResolution: {
           value: new THREE.Vector2(window.innerWidth * dpr, window.innerHeight * dpr),
         },
-        // uTextureResolution: {
-        //   value: null,
-        // },
         uTime: {
           value: 0,
+        },
+        uSaturation: {
+          value: 0.2,
+        },
+        uRefractPower: {
+          value: 1.0,
+        },
+        uShininess: {
+          value: 80.0,
+        },
+        uDiffuseness: {
+          value: 0.01,
+        },
+        uFresnelPower: {
+          value: 4.0,
+        },
+        uIorR: {
+          value: 1.15,
+        },
+        uIorG: {
+          value: 1.17,
+        },
+        uIorB: {
+          value: 1.14,
+        },
+        uIorY: {
+          value: 1.16,
+        },
+        uIorC: {
+          value: 1.17,
+        },
+        uIorP: {
+          value: 1.18,
+        },
+        uGridCount: {
+          value: 4.0,
         },
       },
       vertexShader: suitcaseVertex,
@@ -149,38 +192,25 @@ export const Model = ({ textures, animationControls, ...props }: ModelProps) => 
     return shaderMaterial;
   }, [textures]);
 
-  //isScrollEndが変更されたときのマテリアルの更新
-  useEffect(() => {
-    if (suitcaseMaterial) {
-      suitcaseMaterial.uniforms.uIsScrollEnd.value = isScrollEnd ? 1 : 0;
-    }
-  }, [isScrollEnd, suitcaseMaterial]);
-
   //リサイズ時の更新(スーツケースのマテリアル)
-  // useEffect(() => {
-  //   const handleResize = () => {
-  //     console.log('resize @ suitcase in Model  ');
+  useEffect(() => {
+    const handleResize = () => {
+      if (!suitcaseMaterial) return;
+      console.log('resize @ suitcase in Model  ');
+      const dpr = Math.min(window.devicePixelRatio, 2);
+      suitcaseMaterial.uniforms.uResolution.value.set(
+        window.innerWidth * dpr,
+        window.innerHeight * dpr
+      );
+      suitcaseMaterial.uniforms.uAspect.value = window.innerWidth / window.innerHeight;
+    };
 
-  //     if (!suitcaseMaterial) return;
+    window.addEventListener('resize', handleResize);
 
-  //     const dpr = Math.min(window.devicePixelRatio, 2);
-
-  //     suitcaseMaterial.uniforms.uResolution.value.set(
-  //       window.innerWidth * dpr,
-  //       window.innerHeight * dpr
-  //     );
-
-  //     backRenderTarget.setSize(window.innerWidth, window.innerHeight);
-
-  //     mainRenderTarget.setSize(window.innerWidth, window.innerHeight);
-  //   };
-
-  //   window.addEventListener('resize', handleResize);
-
-  //   return () => {
-  //     window.removeEventListener('resize', handleResize);
-  //   };
-  // }, [suitcaseMaterial, camera, backRenderTarget, mainRenderTarget]);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, [suitcaseMaterial]);
 
   //スーツケースの位置算出につかう
   const calculateSuitcasePosition = useCallback((width: number): [number, number, number] => {
@@ -190,8 +220,8 @@ export const Model = ({ textures, animationControls, ...props }: ModelProps) => 
     };
 
     const POSITIONS = {
-      mobile: [-0.6, 3.6, -2.05],
-      desktop: [-0.6, 3.2, 1.05],
+      mobile: [-0.55, 3.45, -1.80],
+      desktop: [-0.55, 3.15, 1.35],
     };
 
     //画面幅に応じて、0 - 1の範囲をとる
@@ -215,7 +245,8 @@ export const Model = ({ textures, animationControls, ...props }: ModelProps) => 
       const elapsedTime = clock.getElapsedTime();
 
       //線形補完の係数
-      const lerpFactor = 1.0 - Math.pow(0.01, delta);
+      // const lerpFactor = 1.0 - Math.pow(0.001, delta);
+      const lerpFactor = 0.4;
 
       //スーツケースの初期位置
       const originalSuitcasePosition = {
@@ -223,22 +254,26 @@ export const Model = ({ textures, animationControls, ...props }: ModelProps) => 
         y: 0.302,
         z: -4.68,
       };
-
+      //スーツケースのアニメーション
       if (suitcaseRef.current) {
         //条件に応じてスーツケースを移動させる
         const suitcaseShaderMaterial = suitcaseRef.current.material as THREE.ShaderMaterial;
 
         suitcaseShaderMaterial.uniforms.uTime.value = elapsedTime;
 
+        suitcaseShaderMaterial.uniforms.uIsScrollEnd.value = scrollendTransitionef.current;
+
         //----------スーツケースの位置決定----------
-        if (isScrollEnd) {
+        if (scrollendTransitionef.current == 1) {
+          //1だと遅く感じる。まあこの辺は微調整で
+
           //フッター付近でのふるまい
           //回転を加える
           suitcaseRef.current.rotation.x = (Math.PI * 1) / 16;
           if (device === 'mobile') {
             suitcaseRef.current.rotation.y += (delta * Math.PI * 1) / 8;
           } else {
-            suitcaseRef.current.rotation.y += (delta * Math.PI * 1) / 4;
+            suitcaseRef.current.rotation.y += (delta * Math.PI * 1) / 2;
           }
           // suitcaseRef.current.rotation.y += (delta * Math.PI * 1) / 2;//色の確認時に早く回転させたい
           suitcaseRef.current.rotation.z = (Math.PI * 1) / 8;
@@ -260,29 +295,20 @@ export const Model = ({ textures, animationControls, ...props }: ModelProps) => 
         }
 
         suitcaseRef.current.position.lerp(suitcaseTargetPosition.current, lerpFactor);
-
-        //テクスチャの交換など
-
-        //スーツケースを消して、背景を描画
-        // suitcaseShaderMaterial.visible = false;
-        // gl.setRenderTarget(backRenderTarget);
-        // gl.render(scene, camera);
-        // suitcaseShaderMaterial.uniforms.uEffectTexture.value = backRenderTarget.texture;
-
-        //スーツケースの背面を描画
-        // suitcaseShaderMaterial.side = THREE.BackSide;
-        // suitcaseShaderMaterial.visible = true;
-        // gl.setRenderTarget(mainRenderTarget);
-        // gl.render(scene, camera);
-        // suitcaseShaderMaterial.uniforms.uEffectTexture.value = mainRenderTarget.texture;
-        // suitcaseShaderMaterial.side = THREE.FrontSide;
-
-        //最終的にスーツケースは可視化
-        // suitcaseShaderMaterial.visible = true;
       }
-      // gl.setRenderTarget(null);
 
-      // gl.render(scene, camera);
+      //キャラクターのアニメーション
+      const boundingBox = new THREE.Box3();
+      if (group.current) {
+        boundingBox.setFromObject(group.current);
+      }
+
+      Object.values(extendedMaterials.current).forEach((material) => {
+        const time = state.clock.getElapsedTime();
+        const progress = scrollStartTransitionef.current;
+
+        material.update(time, progress, boundingBox);
+      });
     }),
     1
   );
@@ -315,6 +341,8 @@ export const Model = ({ textures, animationControls, ...props }: ModelProps) => 
             return null;
           })}
         </group>
+
+        {/* スーツケース */}
         <mesh
           ref={suitcaseRef}
           name="suitcase"
