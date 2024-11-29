@@ -6,7 +6,6 @@ import * as THREE from 'three';
 
 import { useScrollVelocity } from '@/app/ScrollVelocityProvider';
 import { useTransitionProgress } from '@/app/TransitionContextProvider';
-
 import { useFrameRate } from '@/hooks/useFrameRate';
 import panelFragment from '@/shaders/panel/fragment-panel.glsl';
 import panelVertex from '@/shaders/panel/vertex-panel.glsl';
@@ -26,27 +25,35 @@ interface PanelsProps {
 
 export const Panels = ({ loadedTextures, noiseTexture, telopTexture }: PanelsProps) => {
   // console.log('re rendered : panels' + performance.now());
+
+  const device = useRecoilValue(deviceState);
+  const currentPage = useRecoilValue(currentPageState);
+
+  //シェーダーマテリアルが生成されたら、それを保持
+  const [shaderMaterial, setShaderMaterial] = useState<THREE.ShaderMaterial>();
+
   //リアルタイム操作の値
   const { velocityRef } = useScrollVelocity();
   //ページ遷移時の値
 
-  const {
-    singleProgress,
-    isTransitioning,
-  } = useTransitionProgress();
+  //ページ遷移時のアニメーションに使用
+  const { singleProgress, isTransitioning } = useTransitionProgress();
 
+  //インスタンスマトリクスの更新（たぶんいらん）
   const ref = useRef<THREE.InstancedMesh>(null);
+
+  //パネルの数とアスペクト比の設定
   const count = 7;
   const aspect = 4 / 3;
-  const device = useRecoilValue(deviceState);
-  const [shaderMaterial, setShaderMaterial] = useState<THREE.ShaderMaterial>();
-  const currentPage = useRecoilValue(currentPageState);
+
+  //DOMにおけるギャラリーセクションへの到達判定
   const isGallerySection = useRecoilValue(isGallerySectionAtom);
 
   //フレームレート制限ロジック導入
   const frameRate = useRecoilValue(fps);
   const { createFrameCallback } = useFrameRate({ fps: frameRate });
 
+  //パネルの位置とスケールの計算
   const { positions, scales, matrices, totalWidth, totalHeight } = useMemo(() => {
     const positions = [];
     const scales = [];
@@ -90,7 +97,7 @@ export const Panels = ({ loadedTextures, noiseTexture, telopTexture }: PanelsPro
     };
   }, [count, aspect]);
 
-  //パネル用マテリアルの生成と装着
+  //パネル用マテリアルの生成と保存
   useEffect(() => {
     const material = new THREE.ShaderMaterial({
       uniforms: {
@@ -131,7 +138,7 @@ export const Panels = ({ loadedTextures, noiseTexture, telopTexture }: PanelsPro
     setShaderMaterial(material);
   }, [totalWidth, totalHeight, count, aspect, noiseTexture, telopTexture]);
 
-  //インスタンスマトリクスの生成
+  //インスタンスマトリクスの更新(基本的に不要、パネルの数変わらんし)
   useEffect(() => {
     if (ref.current) {
       matrices.forEach((matrix, i) => {
@@ -141,7 +148,8 @@ export const Panels = ({ loadedTextures, noiseTexture, telopTexture }: PanelsPro
     }
   }, [matrices]);
 
-  //ユニフォームの更新
+  //ユニフォームの更新（ギャラリーセクションへの侵入とページ遷移によるテクスチャの差し替えなど）
+  //isGallerySectionまわりはリファクタするかな、Refで扱った方が再レンダリングが少なくて済むかも
   useEffect(() => {
     let activePage;
     if (currentPage.title === 'portfolio') {
@@ -200,7 +208,7 @@ export const Panels = ({ loadedTextures, noiseTexture, telopTexture }: PanelsPro
     return baseGeometry;
   }, []);
 
-  //リサイズ時の更新
+  //リスナーへの登録（リサイズ）
   useEffect(() => {
     const handleResize = () => {
       if (!shaderMaterial) return;
