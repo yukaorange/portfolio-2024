@@ -57,7 +57,7 @@ class ExtendedMaterial extends THREE.MeshStandardMaterial {
       
       float glitchStrength = sin(glitchTime) + sin(glitchTime * 3.4) + sin(glitchTime * 8.7);
 
-      glitchStrength *= 0.065;//強度を調整
+      glitchStrength *= 0.15;//強度を調整
       glitchStrength *= uEffectProgress;//進行度に応じて適用していく
 
       float glitchRandom = random2D(worldPosition.xz + uTime);//0 - 1のランダム値
@@ -122,44 +122,52 @@ class ExtendedMaterial extends THREE.MeshStandardMaterial {
       `;
       const additionalFragmentColor = /* glsl */ `
       //ノーマライズされた高さ（原点->モデルの頭部頂点 : 0 -> 1）
-      float worldHeight = (vWorldPosition.y - uBoundsMin.y) / (uBoundsMax.y - uBoundsMin.y);
+      float normalizedWorldHeight = (vWorldPosition.y - uBoundsMin.y) / (uBoundsMax.y - uBoundsMin.y);
       
       //モデルを縦方向に分割
-      float partitionValue = 7.0;//7分割
-      float section = floor(worldHeight * partitionValue);
-      float part = section / partitionValue;
+      float partitionValue = 4.0;
+      float section = floor(normalizedWorldHeight * partitionValue);
+      section = section / partitionValue;
 
       //----------ユーティリティ---------
 
-      //横方向のストライプ
+      //横方向のストライプ(ホログラム)
+      // float stripes = mod(vWorldPosition.y * 100.0 + uTime, 1.0);
+      // stripes = pow(stripes, 20.0);//濃淡の変化を急激にする
+      // float holographic = stripes; 
 
-      float stripes = mod(vWorldPosition.y * 100.0 + uTime, 1.0);
-      stripes = pow(stripes, 20.0);//濃淡の変化を急激にする
-
-      float holographic = stripes; 
-
-      float timeBlock = floor(uTime * 10.0);
-
-
-      float waveNoise = sin(worldHeight * 50.0 + timeBlock) * 0.02;
-      float adjustedHeight = worldHeight + waveNoise;
-
-      vec2 noiseCoord = vWorldPosition.xy * 0.1;
-      float n1 = snoise(floor(noiseCoord * vec2(adjustedHeight, section) * vec2(4.0, 5.0) + uTime) * 0.5 + 0.5);
-      float n2 = snoise(noiseCoord * floor(vec2(adjustedHeight, section) * vec2(5.0, 6.0) + uTime) * 0.5 + 0.5);
-      float n3 = snoise(noiseCoord * floor(vec2(adjustedHeight, section) * vec2(6.0, 4.0) + uTime) * 0.5 + 0.5);
-      float n = smoothstep(0.4, 0.5, n1 + n2 + n3);
+      vec2 noiseCoord = vWorldPosition.yy * 0.1;
+      float n1 = snoise(floor(noiseCoord * vec2(4.0, 5.0) + uTime));
+      float n2 = snoise(floor(noiseCoord * vec2(5.0, 6.0) + uTime));
+      float n3 = snoise(floor(noiseCoord * vec2(6.0, 4.0) + uTime));
+      float n = n1 + n2 + n3;
+      n = smoothstep(0.4, 0.5, n);
 
 
       //------------エフェクト色-----------
-      float hue = part + uTime*10.0;
-
-      hue = fract(hue);//0~0.9999...
-      hue = mix(0.6, 0.9, hue);//hueの範囲を制限
-
+      
+      float intensity = mix(0.6,0.8,n);
       vec3 effectColor;
       
-      effectColor = hsv2rgb(vec3(hue, mix(0.64,0.98,n), mix(0.01,0.2,n)));//色相、彩度、明度 (彩度と明度がランダムになることを狙っている) 
+      float sectionRotate = section + uTime * 100.0;//各セクションに色を割り当てる & 等間隔（section / partitionValueのよるもの）でどんどん変化
+      float hue = fract(sectionRotate);//0~0.9999...
+      hue = mix(0.2,0.8,hue);
+      float sat = fract(sectionRotate);
+      float val = fract(sectionRotate);
+      val *= intensity;
+      
+      vec3 hsvColor = hsv2rgb(vec3(hue, sat, val));//色相、彩度、明度 (明度がランダムになることを狙っている) 
+      
+
+      vec3 aberration;
+
+      aberration.r = hsv2rgb(vec3(hue - 0.05 * n, 0.8, 0.9)).r;
+      aberration.g = hsv2rgb(vec3(hue, 0.8, 0.9)).g;
+      aberration.b = hsv2rgb(vec3(hue + 0.05 * n, 0.8, 0.9)).b;
+      aberration *= intensity;
+
+      // effectColor = mix(aberration * hsvColor , hsvColor, n);
+      effectColor = hsvColor;
 
       //----------エフェクト-----------
       //進行度の準備
@@ -169,15 +177,15 @@ class ExtendedMaterial extends THREE.MeshStandardMaterial {
       float phase2Progress = calcReMap(progress,0.4,1.0,0.0,1.2,true);
 
       // 消失エフェクト進行（下から上へ）
-      float firstPhase = smoothstep(worldHeight , worldHeight + 0.1, phase1Progress);
-      float secondPhase = smoothstep(worldHeight, worldHeight + 0.1, phase2Progress);
+      float firstPhase = smoothstep(normalizedWorldHeight , normalizedWorldHeight + 0.1, phase1Progress);
+      float secondPhase = smoothstep(normalizedWorldHeight, normalizedWorldHeight + 0.1, phase2Progress);
       
       vec4 finalColor = vec4(gl_FragColor.rgb,gl_FragColor.a);
 
       finalColor = mix(finalColor,vec4(effectColor,1.0), firstPhase);
       finalColor = mix(finalColor,vec4(0.0,0.0,0.0,0.0), secondPhase);
 
-      finalColor.a = mix(1.0,stripes,firstPhase);
+      // finalColor.a = mix(1.0,stripes,firstPhase);
       finalColor.a = mix(finalColor.a,0.0,secondPhase);
 
       if(finalColor.a < 0.01) discard;//透明度が0.01以下の場合は描画しない（消失したと見なす）
