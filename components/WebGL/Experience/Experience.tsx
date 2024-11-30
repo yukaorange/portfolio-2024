@@ -153,7 +153,7 @@ export const Experience = () => {
       //時間経過を記録する変数:delta timeを作成。
       const currentTime = state.clock.getElapsedTime();
 
-      const deltaTime = currentTime - lastTimeRef.current;
+      // const deltaTime = currentTime - lastTimeRef.current;
 
       lastTimeRef.current = currentTime;
 

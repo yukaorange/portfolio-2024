@@ -20,9 +20,11 @@ uniform vec2 uResolution;
 const float PI = 3.14159265359;
 
 varying float vIndex;//1 ～ count * count
+varying float vInvert;
+varying float vNoise;
+varying float vNoiseHigh;
 varying vec2 vUv;
 varying vec3 vNormal;
-varying float vInvert;
 varying vec3 vWorldPosition;
 varying vec3 vInstacePosition;
 
@@ -128,6 +130,9 @@ void main() {
 
   float activepage = floor(uActivePage);//ページ判定 0:top 1:about 2:gallery系
 
+  //hash値
+  float hashValue = hash(singleScreenUv + mod(uTime, 1.0) + 214.0) * 0.7;
+
   //汎用ノイズ
   float noise = snoise(vec2(vUv.y * 60.0, sin(uTime * 40.0)));
 
@@ -135,16 +140,12 @@ void main() {
   // float variation = hash(singleScreenUv + uTime);
   // noise = mix(baseNoise, variation, 0.2);
 
-  //hash値
-  float hashValue = hash(singleScreenUv + mod(uTime, 1.0) + 214.0) * 0.7;
-
   //invert
   float invert = vInvert;
 
   // ---------- 汎用画像 ----------
 
   //汎用 ノイズ画面
-  // vec3 noiseColor = vec3(hashValue);//ベースとなる砂嵐
   vec3 noiseColor = vec3(hashValue * hashValue);//ベースとなる砂嵐
   noiseColor *= 0.3;
 
@@ -391,21 +392,23 @@ void main() {
       color = mix(color, mix(color, noiseColor, 0.5), noiseIntensity * 0.25);
     };
   }
-  //--------------ページ遷移・ロード完了時--------------------
+  //--------------ページ遷移----------------
 
   //ページ遷移中
   if(uIsTransitioning == 1.0) {
     color = noiseColor * uTransition;
   }
 
-  //ロード完了時
+  //--------------ロード完了時---------------
   float loadedProgress = uLoaded;
 
-  float threshold = map(loadedProgress, 0.5, 1.0, 0.0, 6.5, true);//0どうしの比較を避けるため、始点と終点に多少のバッファを設けている
+  float threshold = map(loadedProgress, 0.7, 1.0, 0.0, 6.5, true);//0どうしの比較を避けるため、始点と終点に多少のバッファを設けている
 
   float loadedTransition = step(adjustedDistance + 0.1, threshold);
 
-  color = mix(noiseColor, color, loadedTransition);
+  vec3 waitingColor = texture2D(uTextures[3], singleOptimizedUv3).rgb;
+
+  color = mix(waitingColor, color, loadedTransition);
 
   //----------最終的な明度調整----------
   //(スクロール速度による明度強化も含む)・・・あってもなくてもいい

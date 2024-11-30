@@ -113,6 +113,11 @@ export const ResponsiveCamera = ({ position, lookAt, near, far }: ResponsiveCame
       //0.4秒: 1.0 - Math.pow(0.2, 0.4) ≈ 0.86 // 残り14%
       //0.6秒: 1.0 - Math.pow(0.2, 0.6) ≈ 0.95 // 残り5%
 
+      const needLog = false;
+      if (needLog) {
+        console.log(state, delta);
+      }
+
       //ページトランジション中はカメラの位置を動かさな
       if (isTransitioning.current == true) {
         return;

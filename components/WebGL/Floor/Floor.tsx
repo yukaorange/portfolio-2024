@@ -5,7 +5,6 @@ import * as THREE from 'three';
 import floorFragment from '@/shaders/floor/fragment-floor.glsl';
 import floorVertex from '@/shaders/floor/vertex-floor.glsl';
 import { iphoneState } from '@/store/userAgentAtom';
-import { AnimationControls } from '@/types/animation';
 
 interface FloorProps {
   textures: {

@@ -28,9 +28,9 @@ export const Filters = () => {
   const turbRef = useRef<SVGFETurbulenceElement>(null);
   const lastUpdateTimeRef = useRef(0);
 
-  const ease = (t: number): number => {
-    return t * (2 - t);
-  };
+  // const ease = (t: number): number => {
+  //   return t * (2 - t);
+  // };
 
   useEffect(() => {
     const updateNoiseEffect = (currentTime: number) => {

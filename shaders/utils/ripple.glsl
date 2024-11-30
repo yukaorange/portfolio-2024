@@ -4,18 +4,19 @@ float easeOutQuad(float t) {
   return 1.0 - (reversedT * reversedT * reversedT * reversedT);
 }
 
-vec3 ripple(vec2 uv, float time) {
+vec3 ripple(vec2 uv, float time, float aspect) {
   float RIPPLE_SPEED = 0.4;
   float RIPPLE_PEAK = 0.3;
 
   vec2 center = vec2(0.5);
   float dist = length(uv - center);
 
-    // 時間に基づいて波紋の年齢を計算
+    // 時間に基づいて波紋の進捗をだす
   float age = mod(time * RIPPLE_SPEED + 0.5, 1.0);
 
     // 波紋のサイズを計算
   float size = easeOutQuad(age);
+  size *= aspect;
   float innerSize = size * 0.25;
   float outerSize = size;
 

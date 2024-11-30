@@ -11,10 +11,9 @@ import { useTransitionAnimation } from '@/hooks/useTransitionAnimation';
 import panelFragment from '@/shaders/panel/fragment-panel.glsl';
 import panelVertex from '@/shaders/panel/vertex-panel.glsl';
 import { fps } from '@/store/fpsAtom';
-import { currentPageState } from '@/store/pageTitleAtom';
-import { isGallerySectionAtom } from '@/store/scrollAtom';
 import { intializedCompletedAtom } from '@/store/initializedAtom';
-import { isScrollEndAtom } from '@/store/scrollAtom';
+import { currentPageState } from '@/store/pageTitleAtom';
+import { isGallerySectionAtom, isScrollEndAtom } from '@/store/scrollAtom';
 import { deviceState } from '@/store/userAgentAtom';
 
 interface PanelsProps {
