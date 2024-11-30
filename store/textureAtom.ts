@@ -6,6 +6,10 @@ import { useEffect } from 'react';
 import { atom, selector, useRecoilValue, useSetRecoilState, SetterOrUpdater } from 'recoil';
 import * as THREE from 'three';
 
+import { Content } from '@/lib/microcms';
+
+import { loadProgressAtom } from './loadProgressAtom';
+
 interface TextureInfo {
   url: string;
   aspectRatio: number;
@@ -16,8 +20,6 @@ interface LoadedTextureInfo {
   aspectRatio: number;
 }
 
-import { Content } from '@/lib/microcms';
-
 //2024/11/29
 //blenderモデルのロード完了を管理するatomを追加
 
@@ -25,6 +27,9 @@ import { Content } from '@/lib/microcms';
 //App.tsxでuseSceneを使っているので、WebGLマウント時にテクスチャがロードされる
 
 const TOTAL_TEXTURES = 10;
+const ADDITIONAL_TEXTURES = 6;
+const TOTAL_TEXTURES_WITH_ADDITIONAL = TOTAL_TEXTURES + ADDITIONAL_TEXTURES;
+
 const NO_ITEM_TEXTURE: TextureInfo = {
   url: '/images/textures/no-item.jpg',
   aspectRatio: 4 / 3,
@@ -236,6 +241,7 @@ export const useSetCurrentPage = () => useSetRecoilState(currentPageAtom); //Web
 export const useInitialLoading = () => useRecoilValue(initialLoadingAtom);
 export const useSetInitialLoading = () => useSetRecoilState(initialLoadingAtom);
 export const useSetModelLoaded = () => useSetRecoilState(modelLoadedAtom);
+const useSetProgress = () => useSetRecoilState(loadProgressAtom);
 
 export const useLoadTextures = () => {
   const setLoadedTextures = useSetRecoilState(loadedTexturesAtom);
@@ -321,7 +327,7 @@ export const useSetGalleryContents = () => {
 };
 
 export const useInitializeCurrentPage = () => {
-  const setCurrentPage = useSetCurrentPage(); //currentPageAtomを更新する
+  const setCurrentPage = useSetCurrentPage(); //currentPageAtomを更新するメソッド
   const pathname = usePathname();
 
   //初回アクセス時に、そのページにふさわしいテクスチャをセットする。また、余計な再発火は防ぐ。
@@ -336,16 +342,23 @@ export const useInitializeCurrentPage = () => {
 };
 
 export const useScene = () => {
-  //基本的にはcurrentPageの変更を契機に後続処理が発火する
+  //----------初回アクセス時に発火する処理 ----------
+  useInitializeCurrentPage(); //初回アクセス時currentPageを更新しする。いかなるページであっても、そのページにふさわしいテクスチャをセットする
+
+  //----------ページの変更を検知 ----------
   const currentPage = useCurrentPage();
   const setCurrentPage = useSetCurrentPage();
+
+  //----------テクスチャの用意 ----------
+  //基本的にはcurrentPageの変更を契機に後続処理が発火する
   const currentTextures = useCurrentTextures();
   const loadedTextures = useLoadTextures();
+
+  //----------ローディングアニメーションの契機と進捗 ----------
   const setInitialLoading = useSetInitialLoading();
+  const setProgress = useSetProgress();
 
-  // console.log(`loadedTextures : `, loadedTextures);
-
-  //----------固定で使用するテクスチャの用意 ----------
+  //----------固定で使用するテクスチャの用意(6枚) ----------
   const [characterTexture, suitcaseTexture] = useLoadCharacterAndSuitcaseTextures();
   const [floorNormalTexture, floorRoughnessTexture] = useLoadFloorTextures();
   const noiseTexture = useLoadNoiseTexture();
@@ -355,23 +368,43 @@ export const useScene = () => {
   //ギャラリーのコンテンツをセットする
   const setGalleryContents = useSetGalleryContents() as SetterOrUpdater<Content[]>;
 
-  //----------初回アクセス時に発火する処理 ----------
-  useInitializeCurrentPage(); //初回アクセス時currentPageを更新しする。いかなるページであっても、そのページにふさわしいテクスチャをセットする
-
   //----------ローディングアニメーションの契機 ----------
   useEffect(() => {
     //全てのテクスチャがロードされたら、initialLoadingAtomがtrueとなる。ローディングアニメーションのコンポーネントはこのatomを監視している。
-    const allTextureLoaded =
-      loadedTextures.length === TOTAL_TEXTURES &&
-      characterTexture !== null &&
-      suitcaseTexture !== null &&
-      floorNormalTexture !== null &&
-      floorRoughnessTexture !== null &&
-      noiseTexture !== null &&
-      telopTexture !== null;
+    const loadedTexturesCount =
+      loadedTextures.length +
+      (characterTexture ? 1 : 0) +
+      (suitcaseTexture ? 1 : 0) +
+      (floorNormalTexture ? 1 : 0) +
+      (floorRoughnessTexture ? 1 : 0) +
+      (noiseTexture ? 1 : 0) +
+      (telopTexture ? 1 : 0);
+
+    const totalTextures = TOTAL_TEXTURES_WITH_ADDITIONAL;
+
+    // console.log('loadedTexturesCount :', loadedTexturesCount);
+
+    setProgress((prev) => {
+      return {
+        ...prev,
+        texturesProgress: loadedTexturesCount,
+        texturesTotal: totalTextures,
+      };
+    });
+
+    // const allTextureLoaded =
+    //   loadedTextures.length === TOTAL_TEXTURES &&
+    //   characterTexture !== null &&
+    //   suitcaseTexture !== null &&
+    //   floorNormalTexture !== null &&
+    //   floorRoughnessTexture !== null &&
+    //   noiseTexture !== null &&
+    //   telopTexture !== null;
+
+    const allTextureLoaded = loadedTexturesCount === totalTextures;
 
     if (allTextureLoaded) {
-      console.log('All Texture Loaded , initialize is going to be standby');
+      // console.log('All Texture Loaded , initialize is going to be standby');
       setInitialLoading(true);
     }
   }, [
@@ -383,6 +416,7 @@ export const useScene = () => {
     noiseTexture,
     telopTexture,
     setInitialLoading,
+    setProgress,
   ]);
 
   return {

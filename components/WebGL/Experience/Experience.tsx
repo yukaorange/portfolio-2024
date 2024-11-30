@@ -33,7 +33,8 @@ export const Experience = () => {
   //ローディング完了を検知して動くアニメーションの制御
   const loadingTransitionRef = useTransitionAnimation({
     trigger: intializedCompletedAtom,
-    duration: 1,
+    duration: 3,
+    easing: 'easeInOutExpo',
   });
 
   //ポストプロセス
@@ -93,7 +94,7 @@ export const Experience = () => {
   useEffect(() => {
     const effectComposer = new EffectComposer(gl);
 
-    const coefficientResolution = 0.5; //解像度が必要なエフェクトに対して送信する解像度が高すぎると負荷がかかるため、解像度を下げる係数
+    const coefficientResolution = 1.0; //解像度が必要なエフェクトに対して送信する解像度が高すぎると負荷がかかるため、解像度を下げる係数
 
     //シーンをレンダリングするだけのパス
     const renderPass = new RenderPass(scene, camera);
@@ -162,18 +163,18 @@ export const Experience = () => {
         customPassRef.current.uniforms.uLoadingTransition.value = loadingTransitionRef.current;
       }
 
-      console.log(
-        'check status : ',
-        '\n',
-        'currentTime : ',
-        currentTime,
-        '\n',
-        'deltaTime : ',
-        deltaTime,
-        '\n',
-        'loadingTransitionRef :',
-        loadingTransitionRef.current
-      );
+      // console.log(
+      //   'check status : ',
+      //   '\n',
+      //   'currentTime : ',
+      //   currentTime,
+      //   '\n',
+      //   'deltaTime : ',
+      //   deltaTime,
+      //   '\n',
+      //   'loadingTransitionRef :',
+      //   loadingTransitionRef.current
+      // );
 
       composer.render(delta);
     }),

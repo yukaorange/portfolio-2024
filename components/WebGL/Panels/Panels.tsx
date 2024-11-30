@@ -4,14 +4,17 @@ import React, { useMemo, useRef, useEffect, useState } from 'react';
 import { useRecoilValue } from 'recoil';
 import * as THREE from 'three';
 
-import { useScrollVelocity } from '@/app/ScrollVelocityProvider';
+// import { useScrollVelocity } from '@/app/ScrollVelocityProvider';
 import { useTransitionProgress } from '@/app/TransitionContextProvider';
 import { useFrameRate } from '@/hooks/useFrameRate';
+import { useTransitionAnimation } from '@/hooks/useTransitionAnimation';
 import panelFragment from '@/shaders/panel/fragment-panel.glsl';
 import panelVertex from '@/shaders/panel/vertex-panel.glsl';
 import { fps } from '@/store/fpsAtom';
 import { currentPageState } from '@/store/pageTitleAtom';
 import { isGallerySectionAtom } from '@/store/scrollAtom';
+import { intializedCompletedAtom } from '@/store/initializedAtom';
+import { isScrollEndAtom } from '@/store/scrollAtom';
 import { deviceState } from '@/store/userAgentAtom';
 
 interface PanelsProps {
@@ -32,12 +35,24 @@ export const Panels = ({ loadedTextures, noiseTexture, telopTexture }: PanelsPro
   //シェーダーマテリアルが生成されたら、それを保持
   const [shaderMaterial, setShaderMaterial] = useState<THREE.ShaderMaterial>();
 
-  //リアルタイム操作の値
-  const { velocityRef } = useScrollVelocity();
-  //ページ遷移時の値
+  //ページ状態の変化を検知して動くアニメーションの制御
+
+  // const { velocityRef } = useScrollVelocity();
+
+  const scrollendTransitionef = useTransitionAnimation({
+    trigger: isScrollEndAtom,
+    duration: 1.0,
+  });
 
   //ページ遷移時のアニメーションに使用
   const { singleProgress, isTransitioning } = useTransitionProgress();
+
+  //ロード完了後のアニメーションに使用
+  const loadingTransitionRef = useTransitionAnimation({
+    trigger: intializedCompletedAtom,
+    duration: 3,
+    easing: 'easeInOutQuad',
+  });
 
   //インスタンスマトリクスの更新（たぶんいらん）
   const ref = useRef<THREE.InstancedMesh>(null);
@@ -113,7 +128,11 @@ export const Panels = ({ loadedTextures, noiseTexture, telopTexture }: PanelsPro
         uIsGallerySection: {
           value: null,
         },
+        uIsScrollEnd: {
+          value: null,
+        },
         uTime: { value: 0 },
+        uLoaded: { value: 0 },
         uTransition: {
           value: 0,
         },
@@ -127,7 +146,7 @@ export const Panels = ({ loadedTextures, noiseTexture, telopTexture }: PanelsPro
             window.innerHeight * devicePixelRatio
           ),
         },
-        uRowLengths: { value: [0.82, 0.64, 0.76, 0.82, 0.98] }, //テロップのサンプリングに使用
+        uRowLengths: { value: [0.82, 0.65, 0.765, 0.82, 1.0] }, //テロップのサンプリングに使用
         uCount: { value: count }, //パネルの枚数
         uAspect: { value: aspect }, //全体のアス比
         uVelocity: { value: 0.0 }, //スクロール速度
@@ -246,9 +265,13 @@ export const Panels = ({ loadedTextures, noiseTexture, telopTexture }: PanelsPro
 
         shaderMaterial.uniforms.uTransition.value = singleProgress.current;
 
+        shaderMaterial.uniforms.uIsScrollEnd.value = scrollendTransitionef.current;
+
         shaderMaterial.uniforms.uIsTransitioning.value = isTransitioning?.current == true ? 1 : 0;
 
-        shaderMaterial.uniforms.uVelocity.value = Math.abs(velocityRef.current);
+        // shaderMaterial.uniforms.uVelocity.value = Math.abs(velocityRef.current);
+
+        shaderMaterial.uniforms.uLoaded.value = loadingTransitionRef.current;
       }
     })
   );

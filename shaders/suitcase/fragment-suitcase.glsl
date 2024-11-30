@@ -6,6 +6,7 @@ varying vec3 vEyeVector;
 uniform float uTime;
 uniform float uAspect;
 uniform float uIsScrollEnd;
+uniform float uTransition;
 uniform float uDiffuseness;
 uniform float uRefractPower;
 uniform float uShininess;
@@ -26,6 +27,7 @@ uniform sampler2D uTexture;
 #pragma glslify: radialRainbow = require('../utils/radialRainbow.glsl');
 #pragma glslify: createGrid = require('../utils/grid.glsl');
 #pragma glslify: specular = require('../utils/specular.glsl');
+#pragma glslify: hash = require('../utils/hash.glsl');
 
 vec2 applyRefraction(vec2 coord, vec3 refractVec, float strength) {
   return coord + refractVec.xy * strength;
@@ -51,6 +53,11 @@ void main() {
 
   //テクスチャ
   vec3 textureColor = texture2D(uTexture, suitcaseUv).rgb;
+
+  //ノイズ
+  float hashValue = hash(suitcaseUv + mod(uTime, 1.0) + 214.0) * 0.7;
+  vec3 noiseColor = vec3(hashValue);
+  noiseColor *= 0.3;
 
   //虹色
   vec4 rainbow = radialRainbow(fragCoord, uTime) * 0.1;
@@ -139,6 +146,8 @@ void main() {
   endPositionColor += vec3(gridColor);
 
   color = mix(textureColor, endPositionColor, uIsScrollEnd);
+
+  color = mix(color, noiseColor, uTransition);
 
   gl_FragColor = vec4(color, 1.0);
 

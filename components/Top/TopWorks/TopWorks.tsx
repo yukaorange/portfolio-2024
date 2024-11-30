@@ -13,7 +13,7 @@ export const TopWorks = () => {
           </div>
           <div className={`${styles.works__textbox} _shadow-blue`}>
             <p className={styles.works__text}>
-              過去に手がけたWebサイト制作の実績や、技術向上のために作成したコーディングのデモ等を掲載しています。
+              作成したWebサイト・Webアプリケーションや、技術向上のために行ったコーディングのデモ等を掲載しています。
             </p>
           </div>
           <div className={styles.works__archive}>

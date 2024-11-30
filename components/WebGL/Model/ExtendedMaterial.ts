@@ -132,7 +132,7 @@ class ExtendedMaterial extends THREE.MeshStandardMaterial {
       float normalizedWorldHeight = (vWorldPosition.y - uBoundsMin.y) / (uBoundsMax.y - uBoundsMin.y);
       
       //モデルを縦方向に分割
-      float partitionValue = 4.0;
+      float partitionValue = 5.0;
       float section = floor(normalizedWorldHeight * partitionValue);
       section = section / partitionValue;
 

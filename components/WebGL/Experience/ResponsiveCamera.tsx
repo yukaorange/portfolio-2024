@@ -8,6 +8,8 @@ import { useFrameRate } from '@/hooks/useFrameRate';
 import { fps } from '@/store/fpsAtom';
 import { currentPageState } from '@/store/pageTitleAtom';
 import { isGallerySectionAtom } from '@/store/scrollAtom';
+// import { useTransitionAnimation } from '@/hooks/useTransitionAnimation';
+// import { intializedCompletedAtom } from '@/store/initializedAtom';
 
 interface ResponsiveCameraProps {
   position: { x: number; y: number; z: number };
@@ -23,11 +25,22 @@ export const ResponsiveCamera = ({ position, lookAt, near, far }: ResponsiveCame
   const frameRate = useRecoilValue(fps);
   const { createFrameCallback } = useFrameRate({ fps: frameRate });
 
+  // const loadingTransitionRef = useTransitionAnimation({
+  //   trigger: intializedCompletedAtom,
+  //   duration: 0.4,
+  //   easing: 'easeOutCirc',
+  // });
+
   const { camera } = useThree();
+
   const isGallerySection = useRecoilValue(isGallerySectionAtom);
+
   const isScrolled = isGallerySection;
+
   const currentPage = useRecoilValue(currentPageState);
+
   const cameraRef = useRef(camera as THREE.PerspectiveCamera);
+
   const { isTransitioning } = useTransitionProgress();
 
   const targetPosition = useRef(new THREE.Vector3(position.x, position.y, position.z));
@@ -105,16 +118,27 @@ export const ResponsiveCamera = ({ position, lookAt, near, far }: ResponsiveCame
         return;
       }
 
-      cameraRef.current.position.lerp(targetPosition.current, lerpFactor);
+      const positionY = targetPosition.current.y;
+      const positionZ = targetPosition.current.z;
 
-      cameraRef.current.lookAt(targetLookAt.current);
+      const lookAtY = targetLookAt.current.y;
+      const lookAtZ = targetLookAt.current.z;
+      // const positionY = (1 - loadingTransitionRef.current) * 2 + targetPosition.current.y;
+      // const positionZ = (1 - loadingTransitionRef.current) * 1 + targetPosition.current.z;
 
+      // const lookAtY = (1 - loadingTransitionRef.current) * -1 + targetLookAt.current.y;
+      // const lookAtZ = (1 - loadingTransitionRef.current) * 1 + targetLookAt.current.z;
+
+      cameraRef.current.position.lerp(
+        new THREE.Vector3(targetPosition.current.x, positionY, positionZ),
+        lerpFactor
+      );
+      cameraRef.current.lookAt(targetLookAt.current.x, lookAtY, lookAtZ);
       cameraRef.current.fov = THREE.MathUtils.lerp(
         cameraRef.current.fov,
         targetFov.current,
         lerpFactor
       );
-
       cameraRef.current.updateProjectionMatrix();
     })
   );

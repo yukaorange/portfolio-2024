@@ -7,10 +7,11 @@ uniform float uIsTransitioning;
 uniform float uSpeed;
 uniform float uVelocity;
 uniform float uActivePage;
+uniform float uLoaded;
 uniform float uIsGallerySection;
+uniform float uIsScrollEnd;
 uniform float uDevice;
 uniform sampler2D uTextures[10];
-uniform sampler2D uNoiseTexture;
 uniform sampler2D uTelopTexture;
 uniform float uTextureAspectRatios[10];
 uniform float uRowLengths[5];
@@ -21,19 +22,19 @@ const float PI = 3.14159265359;
 varying float vIndex;//1 ～ count * count
 varying vec2 vUv;
 varying vec3 vNormal;
+varying float vInvert;
 varying vec3 vWorldPosition;
 varying vec3 vInstacePosition;
 
 #pragma glslify: optimizationTextureUv = require('../utils/optimizeUv.glsl');
 #pragma glslify: hash = require('../utils/hash.glsl');
-// #pragma glslify: cnoise = require('../utils/cnoise.glsl');
 #pragma glslify: snoise = require('../utils/snoise.glsl');
-// #pragma glslify: rand = require('../utils/random.glsl');
-// #pragma glslify: wave = require('../utils/wave.glsl');
+#pragma glslify: wave = require('../utils/wave.glsl');
 #pragma glslify: cardiogram = require('../utils/electrocardiogram.glsl');
 #pragma glslify: createGrid = require('../utils/grid.glsl');
 #pragma glslify: blendOverlay = require('../utils/blend.glsl');
 #pragma glslify: crtEffect = require('../utils/crtEffect.glsl');
+#pragma glslify: map = require('../utils/map.glsl');
 
 void main() {
 
@@ -74,8 +75,23 @@ void main() {
   //各全体で一つのパネルとした場合のテクスチャを取得する場合
   // vec4 fullScreenDiffuseColor0 = texture2D(uTextures[0], fullScreenOptimizedUv0);
 
-  //top pageのテキストが流れるアニメーションに使用するテクスチャ出力
+  //------------グリッド関連のプロパティ-------------
+
+  vec2 gridPos = vec2(mod(vIndex, uCount), floor(vIndex / uCount));
+
+  vec2 center = vec2(floor(uCount / 2.0));
+
+  float distanceFromCenter = length(gridPos - center);
+
+  float randomOffset = hash(vIndex + 42.0) * 1.5;
+
+  float adjustedDistance = vIndex == 24.0 ? distanceFromCenter : distanceFromCenter + randomOffset;
+
+  //-----------------テロップ画像のサンプリング-----------------
+
+  //テキストが流れるアニメーションに使用するテクスチャ出力
   vec2 scrollingUv = fullScreenOptimizedTelopUv;
+
   int row = int(floor(scrollingUv.y * 5.0));//テクスチャは5行に分かれたテキストであるため。
   float speed = uSpeed * (1.0 / uRowLengths[row]);//各行にふさわしいスピードを設定
   float rowLength = uRowLengths[row];
@@ -83,16 +99,22 @@ void main() {
   float scrollingOffset = fract(uTime * 2.0 * speed);
 
   scrollingUv.x = fract((scrollingUv.x + scrollingOffset));
+
   float compressdX = scrollingUv.x * rowLength;//各行の空白部分はサンプリングしないので、その部分を圧縮
+
   scrollingUv.x = mod(compressdX + scrollingOffset, rowLength);//圧縮した部分を元に戻す。例えば、0.7の幅だとしたら、0.7の長さが1.0の長さになるようにする。（自分用のメモです）
 
-  //singleScreenのテロップに合っても同様(速度は調整)
+  //------------singleScreenのテロップも同様(速度は調整)--------
+
   vec2 singleScrollingUv = singleScreenOptimizedTelopUv;
 
   int singleRow = int(floor(singleScrollingUv.y * 5.0));//テクスチャは5行に分かれたテキストであるため。
+
   speed = uSpeed * (1.0 / uRowLengths[singleRow]);
 
-  singleScrollingUv.x = fract((singleScrollingUv.x + scrollingOffset));
+  rowLength = uRowLengths[singleRow];
+
+  scrollingOffset = fract(uTime * 2.0 * speed);
 
   float singleCompressdX = singleScrollingUv.x * rowLength;
 
@@ -116,37 +138,42 @@ void main() {
   //hash値
   float hashValue = hash(singleScreenUv + mod(uTime, 1.0) + 214.0) * 0.7;
 
+  //invert
+  float invert = vInvert;
+
   // ---------- 汎用画像 ----------
 
   //汎用 ノイズ画面
-  vec3 noiseColor = vec3(hashValue);//ベースとなる砂嵐
+  // vec3 noiseColor = vec3(hashValue);//ベースとなる砂嵐
+  vec3 noiseColor = vec3(hashValue * hashValue);//ベースとなる砂嵐
+  noiseColor *= 0.3;
 
   //汎用 等高線画面
-  // vec4 waveColor;
+  vec4 waveColor;
 
-  // float waveIntensity = wave(singleScreenUv.x, singleScreenUv.y) + 2.0;
+  float waveIntensity = wave(singleScreenUv.x, singleScreenUv.y) + 2.0;
 
-  // waveIntensity *= 1.23 * abs(sin(PI / 2.0 + uTime * 0.2) + 1.5);
+  waveIntensity *= 1.23 * abs(sin(PI / 2.0 + uTime * 0.2) + 1.5);
 
-  // float waveDiffuse = fract(waveIntensity);
+  float waveDiffuse = fract(waveIntensity);
 
-  // if(mod(waveIntensity, 2.0) > 1.0) {
-  //   waveDiffuse = 1.0 - waveDiffuse;
-  // }
+  if(mod(waveIntensity, 2.0) > 1.0) {
+    waveDiffuse = 1.0 - waveDiffuse;
+  }
 
-  // waveDiffuse = waveDiffuse / fwidth(waveIntensity);
+  waveDiffuse = waveDiffuse / fwidth(waveIntensity);
 
-  // waveDiffuse = clamp(waveDiffuse, 0.0, 0.5);
+  waveDiffuse = clamp(waveDiffuse, 0.0, 0.5);
 
-  // waveColor = vec4(vec3(waveDiffuse), 1.0);
+  waveColor = vec4(vec3(waveDiffuse), 1.0);
 
   //汎用 心電図画面
   vec4 cardiogramColor = vec4(cardiogram(singleScreenUv, vec2(4.0, 3.0), uTime), 1.0);
 
-  //グリッド線画面(aboutページ用)
-  vec4 gridColor = vec4(createGrid(fullScreenUv, vec2(8.0, 6.0), uTime), 1.0);
+  //グリッド線画面(主にaboutページ用)
+  vec4 gridColor = vec4(createGrid(fullScreenUv, vec2(12.0, 9.0), uTime), 1.0);
 
-  vec4 gridColorSingle = vec4(createGrid(singleScreenUv, vec2(4.0, 3.0), uTime * 3.0), 1.0);
+  vec4 gridColorSingle = vec4(createGrid(singleScreenUv, vec2(2.0, 1.5), uTime * 3.0), 1.0);
 
   //--------画面切替えアニメーション---------
 
@@ -216,14 +243,26 @@ void main() {
 
   if(activepage == 0.0) {
     index = floor(index - changeStep);//切り替わる度に表画面が変わる
-    if(mod(index, 24.0) == 0.0) {
-      checkerBoardDiffuseColor = texture2D(uTextures[0], singleOptimizedUv0 + glitchOffset);
-    } else if(mod(index, 14.0) == 0.0) {
+    if(mod(index, 18.0) == 0.0) {
+      vec4 scrollDownDiffuse = texture2D(uTextures[0], singleOptimizedUv0 + glitchOffset);
+
+      scrollDownDiffuse.rgb = mix(scrollDownDiffuse.rgb, 0.5 - scrollDownDiffuse.rgb, invert);
+
+      scrollDownDiffuse.rgb *= 0.64;
+
+      checkerBoardDiffuseColor = scrollDownDiffuse;
+    } else if(mod(index, 16.0) == 0.0) {
       checkerBoardDiffuseColor = texture2D(uTextures[1], singleOptimizedUv1 + glitchOffset);
-    } else if(mod(index, 12.0) == 0.0) {
+    } else if(mod(index, 14.0) == 0.0) {
       checkerBoardDiffuseColor = texture2D(uTextures[2], singleOptimizedUv2 + glitchOffset);
+    } else if(mod(index, 12.0) == 0.0) {
+      vec4 singleTelop = texture2D(uTelopTexture, singleScrollingUv + glitchOffset);
+
+      singleTelop.rgb *= 0.16;
+
+      checkerBoardDiffuseColor = singleTelop;
     } else if(mod(index, 10.0) == 0.0) {
-      checkerBoardDiffuseColor = texture2D(uTelopTexture, singleScrollingUv + glitchOffset);
+      checkerBoardDiffuseColor = waveColor;
     } else if(mod(index, 8.0) == 0.0) {
       checkerBoardDiffuseColor = gridColorSingle;
     } else if(mod(index, 5.0) == 0.0) {
@@ -269,8 +308,10 @@ void main() {
   //----------テロップ画像アニメーション----------
   vec4 scrollingDiffuseColorNoise = texture2D(uTelopTexture, scrollingUv + glitchOffset);
 
+  scrollingDiffuseColorNoise.rgb *= 0.83;
+
   //簡易crt加工
-  scrollingDiffuseColorNoise.rgb = crtEffect(fullScreenUv, vec2(1280, 960), scrollingDiffuseColorNoise.rgb, 0.98);
+  scrollingDiffuseColorNoise.rgb = crtEffect(fullScreenUv, vec2(1280, 960), scrollingDiffuseColorNoise.rgb, .7);
 
   // vec4 scrollingDiffuseColor = texture2D(uTelopTexture, scrollingUv);
 
@@ -290,33 +331,41 @@ void main() {
   vec4 finalDiffuse;
 
   if(activepage == 0.0) {
+    //-------top-------
     finalDiffuse = ProgressDiffuse;
   } else if(activepage == 1.0) {
+    //-------profile-------
     finalDiffuse = checkerBoardDiffuseColor;
   } else {
+    //-------gallery-------
     finalDiffuse = checkerBoardDiffuseColor;
     //モノクロに寄せる
-    finalDiffuse.rgb = mix(finalDiffuse.rgb, vec3(dot(finalDiffuse.rgb, vec3(0.299, 0.587, 0.114))), 0.64);
+    finalDiffuse.rgb = mix(finalDiffuse.rgb, vec3(dot(finalDiffuse.rgb, vec3(0.299, 0.587, 0.114))), 0.25);
+
     //明度を落とす（可読性の観点から）
-    finalDiffuse.rbg *= 0.223;
+    finalDiffuse.rbg *= 0.1;
   }
 
-  if(uIsGallerySection == 1.0) {//ギャラリーのセクションに差し掛かっている
+  if(uIsGallerySection == 1.0) {
+    //ギャラリーのセクションに差し掛かっている
     finalDiffuse = gridColor;
   }
+
+  //フッター付近に到達
+  finalDiffuse = mix(finalDiffuse, gridColor, uIsScrollEnd);
 
   //----------エフェクト----------
 
   vec3 color = finalDiffuse.rgb;
 
   //グレイン
-  color.rgb = blendOverlay(color.rgb, vec3(hashValue), 0.14);
+  color.rgb = blendOverlay(color.rgb, vec3(hashValue), 0.06);
 
   // 点滅
   // color *= step(0.0, sin(fullScreenUv.y * 5.0 - uTime * 2.0 * noise)) * 0.05 + 0.98;
 
   //走査線（画面全体）
-  // color *= step(0.0, sin(fullScreenUv.y * 4.0 - uTime * 0.9)) * 0.05 + 1.98;
+  // color *= step(0.0, sin(fullScreenUv.y * 4.0 - uTime * 0.9)) * 0.05 + 0.98;
 
 	// 走査線（シングル）
   color *= 0.98 - sin(fullScreenUv.y * 200.0 - uTime * 100.0) * 0.01;
@@ -342,6 +391,21 @@ void main() {
       color = mix(color, mix(color, noiseColor, 0.5), noiseIntensity * 0.25);
     };
   }
+  //--------------ページ遷移・ロード完了時--------------------
+
+  //ページ遷移中
+  if(uIsTransitioning == 1.0) {
+    color = noiseColor * uTransition;
+  }
+
+  //ロード完了時
+  float loadedProgress = uLoaded;
+
+  float threshold = map(loadedProgress, 0.5, 1.0, 0.0, 6.5, true);//0どうしの比較を避けるため、始点と終点に多少のバッファを設けている
+
+  float loadedTransition = step(adjustedDistance + 0.1, threshold);
+
+  color = mix(noiseColor, color, loadedTransition);
 
   //----------最終的な明度調整----------
   //(スクロール速度による明度強化も含む)・・・あってもなくてもいい
@@ -350,11 +414,6 @@ void main() {
 
   if(uDevice == 1.0) {//@mobile
     colorIntensity *= 1.18;
-  }
-
-  //ページ遷移中
-  if(uIsTransitioning == 1.0) {
-    color = noiseColor * uTransition;
   }
 
   //テスト用

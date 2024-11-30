@@ -3,10 +3,14 @@ uniform float uTime;
 uniform float uTotalWidth;
 uniform float uTotalHeight;
 varying float vIndex;
+varying float vInvert;
+varying float vBlightness;
 varying vec2 vUv;
 varying vec3 vNormal;
 varying vec3 vWorldPosition;
 varying vec3 vInstacePosition;
+
+uniform sampler2D uNoiseTexture;
 
 #define PI 3.1415926535897932384626433832795
 
@@ -31,4 +35,11 @@ void main() {
   vec4 viewPosition = viewMatrix * worldPosition;
 
   gl_Position = projectionMatrix * viewPosition;
+
+  //----------汎用ノイズ------------
+  vec2 noise = texture2D(uNoiseTexture, vec2(uTime * 0.01 + modelMatrix[3][0])).xy;
+  vec2 noiseHigh = texture2D(uNoiseTexture, vec2(uTime * 0.1 + modelMatrix[3][0])).xy;
+
+  vInvert = step(0.5, noise.y + noiseHigh.y * 0.08);
+
 }

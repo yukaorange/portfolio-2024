@@ -5,15 +5,17 @@ Command: npx gltfjsx@6.2.16 public/models/scene_animation.glb -o ./components/We
 import { useGLTF, useAnimations } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
 import React, { useEffect, useRef, useMemo, useCallback } from 'react';
-import { useRecoilValue } from 'recoil';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
 import * as THREE from 'three';
 import { GLTF } from 'three-stdlib';
 
+import { useTransitionProgress } from '@/app/TransitionContextProvider';
 import { useFrameRate } from '@/hooks/useFrameRate';
 import { useTransitionAnimation } from '@/hooks/useTransitionAnimation';
 import suitcaseFragment from '@/shaders/suitcase/fragment-suitcase.glsl';
 import suitcaseVertex from '@/shaders/suitcase/vertex-suitcase.glsl';
 import { fps } from '@/store/fpsAtom';
+import { loadProgressAtom } from '@/store/loadProgressAtom';
 import { isScrollEndAtom, isScrollStartAtom } from '@/store/scrollAtom';
 import { useSetModelLoaded } from '@/store/textureAtom';
 import { deviceState } from '@/store/userAgentAtom';
@@ -58,6 +60,9 @@ interface ModelProps extends GroupProps {
 export const Model = ({ textures, ...props }: ModelProps) => {
   const device = useRecoilValue(deviceState);
   // console.log('re rendered : model' + performance.now());
+  const setProgress = useSetRecoilState(loadProgressAtom);
+
+  //---------モデルのロード---------
   const { nodes, materials, animations } = useGLTF('/models/scene_animation_02.glb') as GLTFResult;
 
   //ロード完了を通知
@@ -65,21 +70,29 @@ export const Model = ({ textures, ...props }: ModelProps) => {
   useEffect(() => {
     //ロード完了を通知（useGLTFによるnodesの変更はロード完了時に発生するので、この通知は一度だけ起こる算段）
     if (nodes && Object.keys(nodes).length > 0) {
-      console.log('loaded', Object.keys(nodes).length);
       setModelLoaded(true);
-      console.log('model loaded  initialize is going to be standby');
+
+      setProgress((prev) => {
+        return {
+          ...prev,
+          modelProgress: Object.keys(nodes).length,
+          modelTotal: Object.keys(nodes).length,
+        };
+      });
+      // console.log('model loaded  initialize is going to be standby');
     }
-  }, [nodes, setModelLoaded]);
+  }, [nodes, setModelLoaded, setProgress]);
 
   //ページ状態の変化を検知して動くアニメーションの制御
-  const scrollStartTransitionef = useTransitionAnimation({
+  const scrollStartTransitionRef = useTransitionAnimation({
     trigger: isScrollStartAtom,
-    duration: 0.4,
+    duration: 0.64,
   });
   const scrollendTransitionef = useTransitionAnimation({
     trigger: isScrollEndAtom,
     duration: 1.0,
   });
+  const { singleProgress } = useTransitionProgress();
 
   //フレームレート制限ロジック導入
   const frameRate = useRecoilValue(fps);
@@ -148,6 +161,9 @@ export const Model = ({ textures, ...props }: ModelProps) => {
           value: new THREE.Vector3(0.0, 6.0, 10.0),
         },
         uIsScrollEnd: {
+          value: 0,
+        },
+        uTransition: {
           value: 0,
         },
         uAspect: {
@@ -249,6 +265,7 @@ export const Model = ({ textures, ...props }: ModelProps) => {
     ];
   }, []);
 
+  //----------raf----------
   useFrame(
     createFrameCallback((state, delta) => {
       const { clock } = state;
@@ -273,6 +290,8 @@ export const Model = ({ textures, ...props }: ModelProps) => {
         suitcaseShaderMaterial.uniforms.uTime.value = elapsedTime;
 
         suitcaseShaderMaterial.uniforms.uIsScrollEnd.value = scrollendTransitionef.current;
+
+        suitcaseShaderMaterial.uniforms.uTransition.value = singleProgress.current;
 
         //----------スーツケースの位置決定----------
         if (scrollendTransitionef.current >= 0.25) {
@@ -316,7 +335,7 @@ export const Model = ({ textures, ...props }: ModelProps) => {
 
       Object.values(extendedMaterials.current).forEach((material) => {
         const time = state.clock.getElapsedTime();
-        const progress = scrollStartTransitionef.current;
+        const progress = scrollStartTransitionRef.current;
 
         material.update(time, progress, boundingBox);
       });
