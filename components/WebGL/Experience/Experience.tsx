@@ -184,7 +184,7 @@ export const Experience = () => {
   return (
     <>
       <ResponsiveCamera position={position} lookAt={lookAt} near={near} far={far} />
-      <ambientLight intensity={device == 'mobile' ? 0.5 : 0.15} />
+      <ambientLight intensity={device == 'mobile' ? 0.5 : 0.25} />
       <Lights device={device} />
       <Model
         textures={modelTextureMap}

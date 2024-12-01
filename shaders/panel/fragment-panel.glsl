@@ -32,6 +32,7 @@ varying vec3 vInstacePosition;
 #pragma glslify: hash = require('../utils/hash.glsl');
 #pragma glslify: snoise = require('../utils/snoise.glsl');
 #pragma glslify: wave = require('../utils/wave.glsl');
+#pragma glslify: stripe = require('../utils/stripe.glsl');
 #pragma glslify: cardiogram = require('../utils/electrocardiogram.glsl');
 #pragma glslify: createGrid = require('../utils/grid.glsl');
 #pragma glslify: blendOverlay = require('../utils/blend.glsl');
@@ -77,15 +78,15 @@ void main() {
   //各全体で一つのパネルとした場合のテクスチャを取得する場合
   // vec4 fullScreenDiffuseColor0 = texture2D(uTextures[0], fullScreenOptimizedUv0);
 
-  //------------グリッド関連のプロパティ-------------
+  //------------グリッドパネル関連のプロパティ-------------
 
   vec2 gridPos = vec2(mod(vIndex, uCount), floor(vIndex / uCount));
 
-  vec2 center = vec2(floor(uCount / 2.0));
+  vec2 center = vec2(floor((uCount / 2.0) - 2.0), floor(uCount / 2.0));//中心は
 
   float distanceFromCenter = length(gridPos - center);
 
-  float randomOffset = hash(vIndex + 42.0) * 1.5;
+  float randomOffset = hash(vIndex + 42.0) * 1.0;
 
   float adjustedDistance = vIndex == 24.0 ? distanceFromCenter : distanceFromCenter + randomOffset;
 
@@ -108,19 +109,19 @@ void main() {
 
   //------------singleScreenのテロップも同様(速度は調整)--------
 
-  vec2 singleScrollingUv = singleScreenOptimizedTelopUv;
+  // vec2 singleScrollingUv = singleScreenOptimizedTelopUv;
 
-  int singleRow = int(floor(singleScrollingUv.y * 5.0));//テクスチャは5行に分かれたテキストであるため。
+  // int singleRow = int(floor(singleScrollingUv.y * 5.0));//テクスチャは5行に分かれたテキストであるため。
 
-  speed = uSpeed * (1.0 / uRowLengths[singleRow]);
+  // speed = uSpeed * (1.0 / uRowLengths[singleRow]);
 
-  rowLength = uRowLengths[singleRow];
+  // rowLength = uRowLengths[singleRow];
 
-  scrollingOffset = fract(uTime * 2.0 * speed);
+  // scrollingOffset = fract(uTime * 2.0 * speed);
 
-  float singleCompressdX = singleScrollingUv.x * rowLength;
+  // float singleCompressdX = singleScrollingUv.x * rowLength;
 
-  singleScrollingUv.x = mod(singleCompressdX + scrollingOffset, rowLength);
+  // singleScrollingUv.x = mod(singleCompressdX + scrollingOffset, rowLength);
 
   // vec4 scrollingDiffuseColor = texture2D(uTextures[0], scrollingUv);//glitchでサンプリングをずらすため、diffuseの決定は後述にまわす(下記テロップ画像アニメーション)
 
@@ -142,6 +143,17 @@ void main() {
 
   //invert
   float invert = vInvert;
+
+  //shiverring
+  float shiveringIntensity;
+
+  if(uDevice == 1.0) {
+    shiveringIntensity = 0.012;
+  } else {
+    shiveringIntensity = 0.006;
+  }
+
+  float shivering = sin(singleScreenUv.y * 1500.0 + sin(singleScreenUv.y * 10.0)) * noise * shiveringIntensity;
 
   // ---------- 汎用画像 ----------
 
@@ -175,6 +187,20 @@ void main() {
   vec4 gridColor = vec4(createGrid(fullScreenUv, vec2(12.0, 9.0), uTime), 1.0);
 
   vec4 gridColorSingle = vec4(createGrid(singleScreenUv, vec2(2.0, 1.5), uTime * 3.0), 1.0);
+
+  //ストライプ画面
+
+  vec4 stripeColor;
+
+  vec2 stripeUv = singleScreenUv;
+  stripeUv.x += shivering * 2.0;
+  stripeUv.x += uTime * 0.1;
+
+  float stripeValue = stripe(stripeUv, 0.1);
+
+  stripeColor = vec4(vec3(stripeValue), 1.0);
+
+  stripeColor.rgb *= 0.24;
 
   //--------画面切替えアニメーション---------
 
@@ -245,6 +271,8 @@ void main() {
   if(activepage == 0.0) {
     index = floor(index - changeStep);//切り替わる度に表画面が変わる
     if(mod(index, 18.0) == 0.0) {
+      singleOptimizedUv0.x += shivering;
+
       vec4 scrollDownDiffuse = texture2D(uTextures[0], singleOptimizedUv0 + glitchOffset);
 
       scrollDownDiffuse.rgb = mix(scrollDownDiffuse.rgb, 0.5 - scrollDownDiffuse.rgb, invert);
@@ -253,15 +281,19 @@ void main() {
 
       checkerBoardDiffuseColor = scrollDownDiffuse;
     } else if(mod(index, 16.0) == 0.0) {
-      checkerBoardDiffuseColor = texture2D(uTextures[1], singleOptimizedUv1 + glitchOffset);
+      singleOptimizedUv1.x += shivering;
+
+      vec4 chemicalDiffuse = texture2D(uTextures[1], singleOptimizedUv1 + glitchOffset);
+
+      checkerBoardDiffuseColor = chemicalDiffuse;
     } else if(mod(index, 14.0) == 0.0) {
-      checkerBoardDiffuseColor = texture2D(uTextures[2], singleOptimizedUv2 + glitchOffset);
+      singleOptimizedUv2.x += shivering;
+
+      vec4 airportDiffuse = texture2D(uTextures[2], singleOptimizedUv2 + glitchOffset);
+
+      checkerBoardDiffuseColor = airportDiffuse;
     } else if(mod(index, 12.0) == 0.0) {
-      vec4 singleTelop = texture2D(uTelopTexture, singleScrollingUv + glitchOffset);
-
-      singleTelop.rgb *= 0.16;
-
-      checkerBoardDiffuseColor = singleTelop;
+      checkerBoardDiffuseColor = stripeColor;
     } else if(mod(index, 10.0) == 0.0) {
       checkerBoardDiffuseColor = waveColor;
     } else if(mod(index, 8.0) == 0.0) {
@@ -312,7 +344,8 @@ void main() {
   scrollingDiffuseColorNoise.rgb *= 0.83;
 
   //簡易crt加工
-  scrollingDiffuseColorNoise.rgb = crtEffect(fullScreenUv, vec2(1280, 960), scrollingDiffuseColorNoise.rgb, .7);
+  scrollingDiffuseColorNoise.rgb = crtEffect(fullScreenUv, vec2(960, 720), scrollingDiffuseColorNoise.rgb, .7);
+  // scrollingDiffuseColorNoise.rgb = crtEffect(fullScreenUv, vec2(1280, 960), scrollingDiffuseColorNoise.rgb, .7);
 
   // vec4 scrollingDiffuseColor = texture2D(uTelopTexture, scrollingUv);
 
@@ -341,6 +374,7 @@ void main() {
     //-------gallery-------
     finalDiffuse = checkerBoardDiffuseColor;
     //モノクロに寄せる
+
     finalDiffuse.rgb = mix(finalDiffuse.rgb, vec3(dot(finalDiffuse.rgb, vec3(0.299, 0.587, 0.114))), 0.25);
 
     //明度を落とす（可読性の観点から）
@@ -402,9 +436,15 @@ void main() {
   //--------------ロード完了時---------------
   float loadedProgress = uLoaded;
 
-  float threshold = map(loadedProgress, 0.7, 1.0, 0.0, 6.5, true);//0どうしの比較を避けるため、始点と終点に多少のバッファを設けている
+  float threshold;
+  //0どうしの比較を避けるため、始点と終点に多少のバッファを設けている
+  if(uDevice == 1.0) {//@mobile
+    threshold = map(loadedProgress, 0.64, 1.0, 0.0, 8.5, true);
+  } else {
+    threshold = map(loadedProgress, 0.84, 1.0, 0.0, 8.0, true);
+  }
 
-  float loadedTransition = step(adjustedDistance + 0.1, threshold);
+  float loadedTransition = step(adjustedDistance + 0.01, threshold);
 
   vec3 waitingColor = texture2D(uTextures[3], singleOptimizedUv3).rgb;
 
@@ -420,7 +460,7 @@ void main() {
   }
 
   //テスト用
-  // color = testcolor;
+  // color = stripeColor.rgb;
 
   color *= colorIntensity;
 

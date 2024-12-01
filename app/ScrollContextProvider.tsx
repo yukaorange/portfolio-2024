@@ -30,6 +30,7 @@ export const ScrollProvider = ({ children }: ScrollProviderProps) => {
   //----------Recoilの状態を更新するための関数を取得----------
   const setIsScrollStart = useSetRecoilState(isScrollStartAtom);
   const setIsGallerySection = useSetRecoilState(isGallerySectionAtom);
+  const isGallerySection = useRecoilValue(isGallerySectionAtom);
   const setIsScrollEnd = useSetRecoilState(isScrollEndAtom);
 
   //----------ギャラリーセクションのY座標を計算----------
@@ -41,6 +42,20 @@ export const ScrollProvider = ({ children }: ScrollProviderProps) => {
     gallerySectionY += window.scrollY; //ページ遷移時に再計算されるから、その時点でのスクロール量を加算
 
     gallerySectionScrollYRef.current = gallerySectionY || 0;
+
+    if (gallerySection == null) {
+      setIsGallerySection(false);
+      const needLog: boolean = false;
+      if (needLog) {
+        console.log(
+          'gallery section is not found , current atom ->',
+          isGallerySection,
+          '\n',
+          'gallery section (atom) :',
+          isGallerySection
+        );
+      }
+    }
   }, []);
 
   //----------スクロール連動のメソッドはコチラ ----------
@@ -58,9 +73,14 @@ export const ScrollProvider = ({ children }: ScrollProviderProps) => {
       prevScrollStartRef.current = isScrollStartCurrent;
     }
 
+    //ギャラリーセクションに到達していればtrue
     const isGallerySectionCurrent = scrollRef.current >= gallerySectionScrollYRef.current;
+
+    //ギャラリーセクションに到達しているかどうかを更新
+    //すでにtrueの場合は更新しない
     if (isGallerySectionCurrent !== prevGallerySectionRef.current) {
       setIsGallerySection(isGallerySectionCurrent);
+
       prevGallerySectionRef.current = isGallerySectionCurrent;
     }
 
@@ -71,14 +91,22 @@ export const ScrollProvider = ({ children }: ScrollProviderProps) => {
       prevScrollEndRef.current = isScrollEndCurrent;
     }
 
-    // console.log('scroll start: ', scrollRatioRef.current >= 1);
-
-    // console.log('gallery section :', scrollRef.current >= gallerySectionScrollYRef.current);
-
-    // console.log('scroll positon y :', scrollRef.current);
-
-    // console.log('gallery section y :', gallerySectionScrollYRef.current);
-  }, [setIsScrollStart, setIsGallerySection, setIsScrollEnd]);
+    // console.log(
+    //   'scroll start: ',
+    //   isScrollStartCurrent,
+    //   '\n',
+    //   'gallery section :',
+    //   isGallerySectionCurrent,
+    //   '\n',
+    //   'scroll end :',
+    //   isScrollEndCurrent,
+    //   '\n'
+    // );
+  }, [
+    setIsScrollStart,
+    setIsGallerySection, //
+    setIsScrollEnd, //
+  ]);
 
   //----------主にページ遷移時にリセットするため---------
   useEffect(() => {

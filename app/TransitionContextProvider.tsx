@@ -52,8 +52,11 @@ export const TransitionContextProvider = ({ children }: TransitionProviderProps)
         const elapsedTime = currentTime - startTime;
 
         const progress = Math.min(1, elapsedTime / duration);
+
+        //startに指定した値から、endに指定した値まで、progressの値に沿って、変遷する常套テク
         progressRef.current = start + (end - start) * progress;
 
+        //progressが完了するまでの間、ループ処理が続くようにする
         if (progress < 1) {
           requestAnimationFrame(animate);
         } else {

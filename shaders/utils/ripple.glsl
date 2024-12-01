@@ -5,22 +5,23 @@ float easeOutQuad(float t) {
 }
 
 vec3 ripple(vec2 uv, float time, float aspect) {
-  float RIPPLE_SPEED = 0.4;
+  float RIPPLE_SPEED = 1.0;
   float RIPPLE_PEAK = 0.3;
 
   vec2 center = vec2(0.5);
   float dist = length(uv - center);
 
     // 時間に基づいて波紋の進捗をだす
-  float age = mod(time * RIPPLE_SPEED + 0.5, 1.0);
+  float age = mod(time * RIPPLE_SPEED , 1.0);
 
     // 波紋のサイズを計算
   float size = easeOutQuad(age);
   size *= aspect;
-  float innerSize = size * 0.25;
+  float innerSize = size * 0.5;
   float outerSize = size;
 
   float gradient = 1.0;
+
   if(dist < innerSize) {
     gradient = smoothstep(0.0, innerSize, dist);
   } else if(dist < outerSize) {

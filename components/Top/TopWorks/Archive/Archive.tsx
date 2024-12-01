@@ -7,21 +7,21 @@ export const Archive = () => {
   const archive = [
     {
       title: 'Projects',
-      description: 'Webサイト制作の実績',
+      description: '制作したWebサイト',
       amount: '02',
       available: false,
       href: '',
     },
     {
       title: 'App',
-      description: '自主制作Webアプリケーション',
+      description: '個人制作Webアプリケーション',
       amount: '01',
       available: true,
       href: 'colortrainingapp',
     },
     {
       title: 'Modeling',
-      description: '自主制作3Dモデル',
+      description: '個人制作3Dモデル',
       amount: '01',
       available: true,
       href: 'character',

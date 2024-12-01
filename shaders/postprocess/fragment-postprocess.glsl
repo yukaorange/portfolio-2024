@@ -5,6 +5,7 @@ uniform float uAspect;
 uniform float uStrength;
 uniform float uRadius;
 uniform float uThreshold;
+uniform float uIsMobile;
 uniform float uTime;
 uniform float uLoadingTransition;
 uniform vec2 uResolution;
@@ -17,14 +18,17 @@ varying vec2 vUv;
 #pragma glslify: radialStrength = require('../utils/radialStrength.glsl');
 #pragma glslify: linearToSRGB = require('../utils/linerToSRGB.glsl');
 #pragma glslify: ripple = require('../utils/ripple.glsl');
+#pragma glslify: quake = require('../utils/quake.glsl');
 #pragma glslify: blur = require('../utils/blur.glsl');
 #pragma glslify: getLuminance = require('../utils/getLuminance.glsl');
 #pragma glslify: grayScale = require('../utils/grayScale.glsl');
+#pragma glslify: halftone = require('../utils/halftone.glsl');
 #pragma glslify: blendOverlay = require('../utils/blend.glsl');
 
 void main() {
 
   float PI = 3.1415926535897932384626433832795;
+  float noise = snoise(vec2(vUv.y * 60.0, sin(uTime * 40.0)));
 
   vec2 uv = vUv;
 
@@ -36,7 +40,7 @@ void main() {
   vec3 color;
 
   //----------shivering -------
-  float shiveringProgress = map(uLoadingTransition, 0.2, 1.0, 0.0, 1.0, true);
+  float shiveringProgress = map(uLoadingTransition, 0.4, 1.0, 0.0, 1.0, true);
 
   float shiveringKeepEdge = 0.01;
   //keepEdgeの値を小さくすると、1でいる時間が長くなる
@@ -45,7 +49,15 @@ void main() {
 
   float shiveringNoise = snoise(vec2(uTime * 10.0));
 
-  float shivering = sin(uv.y * 1500.0 + sin(uv.y * 10.0)) * shiveringNoise * 0.005;
+  float shiveringIntensity;
+
+  if(uIsMobile == 1.0) {
+    shiveringIntensity = 0.012;
+  } else {
+    shiveringIntensity = 0.006;
+  }
+
+  float shivering = sin(uv.y * 1500.0 + sin(uv.y * 10.0)) * shiveringNoise * shiveringIntensity;
 
   shivering *= shiveringProgress;
 
@@ -59,55 +71,71 @@ void main() {
 
   deformProgress = smoothstep(0.0, deformKeepEdge, abs(sin(deformProgress * PI)));
 
-  float deformNoise = snoise(floor((vUv + vec2(0.0, uTime)) * vec2(1.0, 2.0))) * 0.004;
+  vec2 verticalWave = vec2(0.0, sin(uTime));//縦方向に波を作る
+
+  verticalWave *= noise * 0.05;//縦方向の波の振幅をノイズで変化させる
+
+  vec2 timeOffset = vec2(uTime * 0.1);
+
+  vec2 deformMap = uv + verticalWave;//波を適用
+
+  deformMap.y -= timeOffset.y;//時間経過で波を動かす
+
+  deformMap *= vec2(1.0, 10.0);
+  deformMap = floor(deformMap);//y方向に分割
+
+  float deformNoise = snoise(deformMap) * 0.006;//ノイズに変換することで、縦方向に波上のランダムな変化が生まれる
 
   deformNoise *= deformProgress;
 
   uv.x += deformNoise;
 
-  //----------ベースカラー--------
+   //---------クエイクエフェクト-------
+
+  float quakeProgress = map(uLoadingTransition, 0.86, 0.95, 0.0, 1.0, true);
+
+  float quakeKeepEdge = 0.4;
+
+  quakeProgress = smoothstep(0.0, quakeKeepEdge, abs(sin(quakeProgress * PI)));
+
+  float sliceCount = 25.0;
+  float quakeIntensity = 0.01;
+
+  float quakeOffset = quake(uv.y, sliceCount, uTime, quakeIntensity);
+
+  quakeOffset *= quakeProgress;
+
+  uv.x += quakeOffset;
+
+  //----------ベースカラー（ここまでに行ったUVの変換の影響を受けます）--------
   vec4 texColor = texture2D(tDiffuse, uv);
+
   color = texColor.rgb;
-
-  //----------block noise---------
-  // float blockNoiseProgress = map(uLoadingTransition, 0.3, 0.8, 0.0, 1.0, true);
-
-  // float blockNoiseKeepEdge = 0.01;
-  // //keepEdgeの値を小さくすると、1でいる時間が長くなる
-
-  // blockNoiseProgress = smoothstep(0.0, blockNoiseKeepEdge, abs(sin(blockNoiseProgress * PI)));
-
-  // float blockTime = floor(uTime * 10.0);
-
-  // float n1 = snoise(floor(uv * vec2(4.0, 5.0) + blockTime) * 0.5 + 0.5);
-  // float n2 = snoise(floor(uv * vec2(5.0, 6.0) + blockTime) * 0.5 + 0.5);
-  // float n3 = snoise(floor(uv * vec2(6.0, 4.0) + blockTime) * 0.5 + 0.5);
-
-  // float compositionNoise = n1 + n2 + n3;
-
-  // compositionNoise = smoothstep(0.4, 0.5, compositionNoise);
-
-  // vec3 aberrattion;
-
-  // aberrattion.r = texture2D(tDiffuse, uv - vec2(0.01)).r;
-  // aberrattion.g = texture2D(tDiffuse, uv - vec2(0.0)).g;
-  // aberrattion.b = texture2D(tDiffuse, uv + vec2(0.01)).b;
-
-  // color = mix(color, aberrattion, compositionNoise);
+  // vec3 testColor = texColor.rgb;
 
   //-----------色ずらし系の処理ここから ----------
-  float colorOffsetIntensity = 2.0;
+  float colorOffsetIntensity;
+
+  if(uIsMobile == 1.0) {//@mobile
+    colorOffsetIntensity = 4.0;
+  } else {
+    colorOffsetIntensity = 8.0;
+  }
 
   //----------リップル波--------
-  float rippleProgress = map(uLoadingTransition, 0.4, 1.0, 0.0, 1.0, true);
+  float rippleProgress = map(uLoadingTransition, 0.8, 1.0, 0.0, 1.0, true);
+
+  float rippleKeepEdge = 1.0;
+
+  rippleProgress = smoothstep(0.0, rippleKeepEdge, abs(sin(rippleProgress * PI)));
 
   vec3 rippleDiffuse = ripple(adjustedUv, rippleProgress, uAspect);
 
   vec2 rippleBaseOffset = normalize(rippleDiffuse.xy) * rippleDiffuse.b + vec2(0.001);
 
-  vec2 rippleRedOffset = rippleBaseOffset * 0.24 * colorOffsetIntensity;
-  vec2 rippleGreenOffset = rippleBaseOffset * -0.33 * colorOffsetIntensity;
-  vec2 rippleBlueOffset = rippleBaseOffset * 0.32 * colorOffsetIntensity;
+  vec2 rippleRedOffset = rippleBaseOffset * 0.12 * colorOffsetIntensity;
+  vec2 rippleGreenOffset = rippleBaseOffset * -0.12 * colorOffsetIntensity;
+  vec2 rippleBlueOffset = rippleBaseOffset * 0.08 * colorOffsetIntensity;
 
   float rippleAlpha = rippleDiffuse.b * 0.0025;
 
@@ -121,12 +149,12 @@ void main() {
 
   vec3 rippleColor = vec3(rippleRed.r, rippleGreen.g, rippleBlue.b);
 
-  color = blendOverlay(color, rippleColor, 0.5);
+  color = blendOverlay(color, rippleColor, rippleProgress);
 
   //---------放射ディストーション-------
-  float distortionProgress = map(uLoadingTransition, 0.0, 1.0, 0.0, 1.0, true);
+  float distortionProgress = map(uLoadingTransition, 0.8, 1.0, 0.0, 1.0, true);
 
-  float distortionKeepEdge = 0.75;
+  float distortionKeepEdge = 0.2;
   //keepEdgeの値を小さくすると、1でいる時間が長くなる
 
   distortionProgress = smoothstep(0.0, distortionKeepEdge, abs(sin(distortionProgress * PI)));
@@ -135,9 +163,9 @@ void main() {
 
   vec2 baseOffset = normalize(uv.xy) * distortionStrength;
 
-  vec2 redOffset = baseOffset * -0.14 * colorOffsetIntensity;
-  vec2 greenOffset = baseOffset * 0.16 * colorOffsetIntensity;
-  vec2 blueOffset = baseOffset * -0.01 * colorOffsetIntensity;
+  vec2 redOffset = baseOffset * -0.07 * colorOffsetIntensity;
+  vec2 greenOffset = baseOffset * 0.08 * colorOffsetIntensity;
+  vec2 blueOffset = baseOffset * -0.1 * colorOffsetIntensity;
 
   vec3 red = texture2D(tDiffuse, uv + redOffset).rgb;
   vec3 green = texture2D(tDiffuse, uv + greenOffset).rgb;
@@ -145,9 +173,9 @@ void main() {
 
   vec3 distortionColor = vec3(red.r, green.g, blue.b);
 
-  color = blendOverlay(color, distortionColor, 0.5);
+  color = blendOverlay(color, distortionColor, distortionProgress);
 
-  //------低負荷ブルームエフェクト------
+  //------低負荷ブルームエフェクト（これは常時ON）------
   vec3 blurred = blur(tDiffuse, uv, uResolution, uRadius, 2);
 
   float brightness = getLuminance(blurred);
@@ -155,16 +183,21 @@ void main() {
   brightness = brightness > uThreshold ? 1.0 : 0.0;
 
   vec3 bloom = color + blurred * uStrength * smoothstep(uThreshold, uThreshold + 0.1, brightness);
+
   color = bloom;
 
-  // 点滅
-  // color *= step(0.0, sin(fullScreenUv.y * 5.0 - uTime * 2.0 * noise)) * 0.05 + 0.98;
+  //-----------------ブラー ----------------
 
-  //走査線（画面全体）
-  // color *= step(0.0, sin(fullScreenUv.y * 4.0 - uTime * 0.9)) * 0.05 + 0.98;
+  float blurProgress = map(uLoadingTransition, 0.0, 1.0, 0.0, 1.0, true);
 
-	// 走査線（シングル）
-  // color *= 0.98 - sin(fullScreenUv.y * 200.0 - uTime * 100.0) * 0.01;
+  float blurKeepEdge = 0.4;
+  //keepEdgeの値を小さくすると、1でいる時間が長くなる
+
+  blurProgress = smoothstep(0.0, blurKeepEdge, abs(sin(blurProgress * PI)));
+
+  vec3 blurColor = blur(tDiffuse, uv, uResolution, uRadius, 5);
+
+  color = mix(color, blurColor, blurProgress);
 
 	// ----------ヴィネット---------
   float vignetProgress = map(uLoadingTransition, 0.0, 0.5, 0.0, 1.0, true);
@@ -181,22 +214,40 @@ void main() {
 
   color *= (1.0 - smoothstep(vignetEdge - offset, vignetEdge, length(adjustedUv - 0.5)));
 
-  // color = vec3(vignetEdge);
+  //----------ハーフトーン---------
 
-  //ブライトネス
-  // color = vec3(brightness);
+  float halftoneProgress = map(uLoadingTransition, 0.92, 0.94, 0.0, 1.0, true);
 
-  //ブラー
-  // color = blur(tDiffuse, uv, uResolution, uRadius, 2);
-  // color += blur(tDiffuse, uv, uResolution, uRadius, 2);
+  float halftoneKeepEdge = 0.1;
+  //keepEdgeの値を小さくすると、1でいる時間が長くなる
 
-  //グレースケール
-  // color = grayScale(color);
+  halftoneProgress = smoothstep(0.0, halftoneKeepEdge, abs(sin(halftoneProgress * PI)));
+
+  vec4 halfToneColor = halftone(tDiffuse, uv, uResolution, 1024.0, 1.0, 10.0, true);
+
+  halfToneColor.rgb *= 0.64;
+
+  color = blendOverlay(color, halfToneColor.rgb, halftoneProgress);
+  // color = blendOverlay(color, halfToneColor.rgb, 1.0);
+
+  //-------------グレースケール-------
+  float grayProgress = map(uLoadingTransition, 0.0, 0.5, 0.0, 1.0, true);
+
+  float grayKeepEdge = 0.01;
+  //keepEdgeの値を小さくすると、1でいる時間が長くなる
+
+  grayProgress = smoothstep(0.0, grayKeepEdge, abs(sin(grayProgress * PI)));
+
+  vec3 grayColor = grayScale(color);
+  color = mix(color, grayColor, grayProgress);
 
   //------ガンマ補正------
   color = pow(color, vec3(2.2));
   color = gammaCorrect(color, uGamma);
   color = linearToSRGB(color);
+
+  //-------test--------
+  // color = vec3(halfToneColor.rgb);
 
   gl_FragColor = vec4(color.rgb, texColor.a);
 }

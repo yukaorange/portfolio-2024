@@ -7,7 +7,7 @@ float radialStrength(vec2 uv, float radiusCoefficient, float intensity, float ti
 
     // 色収差の強度を距離に基づいて計算
     // smoothstepで中心付近は0、外側に行くほど1に近づく
-  float strength = smoothstep(0.0, 0.25, dist * radiusCoefficient);
+  float strength = smoothstep(0.1, 0.5, dist * radiusCoefficient);
 
   strength *= time;
 

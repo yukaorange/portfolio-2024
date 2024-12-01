@@ -301,9 +301,9 @@ export const Model = ({ textures, ...props }: ModelProps) => {
           //回転を加える
           suitcaseRef.current.rotation.x = (Math.PI * 1) / 16;
           if (device === 'mobile') {
-            suitcaseRef.current.rotation.y += (delta * Math.PI * 1) / 8;
+            suitcaseRef.current.rotation.y += (delta * Math.PI * 1) / 24;
           } else {
-            suitcaseRef.current.rotation.y += (delta * Math.PI * 1) / 2;
+            suitcaseRef.current.rotation.y += (delta * Math.PI * 1) / 8;
           }
           // suitcaseRef.current.rotation.y += (delta * Math.PI * 1) / 2;//色の確認時に早く回転させたい
           suitcaseRef.current.rotation.z = (Math.PI * 1) / 8;

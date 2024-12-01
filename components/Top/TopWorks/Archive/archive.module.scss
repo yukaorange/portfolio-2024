@@ -15,6 +15,7 @@
 }
 
 .item.unavailable {
+  pointer-events: none;
 }
 
 .item__inner {

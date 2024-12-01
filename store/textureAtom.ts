@@ -158,10 +158,13 @@ const currentTexturesSelector = selector<TextureInfo[]>({
         galleryTextures = [];
       } else if (Array.isArray(contents)) {
         // console.log(`contents lenght:`, contents.length);
-        galleryTextures = contents.map((content) => ({
-          url: content.images[0].url,
-          aspectRatio: content.images[0].width / content.images[0].height,
-        }));
+
+        galleryTextures = contents.map((content) => {
+          return {
+            url: content.images[0].url,
+            aspectRatio: content.images[0].width / content.images[0].height,
+          };
+        });
       } else {
         const item = contents as Content;
         // console.log(`item :`, item);
@@ -418,6 +421,8 @@ export const useScene = () => {
     setInitialLoading,
     setProgress,
   ]);
+
+  // console.log('currentPage : ', currentPage, '\n', 'current Texture', currentTextures);
 
   return {
     currentPage,
