@@ -12,9 +12,20 @@
 }
 
 .footer__inner {
+  display: grid;
+  row-gap: 1rem;
 }
 
 .footer__nav {
+}
+
+.footer__textbox {
+  display: grid;
+  justify-items: end;
+}
+
+.footer__message {
+  font-size: text(24);
 }
 
 .footer__copyright {
@@ -56,9 +67,20 @@
   }
 
   .footer__inner {
+    display: grid;
+    row-gap: 0.4rem;
   }
 
   .footer__nav {
+  }
+
+  .footer__textbox {
+    display: grid;
+    justify-items: end;
+  }
+
+  .footer__message {
+    font-size: text(10);
   }
 
   .footer__copyright {

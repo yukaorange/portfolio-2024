@@ -5,6 +5,14 @@ export const Footer = () => {
   return (
     <footer className={styles.footer}>
       <div className={styles.footer__inner}>
+        <div className={styles.footer__textbox}>
+          <p className={`${styles.footer__message} _en`}>
+            Please contact me via DM on X (Twitter).
+          </p>
+          <p className={styles.footer__message}>
+            ご連絡は、X（旧:Twitter）のDMからお願い致します。
+          </p>
+        </div>
         <div className={styles.footer__nav}>
           <Nav />
         </div>

@@ -13,6 +13,7 @@ import styles from './loading.module.scss';
 export const Loading = () => {
   const [shouldRender, setShouldRender] = useState(true);
   const [animationComplete, setAnimationComplete] = useState(false);
+
   //------------完了通知------------
   const modelLoaded = useRecoilValue(modelLoadedAtom);
   const initialLoading = useRecoilValue(initialLoadingAtom);
@@ -20,20 +21,28 @@ export const Loading = () => {
 
   //---------進捗管理---------
   const progressRef = useRef<number>(0);
+
   const loadingDisplayRef = useRef<HTMLDivElement>(null);
+
   const { modelProgress, modelTotal, texturesProgress, texturesTotal } =
     useRecoilValue(loadProgressAtom);
 
   useEffect(() => {
     if (modelLoaded && initialLoading && animationComplete) {
-      GSAP.to('[data-ui="loading"]', {
+      const Timeline = GSAP.timeline();
+
+      Timeline.to('[data-ui="loading"]', {
         duration: 0.4,
         autoAlpha: 0,
+        onStart: () => {
+          const fv = document.querySelector('.fv__maincopy__textbox') ?? null;
+
+          fv?.classList.add('is_animating');
+        },
         onComplete: () => {
           setShouldRender(false);
           initializedCompleted(true);
-          // console.log("load end");
-          
+          // console.log('load end');
         },
       });
     }

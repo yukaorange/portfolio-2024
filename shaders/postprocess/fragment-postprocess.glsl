@@ -36,6 +36,8 @@ void main() {
 
   vec2 uv = vUv;
 
+  vec2 distortionUv = uv;
+
   vec2 adjustedUv = vUv;
   adjustedUv -= 0.5;
   adjustedUv.x *= uAspect;
@@ -134,14 +136,14 @@ void main() {
   color = texColor.rgb;
   // vec3 testColor = texColor.rgb;
 
-  //-------ピクセラレーション(定期的に発火、パネルの変更に連動) -------
+  //-------ピクセラレーション(FVでのみ定期的に発火、パネルの変更に連動) -------
   vec2 pixelGlicthUv = vUv;
 
   float glicthStep;
   if(uIsMobile == 1.0) {
-    glicthStep = mix(64.0, 32.0, tickedRandom);
+    glicthStep = mix(48.0, 24.0, tickedRandom);
   } else {
-    glicthStep = mix(128.0, 64.0, tickedRandom);
+    glicthStep = mix(64.0, 96.0, tickedRandom);
   }
 
   pixelGlicthUv.x = round(pixelGlicthUv.x * glicthStep) / glicthStep;
@@ -154,6 +156,20 @@ void main() {
   if(uActivePage == 0.0 && uIsScrollStart == 0.0) {
     color.rgb = glitchColor.rgb;
   }
+
+  //-------レンズディストーション-------
+
+  vec2 shiftedDistortionUv = distortionUv * 2.0 - 1.0;//-1.0 ～ 1.0
+  float abberationValue = pow(length(shiftedDistortionUv), 2.0);
+
+  vec3 lensBlur = texture2D(tDiffuse, distortionUv - abberationValue * 0.00625).rgb;
+  vec3 lensBlur2 = texture2D(tDiffuse, distortionUv + abberationValue * 0.0125).rgb;
+  vec3 lensBlur3 = texture2D(tDiffuse, distortionUv + abberationValue * 0.025).rgb;
+
+  vec3 compositeColor = grayScale(color + lensBlur + lensBlur2) / 3.0;
+  compositeColor += grayScale(color - lensBlur3) * 1.0;
+
+  color = mix(color, compositeColor, uTransition);
 
   //-----------色ずらし系の処理ここから ----------
   float colorOffsetIntensity;
@@ -290,7 +306,7 @@ void main() {
   color = linearToSRGB(color);
 
   //-------test--------
-  // color = vec3(glitchColor.rgb);
+  // color = vec3(compositeColor.rgb);
 
   gl_FragColor = vec4(color.rgb, texColor.a);
 }

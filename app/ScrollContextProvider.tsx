@@ -20,6 +20,7 @@ export const ScrollProvider = ({ children }: ScrollProviderProps) => {
   const scrollRef = useRef<number>(0);
   const scrollRatioRef = useRef<number>(0);
   const gallerySectionScrollYRef = useRef<number>(0);
+  const gallerySectionElementRef = useRef<HTMLElement | null>(null);
 
   const prevScrollStartRef = useRef(false);
   const prevGallerySectionRef = useRef(false);
@@ -35,17 +36,17 @@ export const ScrollProvider = ({ children }: ScrollProviderProps) => {
 
   //----------ギャラリーセクションのY座標を計算----------
   const calculateGalleryScrollY = useCallback(() => {
-    const gallerySection = document.querySelector('[data-section="gallery"]') || null;
+    gallerySectionElementRef.current = document.querySelector('[data-section="gallery"]') || null;
 
-    let gallerySectionY = gallerySection?.getBoundingClientRect().top ?? 0;
+    let gallerySectionY = gallerySectionElementRef.current?.getBoundingClientRect().top ?? 0;
 
     gallerySectionY += window.scrollY; //ページ遷移時に再計算されるから、その時点でのスクロール量を加算
 
     gallerySectionScrollYRef.current = gallerySectionY || 0;
 
-    if (gallerySection == null) {
+    if (gallerySectionElementRef.current == null) {
       setIsGallerySection(false);
-      const needLog: boolean = false;
+      const needLog: boolean = true;
       if (needLog) {
         console.log(
           'gallery section is not found , current atom ->',
@@ -78,7 +79,10 @@ export const ScrollProvider = ({ children }: ScrollProviderProps) => {
 
     //ギャラリーセクションに到達しているかどうかを更新
     //すでにtrueの場合は更新しない
-    if (isGallerySectionCurrent !== prevGallerySectionRef.current) {
+    if (
+      isGallerySectionCurrent !== prevGallerySectionRef.current &&
+      gallerySectionElementRef.current
+    ) {
       setIsGallerySection(isGallerySectionCurrent);
 
       prevGallerySectionRef.current = isGallerySectionCurrent;
@@ -91,17 +95,17 @@ export const ScrollProvider = ({ children }: ScrollProviderProps) => {
       prevScrollEndRef.current = isScrollEndCurrent;
     }
 
-    // console.log(
-    //   'scroll start: ',
-    //   isScrollStartCurrent,
-    //   '\n',
-    //   'gallery section :',
-    //   isGallerySectionCurrent,
-    //   '\n',
-    //   'scroll end :',
-    //   isScrollEndCurrent,
-    //   '\n'
-    // );
+    console.log(
+      'scroll start: ',
+      isScrollStartCurrent,
+      '\n',
+      'gallery section :',
+      isGallerySection,
+      '\n',
+      'scroll end :',
+      isScrollEndCurrent,
+      '\n'
+    );
   }, [
     setIsScrollStart,
     setIsGallerySection, //

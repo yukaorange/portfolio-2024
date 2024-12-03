@@ -50,7 +50,7 @@ export const useUserAgent = () => {
     // デバイスのチェック
     if (ua.includes('iphone') || (ua.includes('android') && ua.includes('mobile'))) {
       setDevice('mobile');
-      setFPS(24);
+      setFPS(30);
     } else if (ua.includes('ipad') || ua.includes('android')) {
       setDevice('tablet');
       setFPS(30);

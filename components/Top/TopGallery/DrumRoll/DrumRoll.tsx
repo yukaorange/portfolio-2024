@@ -27,6 +27,31 @@ export const DrumRoll = ({ targetProgressRef, currentProgressRef }: DrumRollProp
     itemRefs.current[index] = el as HTMLLIElement;
   }, []);
 
+  // const animateProgress = useCallback(
+  //   (currentTime: number) => {
+  //     if (!isComponentMounted) {
+  //       console.log('unmount DrumRoll', currentTime, targetProgressRef);
+  //       return;
+  //     }
+
+  //     listRef.current?.style.setProperty(
+  //       '--drumroll-progress',
+  //       currentProgressRef.current.toString()
+  //     );
+
+  //     itemRefs.current.forEach((item, index) => {
+  //       let distance = Math.abs(index - currentProgressRef.current) / (itemRefs.current.length - 1);
+
+  //       distance = distance * 2.5;
+
+  //       if (item) {
+  //         item.style.setProperty(`--drumroll-each-progress`, distance.toString());
+  //       }
+  //     });
+  //   },
+  //   [currentProgressRef, isComponentMounted, itemRefs, listRef, targetProgressRef]
+  // );
+
   const animateProgress = useCallback(
     (currentTime: number) => {
       if (!isComponentMounted) {
@@ -34,30 +59,22 @@ export const DrumRoll = ({ targetProgressRef, currentProgressRef }: DrumRollProp
         return;
       }
 
-      listRef.current?.style.setProperty(
-        '--drumroll-progress',
-        currentProgressRef.current.toString()
-      );
+      // メインリストの進行状態更新
+      const progress = currentProgressRef.current;
+      listRef.current?.style.setProperty('--drumroll-progress', progress.toString());
 
-      itemRefs.current.forEach((item, index) => {
-        let distance = Math.abs(index - currentProgressRef.current) / (itemRefs.current.length - 1);
+      // パフォーマンス最適化
+      const totalItems = itemRefs.current.length - 1;
+      const multiplier = 2.5;
 
-        // if (index == 0) {
-        //   console.log(
-        //     distance,
-        //     index,
-        //     currentProgressRef.current,
-        //     itemRefs.current.length - 1,
-        //     Math.abs(index - currentProgressRef.current),
-        //     Math.abs(index - currentProgressRef.current) / (itemRefs.current.length - 1)
-        //   );
-        // }
-
-        distance = distance * 2.5;
-
-        if (item) {
-          item.style.setProperty(`--drumroll-each-progress`, distance.toString());
-        }
+      // Transform処理をバッチ化
+      requestAnimationFrame(() => {
+        itemRefs.current.forEach((item, index) => {
+          if (item) {
+            const distance = (Math.abs(index - progress) / totalItems) * multiplier;
+            item.style.setProperty(`--drumroll-each-progress`, distance.toString());
+          }
+        });
       });
     },
     [currentProgressRef, isComponentMounted, itemRefs, listRef, targetProgressRef]

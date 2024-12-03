@@ -145,7 +145,7 @@ export const Model = ({ textures, ...props }: ModelProps) => {
   const suitcaseMaterial = useMemo(() => {
     if (!textures) return;
 
-    const dpr = Math.min(window.devicePixelRatio, 2);
+    const dpr = Math.min(window.devicePixelRatio, 1);
 
     const { suitcaseTexture } = textures;
 
@@ -224,7 +224,8 @@ export const Model = ({ textures, ...props }: ModelProps) => {
     const handleResize = () => {
       if (!suitcaseMaterial) return;
       // console.log('resize @ suitcase in Model  ');
-      const dpr = Math.min(window.devicePixelRatio, 2);
+      const dpr = Math.min(window.devicePixelRatio, 1);
+
       suitcaseMaterial.uniforms.uResolution.value.set(
         window.innerWidth * dpr,
         window.innerHeight * dpr
@@ -274,7 +275,7 @@ export const Model = ({ textures, ...props }: ModelProps) => {
 
       //線形補完の係数
       // const lerpFactor = 1.0 - Math.pow(0.001, delta);
-      const lerpFactor = 0.6; //スーツケースの移動は早くていい
+      const lerpFactor = 0.24; //スーツケースの移動は早くていい
 
       //スーツケースの初期位置
       const originalSuitcasePosition = {

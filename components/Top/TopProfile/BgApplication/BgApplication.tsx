@@ -15,14 +15,14 @@ export const BgApplication = () => {
             entry.target.classList.add(styles.active);
             entry.target.classList.remove(styles.inactive);
           } else {
-            // entry.target.classList.remove(styles.active);
-            // entry.target.classList.add(styles.inactive);
+            entry.target.classList.remove(styles.active);
+            entry.target.classList.add(styles.inactive);
           }
         },
         {
           root: null,
-          rootMargin: '150px 0px',
-          threshold: 0.5,
+          rootMargin: '0px',
+          threshold: 1,
         }
       );
     });

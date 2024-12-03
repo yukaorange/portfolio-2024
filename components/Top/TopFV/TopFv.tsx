@@ -1,6 +1,15 @@
+'use client';
+
+import { TextSplitter } from '@/components/Common/TextSplitter/TextSplitter';
 import styles from './fv.module.scss';
+import './global.scss';
+
+import { useRecoilValue } from 'recoil';
+import { intializedCompletedAtom } from '@/store/initializedAtom';
 
 export const TopFv = () => {
+  const initializedCompleted = useRecoilValue(intializedCompletedAtom);
+
   return (
     <div className={styles.fv}>
       <div className={styles.fv__inner}>
@@ -35,13 +44,22 @@ export const TopFv = () => {
             </div>
           </div>
           <div className={styles.fv__maincopy}>
-            <div className={`${styles.fv__maincopy__textbox} _en _shadow--blue`}>
-              <span className={styles.fv__maincopy__text}>FRONT</span>
-              <span className={styles.fv__maincopy__text}>END</span>
-              <span className={`${styles.fv__maincopy__text} ${styles.lastword}`}>ENGINEER</span>
-            </div>
+            <TextSplitter
+              className={`${styles.fv__maincopy__textbox} fv__maincopy__textbox _en _shadow--blue`}
+            >
+              <span className={`${styles.fv__maincopy__text} fv__maincopy__text`}>FRONT</span>
+              <span className={`${styles.fv__maincopy__text} fv__maincopy__text`}>END</span>
+              <span
+                className={`${styles.fv__maincopy__text} ${styles.lastword} fv__maincopy__text`}
+              >
+                ENGINEER
+              </span>
+            </TextSplitter>
           </div>
-          <h1 className="reader-only">I an FrontEnd Engineer in Japan</h1>
+          <h1 className="reader-only">I an FrontEnd Engineer in Japan.</h1>
+          <h1 className="reader-only">
+            日本在住、フロントエンジニアのタカオカと思うします。当Webサイトはポートフォリオサイトであり、デザインから実装まで個人で制作したものです。
+          </h1>
         </div>
       </div>
     </div>

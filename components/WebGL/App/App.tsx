@@ -7,6 +7,8 @@ import React, {
 
 import { Experience } from '@/components/WebGL/Experience/Experience';
 import { useScene } from '@/store/textureAtom';
+import { useRecoilValue } from 'recoil';
+import { deviceState } from '@/store/userAgentAtom';
 
 const TextureLoader = memo(() => {
   useScene();
@@ -73,11 +75,14 @@ const TextureLoader = memo(() => {
 
   //-------デバック用ここまで-------
 });
+
 TextureLoader.displayName = 'TextureLoader';
 
 export const App = () => {
+  const device = useRecoilValue(deviceState);
+
   return (
-    <Canvas gl={{ antialias: true, alpha: false }}>
+    <Canvas dpr={device === 'mobile' ? [0.75, 1] : [1, 2]} gl={{ antialias: true, alpha: false }}>
       <Suspense fallback={null}>
         <TextureLoader />
         <Experience />

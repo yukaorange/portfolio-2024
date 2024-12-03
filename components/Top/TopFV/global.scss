@@ -1,0 +1,81 @@
+@use "@/styles/mixin/mixins" as *;
+
+html.is_loaded .fv__maincopy__text span {
+  opacity: 1;
+}
+
+@for $i from 0 through 30 {
+  .fv__maincopy__textbox.is_animating .fv__maincopy__text span[data-index="#{$i}"] {
+    animation-delay: random() * 0.3s + 2.8s;
+    animation-name: flicker;
+    animation-duration: 0.64s;
+    animation-timing-function: ease-out;
+    animation-fill-mode: forwards;
+  }
+}
+
+@keyframes flicker {
+  0% {
+    opacity: 0;
+  }
+  5% {
+    opacity: 0.3;
+  }
+  10% {
+    opacity: 0;
+  }
+  15% {
+    opacity: 0.8;
+  }
+  20% {
+    opacity: 0.2;
+  }
+  25% {
+    opacity: 0.9;
+  }
+  30% {
+    opacity: 0.3;
+  }
+  35% {
+    opacity: 0.8;
+  }
+  40% {
+    opacity: 0.4;
+  }
+  45% {
+    opacity: 0.8;
+  }
+  50% {
+    opacity: 0.2;
+  }
+  55% {
+    opacity: 0.9;
+  }
+  60% {
+    opacity: 0.3;
+  }
+  65% {
+    opacity: 0.8;
+  }
+  70% {
+    opacity: 0.4;
+  }
+  75% {
+    opacity: 0.9;
+  }
+  80% {
+    opacity: 0.2;
+  }
+  85% {
+    opacity: 0.8;
+  }
+  90% {
+    opacity: 0.4;
+  }
+  95% {
+    opacity: 0.9;
+  }
+  100% {
+    opacity: 1;
+  }
+}

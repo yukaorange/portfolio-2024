@@ -108,7 +108,7 @@ export const Experience = () => {
   useEffect(() => {
     const effectComposer = new EffectComposer(gl);
 
-    const coefficientResolution = 1.0; //解像度が必要なエフェクトに対して送信する解像度が高すぎると負荷がかかるため、解像度を下げる係数
+    const coefficientResolution = 0.750; //解像度が必要なエフェクトに対して送信する解像度が高すぎると負荷がかかるため、解像度を下げる係数
 
     //シーンをレンダリングするだけのパス
     const renderPass = new RenderPass(scene, camera);

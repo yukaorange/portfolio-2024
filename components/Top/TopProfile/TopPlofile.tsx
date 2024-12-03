@@ -20,11 +20,11 @@ export const TopProfile = () => {
             <p className={`${styles.profile__text} ${styles.kerning} _helvetica`}>
               I began learning to become a frontend engineer. I want to provide technical support to
               help create great websites. I am improving my technical skills to implement diverse
-              designs with flexibility. I focus not only on learning frontend development but also
-              on mastering design tools. I want to be a member of creative teams.
+              idea flexibility. I focus not only on learning frontend development but also mastering
+              useful design tools. I want to be a member of creative teams.
             </p>
             <p className={`${styles.profile__text}`}>
-              Webサイトの創造的な表現に魅了され、その実現を技術面からサポートするフロントエンドエンジニアを目指して学習を始めました。多様なデザインを柔軟に実装できるよう、技術力の向上に努めています。センスを磨くために知識は幅広く持っておく方が良いと考えるため、フロントエンド開発に必要な言語を学ぶだけでなく各種デザインツールの習得にも力を入れています。多様な専門性を持つクリエイティブチームの一員として、技術的な側面からプロジェクトに貢献したいと考えています。
+              Webサイトの創造的な表現に魅了され、その実現を技術面からサポートするフロントエンドエンジニアを目指して学習を始めました。多様なアイデアを柔軟に実装できるよう、技術力の向上に努めています。センスを磨くために知識は幅広く持っておく方が良いと考えるため、フロントエンド開発に必要な言語を学ぶだけでなくデザイン技術やツールの習得にも力を入れています。多様な専門性を持つクリエイティブチームの一員として、技術的な側面からプロジェクトに貢献したいと考えています。
             </p>
           </div>
         </div>
@@ -45,14 +45,13 @@ export const TopProfile = () => {
           </div>
           <BgApplication />
         </div>
-
         <div className={styles.profile__content}>
           <div className={styles.profile__lead}>
             <LeadTop text="detailed profile" />
           </div>
           <div className={styles.profile__link}>
             <p className={`${styles.profile__text}`}>
-              フロントエンドに関する各スキルの詳細を記載しています。
+              私が習得している各スキルの詳細を記載しています。
             </p>
             <TransitionLink href={'/about'} scroll={false}>
               <Ticket />

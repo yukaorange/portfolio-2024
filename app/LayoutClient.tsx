@@ -14,6 +14,7 @@ import { Header } from '@/components/Layout/Header/Header';
 import { Loading } from '@/components/Layout/Loading/Loading';
 import { Filters } from '@/components/Layout/SVG/Filter/Filter';
 import { UserAgent } from '@/components/Utility/UserAgent';
+import { InitializeNortification } from '@/components/Utility/initializeNortification';
 import { ViewPortCalculator } from '@/components/Utility/ViewportCalculator';
 import { App } from '@/components/WebGL/App/App';
 import { useNavigationAtomUpdater } from '@/hooks/useNavigationAtomUpdater';
@@ -41,6 +42,7 @@ export const LayoutClient = ({ children }: Readonly<{ children: React.ReactNode 
               <NavigationHandler />
               <div className={styles.layout}>
                 <UserAgent />
+                <InitializeNortification />
                 {isMounted && <ViewPortCalculator />}
                 <Loading />
                 <Header />

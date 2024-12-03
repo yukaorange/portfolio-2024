@@ -83,7 +83,7 @@ void main() {
 
   vec2 gridPos = vec2(mod(vIndex, uCount), floor(vIndex / uCount));
 
-  vec2 center = vec2(floor((uCount / 2.0) - 2.0), floor(uCount / 2.0));//中心は
+  vec2 center = vec2(floor((uCount / 2.0) - 2.0), floor(uCount / 2.0));//中心から少しずらしてます
 
   float distanceFromCenter = length(gridPos - center);
 
@@ -193,16 +193,16 @@ void main() {
   arrowStripeColor = vec4(vec3(arrowStripeValue), 1.0);
   fullScreenArrowStripeColor = vec4(vec3(fullScreenArrowStripeValue), 1.0);
 
-  arrowStripeColor.rgb *= 0.64;
+  arrowStripeColor.rgb *= 0.4;
 
   //--------画面切替えアニメーション---------
 
   //画面切り替えの設定
   float totalDuration = 5.0;
   float transitionDuration = 0.02;
-  float noiseDuration = 0.2;//これは切り替え時にノイズが出る時間の長さとなる
+  float noiseDuration = 0.04;//これは切り替え時にノイズが出る時間の長さとなる
 
-  float changeStep = 7.0 * floor(uTime / (totalDuration * 1.0));//基本変化（横方向）
+  float changeStep = 3.0 * floor(uTime / (totalDuration * 1.0));
 
   //切り替えのサイクルを設定
   float cycle = mod(uTime, totalDuration);//0.0 ～ totalDurationを繰り返す
@@ -210,6 +210,7 @@ void main() {
 
   //切り替え時にノイズを表示する期間の設定
   float noiseStartThreshold = noiseDuration / totalDuration; // 0.2/4.0=0.05
+
   float noiseEndThreshold = 1.0 - noiseStartThreshold; // 3.8/4.0 = 0.95
 
   //ノイズ表示の判定に使用する
@@ -236,7 +237,15 @@ void main() {
     }
   }
 
-  float transition = smoothstep(0.0, transitionDuration, normalizedCycle);//transitionDurationの時点で1.0になるから、その時点で切り替わるということ。
+  float transition;
+  transition = smoothstep(0.0, transitionDuration, normalizedCycle);//transitionDurationの時点で1.0になるから、その時点で切り替わるということ。
+
+  // float delayOffset = adjustedDistance * 0.012;//目視で調整
+  float delayOffset = adjustedDistance * 0.008;//目視で調整
+
+  float delayedTransition = smoothstep(0.0 + delayOffset, transitionDuration + delayOffset, normalizedCycle);//delayを書ける場合はこっちを使う
+
+  transition = delayedTransition;
 
   float progress;
 
@@ -246,11 +255,10 @@ void main() {
     progress = 1.0 - transition;
   }
 
+  //--------サンプリング用のノイズ-------
   vec2 glitchOffset;
-
   if(shouldShowNoise) {
     glitchOffset = vec2(0.0, mod(uTime * 3.0, 1.0) * noise);
-
     glitchOffset *= noiseIntensity;
   }
 
@@ -263,7 +271,7 @@ void main() {
 
   if(activepage == 0.0) {
     index = floor(index - changeStep);//切り替わる度に表画面が変わる
-    if(mod(index, 18.0) == 0.0) {
+    if(mod(index, 15.0) == 0.0) {
       singleOptimizedUv0.x += shivering;
 
       vec4 scrollDownDiffuse = texture2D(uTextures[0], singleOptimizedUv0 + glitchOffset);
@@ -273,24 +281,24 @@ void main() {
       scrollDownDiffuse.rgb *= 0.64;
 
       checkerBoardDiffuseColor = scrollDownDiffuse;
-    } else if(mod(index, 16.0) == 0.0) {
+    } else if(mod(index, 13.0) == 0.0) {
       singleOptimizedUv1.x += shivering;
       vec4 chemicalDiffuse = texture2D(uTextures[1], singleOptimizedUv1 + glitchOffset);
 
       checkerBoardDiffuseColor = chemicalDiffuse;
-    } else if(mod(index, 14.0) == 0.0) {
+    } else if(mod(index, 11.0) == 0.0) {
       vec4 airportDiffuse = texture2D(uTextures[2], singleOptimizedUv2 + glitchOffset);
 
       checkerBoardDiffuseColor = airportDiffuse;
-    } else if(mod(index, 12.0) == 0.0) {
+    } else if(mod(index, 9.0) == 0.0) {
       checkerBoardDiffuseColor = arrowStripeColor;
-    } else if(mod(index, 10.0) == 0.0) {
-      checkerBoardDiffuseColor = waveColor;
     } else if(mod(index, 8.0) == 0.0) {
-      checkerBoardDiffuseColor = gridColorSingle;
+      checkerBoardDiffuseColor = waveColor;
     } else if(mod(index, 5.0) == 0.0) {
-      checkerBoardDiffuseColor = texture2D(uTextures[3], singleOptimizedUv3 + glitchOffset);
+      checkerBoardDiffuseColor = gridColorSingle;
     } else if(mod(index, 3.0) == 0.0) {
+      checkerBoardDiffuseColor = texture2D(uTextures[3], singleOptimizedUv3 + glitchOffset);
+    } else if(mod(index, 2.0) == 0.0) {
       checkerBoardDiffuseColor = cardiogramColor;
     } else {
       checkerBoardDiffuseColor = vec4(noiseColor, 3.0);
@@ -427,14 +435,20 @@ void main() {
   float threshold;
   //0どうしの比較を避けるため、始点と終点に多少のバッファを設けている
   if(uDevice == 1.0) {//@mobile
-    threshold = map(loadedProgress, 0.61, 1.0, 0.0, 8.5, true);
+    threshold = map(loadedProgress, 0.61, 1.0, 0.0, 10.0, true);
   } else {
-    threshold = map(loadedProgress, 0.84, 1.0, 0.0, 8.0, true);
+    threshold = map(loadedProgress, 0.84, 1.0, 0.0,10.0, true);
   }
 
   float loadedTransition = step(adjustedDistance + 0.01, threshold);
 
-  vec3 waitingColor = texture2D(uTextures[3], singleOptimizedUv3).rgb;
+  vec3 waitingColor;
+
+  if(uActivePage == 2.0) {
+    waitingColor = gridColor.rgb;
+  } else {
+    waitingColor = texture2D(uTextures[3], singleOptimizedUv3).rgb;
+  }
 
   color = mix(waitingColor, color, loadedTransition);
 

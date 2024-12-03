@@ -26,6 +26,7 @@ uniform sampler2D uTexture;
 #pragma glslify: fresnel = require('../utils/fresnel.glsl');
 #pragma glslify: radialRainbow = require('../utils/radialRainbow.glsl');
 #pragma glslify: createGrid = require('../utils/grid.glsl');
+#pragma glslify: stripe = require('../utils/stripe.glsl');
 #pragma glslify: specular = require('../utils/specular.glsl');
 #pragma glslify: hash = require('../utils/hash.glsl');
 
@@ -85,7 +86,7 @@ void main() {
   vec3 refractVecC = refract(vEyeVector, normal, (1.0 / uIorC));
   vec3 refractVecP = refract(vEyeVector, normal, (1.0 / uIorP));
 
-  vec3 gridColor = vec3(0.0);
+  vec3 insideColor = vec3(0.0);
 
   const int LOOP = 2;
 
@@ -100,6 +101,20 @@ void main() {
     vec2 coordC = applyRefraction(coordGrid, refractVecC, uRefractPower + slide * 2.5);
     vec2 coordP = applyRefraction(coordGrid, refractVecP, uRefractPower + slide);
 
+    vec3 imageR;
+    vec3 imageG;
+    vec3 imageB;
+    vec3 imageY;
+    vec3 imageC;
+    vec3 imageP;
+
+    vec3 stripeR = vec3(stripe(coordR, 0.25));
+    vec3 stripeG = vec3(stripe(coordG, 0.25));
+    vec3 stripeB = vec3(stripe(coordB, 0.25));
+    vec3 stripeY = vec3(stripe(coordY, 0.25));
+    vec3 stripeC = vec3(stripe(coordC, 0.25));
+    vec3 stripeP = vec3(stripe(coordP, 0.25));
+
     vec3 gridR = createGrid(coordR, vec2(uGridCount), uTime);
     vec3 gridG = createGrid(coordG, vec2(uGridCount), uTime);
     vec3 gridB = createGrid(coordB, vec2(uGridCount), uTime);
@@ -107,20 +122,27 @@ void main() {
     vec3 gridC = createGrid(coordC, vec2(uGridCount), uTime);
     vec3 gridP = createGrid(coordP, vec2(uGridCount), uTime);
 
-    float r = gridR.r * 0.5;
-    float g = gridG.g * 0.5;
-    float b = gridB.b * 0.5;
+    imageR = mix(gridR, stripeR, uTransition);
+    imageG = mix(gridG, stripeG, uTransition);
+    imageB = mix(gridB, stripeB, uTransition);
+    imageY = mix(gridY, stripeY, uTransition);
+    imageC = mix(gridC, stripeC, uTransition);
+    imageP = mix(gridP, stripeP, uTransition);
 
-    float y = (gridY.r * 2.0 + gridY.g * 2.0 - gridY.b) / 6.0;
-    float c = (gridC.r * 2.0 + gridC.g * 2.0 - gridC.b) / 6.0;
-    float p = (gridP.r * 2.0 + gridP.g * 2.0 - gridP.b) / 6.0;
+    float r = imageR.r * 0.5;
+    float g = imageG.g * 0.5;
+    float b = imageB.b * 0.5;
 
-    gridColor.r += r + (2.0 * p + 2.0 * y - c) / 3.0;
-    gridColor.g += g + (2.0 * y + 2.0 * c - p) / 3.0;
-    gridColor.b += b + (2.0 * c + 2.0 * p - y) / 3.0;
+    float y = (imageY.r * 2.0 + imageY.g * 2.0 - imageY.b) / 6.0;
+    float c = (imageC.r * 2.0 + imageC.g * 2.0 - imageC.b) / 6.0;
+    float p = (imageP.r * 2.0 + imageP.g * 2.0 - imageP.b) / 6.0;
+
+    insideColor.r += r + (2.0 * p + 2.0 * y - c) / 3.0;
+    insideColor.g += g + (2.0 * y + 2.0 * c - p) / 3.0;
+    insideColor.b += b + (2.0 * c + 2.0 * p - y) / 3.0;
   }
 
-  gridColor /= float(LOOP);
+  insideColor /= float(LOOP);
 
   //----------最終出力の決定----------
   vec3 color;
@@ -133,11 +155,9 @@ void main() {
 
   endPositionColor += speclarValue * 0.16;
 
-  endPositionColor += vec3(gridColor);
+  endPositionColor += vec3(insideColor);
 
   color = mix(textureColor, endPositionColor, uIsScrollEnd);
-
-  color = mix(color, noiseColor, uTransition);
 
   gl_FragColor = vec4(color, 1.0);
 
