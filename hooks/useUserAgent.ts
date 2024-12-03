@@ -3,8 +3,8 @@
 import { useEffect } from 'react';
 import { useSetRecoilState } from 'recoil';
 
-import { browserState, osState, deviceState, iphoneState } from '@/store/userAgentAtom';
 import { fps } from '@/store/fpsAtom';
+import { browserState, osState, deviceState, iphoneState } from '@/store/userAgentAtom';
 
 export const useUserAgent = () => {
   const setBrowser = useSetRecoilState(browserState);
@@ -50,13 +50,13 @@ export const useUserAgent = () => {
     // デバイスのチェック
     if (ua.includes('iphone') || (ua.includes('android') && ua.includes('mobile'))) {
       setDevice('mobile');
-      setFPS(30);
+      setFPS(24);
     } else if (ua.includes('ipad') || ua.includes('android')) {
       setDevice('tablet');
       setFPS(30);
     } else if (ua.includes('ipad') || (ua.includes('macintosh') && 'ontouchend' in document)) {
       setDevice('tablet');
-      setFPS(60);
+      setFPS(45);
     } else {
       setDevice('pc');
       setFPS(60);

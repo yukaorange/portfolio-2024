@@ -1,6 +1,6 @@
-import postprocessShader from '@/shaders/postprocess/fragment-postprocess.glsl';
-
 import * as THREE from 'three';
+
+import postprocessShader from '@/shaders/postprocess/fragment-postprocess.glsl';
 
 export const postProcessShader = (width: number, height: number, device: string) => {
   const checkDevice = device === 'mobile' ? 1.0 : 0.0; //1.0 for mobile, 0.0 for desktop
@@ -27,6 +27,11 @@ export const postProcessShader = (width: number, height: number, device: string)
       uLoadingTransition: { value: 0 },
       uTime: { value: 0 },
       uIsMobile: { value: checkDevice },
+
+      //ページの状態
+      uIsScrollStart: { value: 0 },
+      uActivePage: { value: 0 },
+      uTransition: { value: 0 },
     },
     vertexShader: `
     varying vec2 vUv;

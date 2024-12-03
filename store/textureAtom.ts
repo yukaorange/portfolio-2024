@@ -248,6 +248,7 @@ const useSetProgress = () => useSetRecoilState(loadProgressAtom);
 
 export const useLoadTextures = () => {
   const setLoadedTextures = useSetRecoilState(loadedTexturesAtom);
+
   const currentTextures = useCurrentTextures();
 
   // console.log(`currentTextures :`, currentTextures);
@@ -255,17 +256,17 @@ export const useLoadTextures = () => {
   const textures = useTexture(currentTextures.map((t) => t.url));
 
   useEffect(() => {
-    const texturesWithAspectRatio = textures.map((texture, index) => ({
-      texture,
-      aspectRatio: currentTextures[index].aspectRatio,
+    const texturesWithAspectRatio = currentTextures.map((textureInfo, index) => ({
+      texture: textures[index],
+      aspectRatio: textureInfo.aspectRatio,
     }));
 
     setLoadedTextures(texturesWithAspectRatio);
   }, [textures, currentTextures, setLoadedTextures]);
 
-  return textures.map((texture, index) => ({
-    texture,
-    aspectRatio: currentTextures[index].aspectRatio,
+  return currentTextures.map((textureinfo, index) => ({
+    texture: textures[index],
+    aspectRatio: textureinfo.aspectRatio,
   }));
 };
 

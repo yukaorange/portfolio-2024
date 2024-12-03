@@ -274,7 +274,7 @@ export const Model = ({ textures, ...props }: ModelProps) => {
 
       //線形補完の係数
       // const lerpFactor = 1.0 - Math.pow(0.001, delta);
-      const lerpFactor = 0.1; //スーツケースの移動は早くていい
+      const lerpFactor = 0.6; //スーツケースの移動は早くていい
 
       //スーツケースの初期位置
       const originalSuitcasePosition = {

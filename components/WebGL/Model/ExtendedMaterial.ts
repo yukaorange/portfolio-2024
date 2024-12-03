@@ -15,6 +15,9 @@ class ExtendedMaterial extends THREE.MeshStandardMaterial {
       shader.uniforms.uBoundsMin = { value: new THREE.Vector3() };
       shader.uniforms.uBoundsMax = { value: new THREE.Vector3() };
       shader.uniforms.uEffectProgress = { value: 0.0 };
+      shader.uniforms.uResolution = {
+        value: new THREE.Vector2(window.innerWidth, window.innerHeight),
+      };
 
       //----------vertexShader----------
       const additionalVertexVaryings = /* glsl */ `
@@ -103,6 +106,7 @@ class ExtendedMaterial extends THREE.MeshStandardMaterial {
       const additionalFragmentVaryings = /* glsl */ `
       //-------uniforms-------
       uniform float uTime;
+      uniform vec2 uResolution;
       uniform vec3 uBoundsMin;
       uniform vec3 uBoundsMax;
       uniform float uEffectProgress;
@@ -139,10 +143,17 @@ class ExtendedMaterial extends THREE.MeshStandardMaterial {
       //----------ユーティリティ---------
 
       //横方向のストライプ(ホログラム)
-      // float stripes = mod(vWorldPosition.y * 100.0 + uTime, 1.0);
-      // stripes = pow(stripes, 20.0);//濃淡の変化を急激にする
-      // float holographic = stripes; 
+      float vertical = gl_FragCoord.y / uResolution.y * 1500.0;
 
+      float stripes = sin(vertical) * 0.5 + 0.5;//0 - 1
+
+      stripes = stripes * (1.0 - 0.5) + 0.5;// 0.5 - 1
+
+      stripes = pow(stripes, 10.0);//立方関数で急激に変化
+
+      float holographic = stripes; 
+      
+      //ノイズ
       vec2 noiseCoord = vWorldPosition.yy * 0.1;
       float n1 = snoise(floor(noiseCoord * vec2(4.0, 5.0) + uTime));
       float n2 = snoise(floor(noiseCoord * vec2(5.0, 6.0) + uTime));
@@ -154,7 +165,7 @@ class ExtendedMaterial extends THREE.MeshStandardMaterial {
       //------------エフェクト色-----------
       
       float intensity = mix(0.6,0.8,n);
-      vec3 effectColor;
+      vec4 effectColor;
       
       float sectionRotate = section + uTime * 100.0;//各セクションに色を割り当てる & 等間隔（section / partitionValueのよるもの）でどんどん変化
       float hue = fract(sectionRotate);//0~0.9999...
@@ -167,14 +178,13 @@ class ExtendedMaterial extends THREE.MeshStandardMaterial {
       
 
       vec3 aberration;
-
       aberration.r = hsv2rgb(vec3(hue - 0.05 * n, 0.8, 0.9)).r;
       aberration.g = hsv2rgb(vec3(hue, 0.8, 0.9)).g;
       aberration.b = hsv2rgb(vec3(hue + 0.05 * n, 0.8, 0.9)).b;
       aberration *= intensity;
 
       // effectColor = mix(aberration * hsvColor , hsvColor, n);
-      effectColor = hsvColor;
+      effectColor.rgb = hsvColor;
 
       //----------エフェクト-----------
       //進行度の準備
@@ -189,10 +199,11 @@ class ExtendedMaterial extends THREE.MeshStandardMaterial {
       
       vec4 finalColor = vec4(gl_FragColor.rgb,gl_FragColor.a);
 
-      finalColor = mix(finalColor,vec4(effectColor,1.0), firstPhase);
+      effectColor *= holographic;
+
+      finalColor = mix(finalColor,vec4(effectColor.rgb,1.0), firstPhase);
       finalColor = mix(finalColor,vec4(0.0,0.0,0.0,0.0), secondPhase);
 
-      // finalColor.a = mix(1.0,stripes,firstPhase);
       finalColor.a = mix(finalColor.a,0.0,secondPhase);
 
       if(finalColor.a < 0.01) discard;//透明度が0.01以下の場合は描画しない（消失したと見なす）
@@ -220,6 +231,8 @@ class ExtendedMaterial extends THREE.MeshStandardMaterial {
       this.userData.shader.uniforms.uTime.value = time;
 
       this.userData.shader.uniforms.uEffectProgress.value = progress;
+
+      this.userData.shader.uniforms.uResolution.value.set(window.innerWidth, window.innerHeight);
 
       this.userData.shader.uniforms.uBoundsMin.value.copy(bounds.min);
 

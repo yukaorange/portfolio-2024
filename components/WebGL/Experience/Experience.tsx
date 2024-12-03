@@ -18,6 +18,10 @@ import { useFrameRate } from '@/hooks/useFrameRate';
 import { useTransitionAnimation } from '@/hooks/useTransitionAnimation';
 import { fps } from '@/store/fpsAtom';
 import { intializedCompletedAtom } from '@/store/initializedAtom';
+import { currentPageState } from '@/store/pageTitleAtom';
+
+import { useTransitionProgress } from '@/app/TransitionContextProvider';
+import { isScrollStartAtom } from '@/store/scrollAtom';
 import { useScene } from '@/store/textureAtom';
 import { deviceState } from '@/store/userAgentAtom';
 
@@ -26,6 +30,8 @@ import { ResponsiveCamera } from './ResponsiveCamera';
 
 export const Experience = () => {
   const { gl, scene, camera } = useThree();
+
+  const currentPage = useRecoilValue(currentPageState);
 
   const lastWidthRef = useRef<number>(window.innerWidth);
   const lastTimeRef = useRef<number>(0);
@@ -36,6 +42,13 @@ export const Experience = () => {
     duration: 3,
     easing: 'easeInOutExpo',
   });
+  //ページ状態の変化を検知して切り替わるアニメーションの制御
+  const scrollStartTransitionef = useTransitionAnimation({
+    trigger: isScrollStartAtom,
+    duration: 1.0,
+  });
+  //ページ遷移時のアニメーションに使用
+  const { singleProgress } = useTransitionProgress();
 
   //ポストプロセス
   const [composer, setComposer] = useState<EffectComposer | null>(null);
@@ -62,6 +75,7 @@ export const Experience = () => {
     suitcaseTexture: suitcaseTexture || new THREE.Texture(),
     noiseTexture: noiseTexture || new THREE.Texture(),
   };
+
   const floorTextureMap = {
     roughness: floorRoughnessTexture || new THREE.Texture(),
     normal: floorNormalTexture || new THREE.Texture(),
@@ -150,6 +164,15 @@ export const Experience = () => {
     createFrameCallback((state, delta) => {
       if (!composer) return;
 
+      let activePage;
+      if (currentPage.title === 'portfolio') {
+        activePage = 0;
+      } else if (currentPage.title === 'about') {
+        activePage = 1;
+      } else {
+        activePage = 2;
+      }
+
       //時間経過を記録する変数:delta timeを作成。
       const currentTime = state.clock.getElapsedTime();
 
@@ -159,6 +182,12 @@ export const Experience = () => {
 
       if (customPassRef.current) {
         customPassRef.current.uniforms.uTime.value = currentTime;
+
+        customPassRef.current.uniforms.uIsScrollStart.value = scrollStartTransitionef.current;
+
+        customPassRef.current.uniforms.uActivePage.value = activePage;
+
+        customPassRef.current.uniforms.uTransition.value = singleProgress.current;
 
         customPassRef.current.uniforms.uLoadingTransition.value = loadingTransitionRef.current;
       }

@@ -58,5 +58,4 @@ vec3 crtEffect(
   return color * brightness;
 }
 
-// エクスポート用
 #pragma glslify: export(crtEffect)

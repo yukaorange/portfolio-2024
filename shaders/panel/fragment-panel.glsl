@@ -36,7 +36,8 @@ varying vec3 vInstacePosition;
 #pragma glslify: cardiogram = require('../utils/electrocardiogram.glsl');
 #pragma glslify: createGrid = require('../utils/grid.glsl');
 #pragma glslify: blendOverlay = require('../utils/blend.glsl');
-#pragma glslify: crtEffect = require('../utils/crtEffect.glsl');
+#pragma glslify: dotPattern = require('../utils/dotPattern.glsl');
+#pragma glslify: grayScale = require('../utils/grayScale.glsl');
 #pragma glslify: map = require('../utils/map.glsl');
 
 void main() {
@@ -90,7 +91,7 @@ void main() {
 
   float adjustedDistance = vIndex == 24.0 ? distanceFromCenter : distanceFromCenter + randomOffset;
 
-  //-----------------テロップ画像のサンプリング-----------------
+  //-----------------テロップ画像のサンプリング準備など-----------------
 
   //テキストが流れるアニメーションに使用するテクスチャ出力
   vec2 scrollingUv = fullScreenOptimizedTelopUv;
@@ -99,7 +100,7 @@ void main() {
   float speed = uSpeed * (1.0 / uRowLengths[row]);//各行にふさわしいスピードを設定
   float rowLength = uRowLengths[row];
 
-  float scrollingOffset = fract(uTime * 2.0 * speed);
+  float scrollingOffset = fract(uTime * 1.0 * speed);
 
   scrollingUv.x = fract((scrollingUv.x + scrollingOffset));
 
@@ -107,23 +108,15 @@ void main() {
 
   scrollingUv.x = mod(compressdX + scrollingOffset, rowLength);//圧縮した部分を元に戻す。例えば、0.7の幅だとしたら、0.7の長さが1.0の長さになるようにする。（自分用のメモです）
 
-  //------------singleScreenのテロップも同様(速度は調整)--------
+  vec4 scrollingDiffuseColor = texture2D(uTelopTexture, scrollingUv);
 
-  // vec2 singleScrollingUv = singleScreenOptimizedTelopUv;
+  vec3 scrollingDiffuseColorGray = grayScale(scrollingDiffuseColor.rgb);
 
-  // int singleRow = int(floor(singleScrollingUv.y * 5.0));//テクスチャは5行に分かれたテキストであるため。
+  scrollingDiffuseColor.rgb = mix(scrollingDiffuseColor.rgb, scrollingDiffuseColorGray, 0.4);
 
-  // speed = uSpeed * (1.0 / uRowLengths[singleRow]);
+  scrollingDiffuseColor.rgb *= 0.1;
 
-  // rowLength = uRowLengths[singleRow];
-
-  // scrollingOffset = fract(uTime * 2.0 * speed);
-
-  // float singleCompressdX = singleScrollingUv.x * rowLength;
-
-  // singleScrollingUv.x = mod(singleCompressdX + scrollingOffset, rowLength);
-
-  // vec4 scrollingDiffuseColor = texture2D(uTextures[0], scrollingUv);//glitchでサンプリングをずらすため、diffuseの決定は後述にまわす(下記テロップ画像アニメーション)
+  //glitchでサンプリングをずらすため、FV用のdiffuseは下記テロップ画像アニメーション内でサンプリング
 
   //----------ユーティリティ-----------
 
@@ -136,10 +129,6 @@ void main() {
 
   //汎用ノイズ
   float noise = snoise(vec2(vUv.y * 60.0, sin(uTime * 40.0)));
-
-  // float baseNoise = texture2D(uNoiseTexture, singleScreenUv).r;
-  // float variation = hash(singleScreenUv + uTime);
-  // noise = mix(baseNoise, variation, 0.2);
 
   //invert
   float invert = vInvert;
@@ -188,25 +177,29 @@ void main() {
 
   vec4 gridColorSingle = vec4(createGrid(singleScreenUv, vec2(2.0, 1.5), uTime * 3.0), 1.0);
 
-  //ストライプ画面
+  //矢印ストライプ画面
+  vec4 arrowStripeColor;
+  vec4 fullScreenArrowStripeColor;
 
-  vec4 stripeColor;
+  vec2 arrowStripeUv = singleScreenUv;
+  vec2 fullScreenArrowStripeUv = fullScreenUv;
 
-  vec2 stripeUv = singleScreenUv;
-  stripeUv.x += shivering * 2.0;
-  stripeUv.x += uTime * 0.1;
+  arrowStripeUv.x -= uTime * 0.1;
+  fullScreenArrowStripeUv.x -= uTime * 0.06;
 
-  float stripeValue = stripe(stripeUv, 0.1);
+  float arrowStripeValue = stripe(arrowStripeUv, 0.1);
+  float fullScreenArrowStripeValue = stripe(fullScreenArrowStripeUv, 0.1);
 
-  stripeColor = vec4(vec3(stripeValue), 1.0);
+  arrowStripeColor = vec4(vec3(arrowStripeValue), 1.0);
+  fullScreenArrowStripeColor = vec4(vec3(fullScreenArrowStripeValue), 1.0);
 
-  stripeColor.rgb *= 0.24;
+  arrowStripeColor.rgb *= 0.64;
 
   //--------画面切替えアニメーション---------
 
   //画面切り替えの設定
   float totalDuration = 5.0;
-  float transitionDuration = 0.01;
+  float transitionDuration = 0.02;
   float noiseDuration = 0.2;//これは切り替え時にノイズが出る時間の長さとなる
 
   float changeStep = 7.0 * floor(uTime / (totalDuration * 1.0));//基本変化（横方向）
@@ -282,18 +275,15 @@ void main() {
       checkerBoardDiffuseColor = scrollDownDiffuse;
     } else if(mod(index, 16.0) == 0.0) {
       singleOptimizedUv1.x += shivering;
-
       vec4 chemicalDiffuse = texture2D(uTextures[1], singleOptimizedUv1 + glitchOffset);
 
       checkerBoardDiffuseColor = chemicalDiffuse;
     } else if(mod(index, 14.0) == 0.0) {
-      singleOptimizedUv2.x += shivering;
-
       vec4 airportDiffuse = texture2D(uTextures[2], singleOptimizedUv2 + glitchOffset);
 
       checkerBoardDiffuseColor = airportDiffuse;
     } else if(mod(index, 12.0) == 0.0) {
-      checkerBoardDiffuseColor = stripeColor;
+      checkerBoardDiffuseColor = arrowStripeColor;
     } else if(mod(index, 10.0) == 0.0) {
       checkerBoardDiffuseColor = waveColor;
     } else if(mod(index, 8.0) == 0.0) {
@@ -343,11 +333,8 @@ void main() {
 
   scrollingDiffuseColorNoise.rgb *= 0.83;
 
-  //簡易crt加工
-  scrollingDiffuseColorNoise.rgb = crtEffect(fullScreenUv, vec2(960, 720), scrollingDiffuseColorNoise.rgb, .7);
-  // scrollingDiffuseColorNoise.rgb = crtEffect(fullScreenUv, vec2(1280, 960), scrollingDiffuseColorNoise.rgb, .7);
-
-  // vec4 scrollingDiffuseColor = texture2D(uTelopTexture, scrollingUv);
+  //簡易dot加工
+  scrollingDiffuseColorNoise.rgb = dotPattern(singleScreenUv, scrollingDiffuseColorNoise.rgb);
 
   //----------画面切替えアニメーションの実行----------
   vec4 oddProgressDiffuse = scrollingDiffuseColorNoise;
@@ -383,7 +370,8 @@ void main() {
 
   if(uIsGallerySection == 1.0) {
     //ギャラリーのセクションに差し掛かっている
-    finalDiffuse = gridColor;
+    finalDiffuse = scrollingDiffuseColor;
+
   }
 
   //フッター付近に到達
@@ -430,7 +418,7 @@ void main() {
 
   //ページ遷移中
   if(uIsTransitioning == 1.0) {
-    color = noiseColor * uTransition;
+    color = fullScreenArrowStripeColor.rgb * uTransition;
   }
 
   //--------------ロード完了時---------------
@@ -439,7 +427,7 @@ void main() {
   float threshold;
   //0どうしの比較を避けるため、始点と終点に多少のバッファを設けている
   if(uDevice == 1.0) {//@mobile
-    threshold = map(loadedProgress, 0.64, 1.0, 0.0, 8.5, true);
+    threshold = map(loadedProgress, 0.61, 1.0, 0.0, 8.5, true);
   } else {
     threshold = map(loadedProgress, 0.84, 1.0, 0.0, 8.0, true);
   }
@@ -460,7 +448,7 @@ void main() {
   }
 
   //テスト用
-  // color = stripeColor.rgb;
+  // color = fullScreenArrowStripeColor.rgb;
 
   color *= colorIntensity;
 

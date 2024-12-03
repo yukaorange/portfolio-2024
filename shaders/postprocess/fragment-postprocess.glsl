@@ -6,13 +6,18 @@ uniform float uStrength;
 uniform float uRadius;
 uniform float uThreshold;
 uniform float uIsMobile;
+uniform float uActivePage;
+uniform float uTransition;
+uniform float uIsScrollStart;
 uniform float uTime;
 uniform float uLoadingTransition;
 uniform vec2 uResolution;
 uniform sampler2D tDiffuse;
 varying vec2 vUv;
 
+#pragma glslify: getTickedTime = require('../utils/getTickedTime.glsl');
 #pragma glslify: gammaCorrect = require('../utils/gamma.glsl');
+#pragma glslify: random = require('../utils/random.glsl');
 #pragma glslify: snoise = require('../utils/snoise.glsl');
 #pragma glslify: map = require('../utils/map.glsl');
 #pragma glslify: radialStrength = require('../utils/radialStrength.glsl');
@@ -28,7 +33,6 @@ varying vec2 vUv;
 void main() {
 
   float PI = 3.1415926535897932384626433832795;
-  float noise = snoise(vec2(vUv.y * 60.0, sin(uTime * 40.0)));
 
   vec2 uv = vUv;
 
@@ -38,6 +42,23 @@ void main() {
   adjustedUv += 0.5;
 
   vec3 color;
+
+  //-------ユーティリティ-------
+  //ノイズ
+  float noise = snoise(vec2(vUv.y * 60.0, sin(uTime * 40.0)));
+
+  //数コンマ刻みの時間(メトロノーム的な)
+  float delta = 1.0 / 15.0;
+  float tickedTime = getTickedTime(uTime, delta);
+  float tickedRandom = random(tickedTime);
+
+  //定期的に発火する効果のための時間管理
+  float totalDuration = 5.0;
+  float effectDuration = 0.1;//効果の持続時間
+  //切り替えのサイクルを設定
+  float cycle = mod(uTime, totalDuration);//0.0 ～ totalDurationを繰り返す
+  float normalizedCycle = cycle / totalDuration;//0.0 ～ 1.0に正規化
+  float effectActivation = 1.0 - smoothstep(0.0, effectDuration, normalizedCycle);
 
   //----------shivering -------
   float shiveringProgress = map(uLoadingTransition, 0.4, 1.0, 0.0, 1.0, true);
@@ -57,7 +78,7 @@ void main() {
     shiveringIntensity = 0.006;
   }
 
-  float shivering = sin(uv.y * 1500.0 + sin(uv.y * 10.0)) * shiveringNoise * shiveringIntensity;
+  float shivering = sin(uv.y * 1000.0 + sin(uv.y * 10.0)) * shiveringNoise * shiveringIntensity;
 
   shivering *= shiveringProgress;
 
@@ -71,9 +92,9 @@ void main() {
 
   deformProgress = smoothstep(0.0, deformKeepEdge, abs(sin(deformProgress * PI)));
 
-  vec2 verticalWave = vec2(0.0, sin(uTime));//縦方向に波を作る
+  vec2 verticalWave = vec2(0.0, sin(uTime * 10.0));//縦方向に波を作る
 
-  verticalWave *= noise * 0.05;//縦方向の波の振幅をノイズで変化させる
+  verticalWave *= noise * 0.01;//縦方向の波の振幅をノイズで変化させる
 
   vec2 timeOffset = vec2(uTime * 0.1);
 
@@ -81,7 +102,7 @@ void main() {
 
   deformMap.y -= timeOffset.y;//時間経過で波を動かす
 
-  deformMap *= vec2(1.0, 10.0);
+  deformMap *= vec2(1.0, 10.0);//y方向に分割する細かさ
   deformMap = floor(deformMap);//y方向に分割
 
   float deformNoise = snoise(deformMap) * 0.006;//ノイズに変換することで、縦方向に波上のランダムな変化が生まれる
@@ -112,6 +133,27 @@ void main() {
 
   color = texColor.rgb;
   // vec3 testColor = texColor.rgb;
+
+  //-------ピクセラレーション(定期的に発火、パネルの変更に連動) -------
+  vec2 pixelGlicthUv = vUv;
+
+  float glicthStep;
+  if(uIsMobile == 1.0) {
+    glicthStep = mix(64.0, 32.0, tickedRandom);
+  } else {
+    glicthStep = mix(128.0, 64.0, tickedRandom);
+  }
+
+  pixelGlicthUv.x = round(pixelGlicthUv.x * glicthStep) / glicthStep;
+
+  vec4 glitchDiffuse = texture2D(tDiffuse, pixelGlicthUv);
+
+  // vec4 glitchColor = mix(texColor, glitchDiffuse, 0.3);
+  vec4 glitchColor = mix(texColor, glitchDiffuse, effectActivation);
+
+  if(uActivePage == 0.0 && uIsScrollStart == 0.0) {
+    color.rgb = glitchColor.rgb;
+  }
 
   //-----------色ずらし系の処理ここから ----------
   float colorOffsetIntensity;
@@ -239,15 +281,16 @@ void main() {
   grayProgress = smoothstep(0.0, grayKeepEdge, abs(sin(grayProgress * PI)));
 
   vec3 grayColor = grayScale(color);
+
   color = mix(color, grayColor, grayProgress);
 
-  //------ガンマ補正------
+  //------ガンマ補正（常に有効）------
   color = pow(color, vec3(2.2));
   color = gammaCorrect(color, uGamma);
   color = linearToSRGB(color);
 
   //-------test--------
-  // color = vec3(halfToneColor.rgb);
+  // color = vec3(glitchColor.rgb);
 
   gl_FragColor = vec4(color.rgb, texColor.a);
 }

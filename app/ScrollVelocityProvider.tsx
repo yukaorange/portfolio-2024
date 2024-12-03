@@ -27,6 +27,7 @@ export const ScrollVelocityProvider = ({ children }: { children: React.ReactNode
 
   const handleWheel = (event: WheelEvent) => {
     const isTrackpad = event.deltaMode === 0 && Math.abs(event.deltaY) < 50;
+
     velocityRef.current += event.deltaY * (isTrackpad ? 0.003 : 0.0013);
   };
 
@@ -40,7 +41,7 @@ export const ScrollVelocityProvider = ({ children }: { children: React.ReactNode
     if (lastTouchY.current !== null) {
       const currentY = event.touches[0].clientY;
       const deltaY = lastTouchY.current - currentY;
-      touchVelocity.current = deltaY * 0.004;
+      touchVelocity.current = deltaY * 0.0004;//0.0004
       lastTouchY.current = currentY;
       velocityRef.current += touchVelocity.current;
     }
@@ -77,7 +78,7 @@ export const ScrollVelocityProvider = ({ children }: { children: React.ReactNode
     const animate = (currentTime: number) => {
       const diff = targetProgressRef.current - currentProgressRef.current;
 
-      currentProgressRef.current += diff * 0.26; //0.2から0.3くらいが丁度いい補完スピード
+      currentProgressRef.current += diff * 0.3; //0.2から0.3くらいが丁度いい補完スピード
 
       if (lastTimeRef.current !== 0) {
         deltaTimeRef.current = (currentTime - lastTimeRef.current) / 1000;

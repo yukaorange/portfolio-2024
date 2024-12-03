@@ -89,16 +89,6 @@ void main() {
 
   const int LOOP = 2;
 
-  // vec2 coordR = applyRefraction(coordGrid, refractVecR, uRefractPower);
-  // vec2 coordG = applyRefraction(coordGrid, refractVecG, uRefractPower);
-  // vec2 coordB = applyRefraction(coordGrid, refractVecB, uRefractPower);
-
-  // vec3 gridColorR = createGrid(coordR, vec2(uGridCount), uTime);
-  // vec3 gridColorG = createGrid(coordG, vec2(uGridCount), uTime);
-  // vec3 gridColorB = createGrid(coordB, vec2(uGridCount), uTime);
-
-  // vec3 gridColor = vec3(gridColorR.r, gridColorG.g, gridColorB.b); 
-
   for(int i = 0; i < LOOP; i++) {
     float slide = float(i) / float(LOOP) * 0.1;
 

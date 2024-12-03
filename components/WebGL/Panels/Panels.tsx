@@ -29,6 +29,7 @@ export const Panels = ({ loadedTextures, noiseTexture, telopTexture }: PanelsPro
   // console.log('re rendered : panels' + performance.now());
 
   const device = useRecoilValue(deviceState);
+
   const currentPage = useRecoilValue(currentPageState);
 
   //シェーダーマテリアルが生成されたら、それを保持

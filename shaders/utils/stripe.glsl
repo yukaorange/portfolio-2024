@@ -12,10 +12,12 @@ float stripe(vec2 uv, float width) {
 
   float rad = angle * PI / 180.0;
 
+  //左右反転
+  uv.x = 1.0 - uv.x;
+
   //矢印っぽくなる
   if(uv.y < 0.5) {
-    uv.x = 1.0 - uv.x;
-    uv.x += width * 0.70;
+    uv.y = 1.0 - uv.y;
   }
 
   //フツーにステップにしたら縦じまになるところ、glslRotateを使って回転させることで斜めストライプにする
