@@ -122,7 +122,7 @@ void main() {
   quakeProgress = smoothstep(0.0, quakeKeepEdge, abs(sin(quakeProgress * PI)));
 
   float sliceCount = 25.0;
-  float quakeIntensity = 0.01;
+  float quakeIntensity = 0.03;
 
   float quakeOffset = quake(uv.y, sliceCount, uTime, quakeIntensity);
 

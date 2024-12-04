@@ -24,6 +24,7 @@
     "next": "14.2.15",
     "react": "^18",
     "react-dom": "^18",
+    "react-lottie-player": "^2.1.0",
     "recoil": "^0.7.7",
     "sharp": "^0.33.5",
     "splitting": "^1.1.0",

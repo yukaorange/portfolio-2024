@@ -1,15 +1,9 @@
-'use client';
-
 import { TextSplitter } from '@/components/Common/TextSplitter/TextSplitter';
+
 import styles from './fv.module.scss';
 import './global.scss';
 
-import { useRecoilValue } from 'recoil';
-import { intializedCompletedAtom } from '@/store/initializedAtom';
-
 export const TopFv = () => {
-  const initializedCompleted = useRecoilValue(intializedCompletedAtom);
-
   return (
     <div className={styles.fv}>
       <div className={styles.fv__inner}>

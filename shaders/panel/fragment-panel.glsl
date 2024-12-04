@@ -199,8 +199,8 @@ void main() {
 
   //画面切り替えの設定
   float totalDuration = 5.0;
+  float noiseDuration = 0.1;//これは切り替え時にノイズが出る間の長さとなる
   float transitionDuration = 0.02;
-  float noiseDuration = 0.04;//これは切り替え時にノイズが出る時間の長さとなる
 
   float changeStep = 3.0 * floor(uTime / (totalDuration * 1.0));
 
@@ -241,7 +241,7 @@ void main() {
   transition = smoothstep(0.0, transitionDuration, normalizedCycle);//transitionDurationの時点で1.0になるから、その時点で切り替わるということ。
 
   // float delayOffset = adjustedDistance * 0.012;//目視で調整
-  float delayOffset = adjustedDistance * 0.008;//目視で調整
+  float delayOffset = adjustedDistance * 0.009;//目視で調整
 
   float delayedTransition = smoothstep(0.0 + delayOffset, transitionDuration + delayOffset, normalizedCycle);//delayを書ける場合はこっちを使う
 

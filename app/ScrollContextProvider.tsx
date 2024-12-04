@@ -95,17 +95,17 @@ export const ScrollProvider = ({ children }: ScrollProviderProps) => {
       prevScrollEndRef.current = isScrollEndCurrent;
     }
 
-    console.log(
-      'scroll start: ',
-      isScrollStartCurrent,
-      '\n',
-      'gallery section :',
-      isGallerySection,
-      '\n',
-      'scroll end :',
-      isScrollEndCurrent,
-      '\n'
-    );
+    // console.log(
+    //   'scroll start: ',
+    //   isScrollStartCurrent,
+    //   '\n',
+    //   'gallery section :',
+    //   isGallerySection,
+    //   '\n',
+    //   'scroll end :',
+    //   isScrollEndCurrent,
+    //   '\n'
+    // );
   }, [
     setIsScrollStart,
     setIsGallerySection, //
