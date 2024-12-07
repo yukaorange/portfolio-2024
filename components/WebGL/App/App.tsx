@@ -4,10 +4,10 @@ import React, {
   Suspense,
   //  useEffect
 } from 'react';
+import { useRecoilValue } from 'recoil';
 
 import { Experience } from '@/components/WebGL/Experience/Experience';
 import { useScene } from '@/store/textureAtom';
-import { useRecoilValue } from 'recoil';
 import { deviceState } from '@/store/userAgentAtom';
 
 const TextureLoader = memo(() => {

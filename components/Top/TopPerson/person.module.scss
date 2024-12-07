@@ -1,0 +1,130 @@
+@use "@/styles/mixin/mixins" as *;
+
+.person {
+  padding-inline: calc(var(--col) * 1 + var(--gap) * 1 + var(--margin) * 1);
+  padding-top: calc(var(--section-space) + 20rem);
+}
+
+.person__inner {
+  display: grid;
+  row-gap: var(--section-space);
+}
+
+.person__content {
+  display: grid;
+  position: relative;
+  row-gap: 3.2rem;
+  z-index: 0;
+}
+
+.person__lead {
+}
+
+.person__textbox {
+  display: grid;
+  row-gap: 2.4rem;
+  width: cols(10);
+}
+
+.person__text {
+  font-size: text(16);
+  line-height: 1.5;
+  text-align: justify;
+  text-shadow: var(--blue-shadow);
+}
+
+.person__text.kerning {
+  letter-spacing: 0.01em;
+}
+
+.person__status {
+  align-items: end;
+  display: grid;
+
+  // grid-template-columns: auto auto;
+  grid-template-areas: "tag tag" "stats photo";
+  row-gap: 2.4rem;
+  width: cols(10);
+}
+
+.person__tag {
+  grid-area: tag;
+}
+
+.person__stats {
+  grid-area: stats;
+}
+
+.person__photo {
+  aspect-ratio: 1/1;
+  grid-area: photo;
+  justify-self: end;
+  width: 19rem;
+}
+
+.person__link {
+  display: grid;
+  row-gap: 2.4rem;
+}
+
+@include mq(sp) {
+  .person {
+    padding-inline: calc(var(--margin) * 1);
+    padding-top: calc(var(--section-space) + 10rem);
+  }
+
+  .person__inner {
+    display: grid;
+    row-gap: var(--section-space);
+  }
+
+  .person__content {
+    display: grid;
+    position: relative;
+    row-gap: 3.2rem;
+    z-index: 0;
+  }
+
+  .person__lead {
+  }
+
+  .person__textbox {
+    display: grid;
+    row-gap: 2.4rem;
+    width: cols(8);
+  }
+
+  .person__text {
+    font-size: text(12);
+    line-height: 1.5;
+    text-align: justify;
+  }
+
+  .person__status {
+    align-items: center;
+    display: grid;
+    grid-template-areas: "tag photo" "stats stats";
+    row-gap: 2.4rem;
+    width: cols(8);
+  }
+
+  .person__tag {
+    grid-area: tag;
+  }
+
+  .person__stats {
+    grid-area: stats;
+  }
+
+  .person__photo {
+    aspect-ratio: 1/1;
+    grid-area: photo;
+    justify-self: end;
+    width: 8.2rem;
+  }
+
+  .person__link {
+    display: grid;
+    row-gap: 3.2rem;
+  }
+}

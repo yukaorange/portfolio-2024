@@ -54,7 +54,8 @@ html {
   overscroll-behavior-y: none;
   scrollbar-color: var(--black-1) var(--yellow-1); //webkit
   scrollbar-width: thin; //webkit
-  touch-action: manipulation;
+
+  touch-action: pan-x pan-y;
 }
 
 @include mq(sp) {

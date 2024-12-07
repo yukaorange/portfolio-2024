@@ -9,6 +9,7 @@ import { SMAAPass, ShaderPass } from 'three/examples/jsm/Addons.js';
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer';
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass';
 
+import { useTransitionProgress } from '@/app/TransitionContextProvider';
 import { postProcessShader } from '@/components/WebGL/Experience/postProcessShader';
 import { Floor } from '@/components/WebGL/Floor/Floor';
 import { Lights } from '@/components/WebGL/Lights/Lights';
@@ -19,8 +20,6 @@ import { useTransitionAnimation } from '@/hooks/useTransitionAnimation';
 import { fps } from '@/store/fpsAtom';
 import { intializedCompletedAtom } from '@/store/initializedAtom';
 import { currentPageState } from '@/store/pageTitleAtom';
-
-import { useTransitionProgress } from '@/app/TransitionContextProvider';
 import { isScrollStartAtom } from '@/store/scrollAtom';
 import { useScene } from '@/store/textureAtom';
 import { deviceState } from '@/store/userAgentAtom';
@@ -39,8 +38,18 @@ export const Experience = () => {
   //ローディング完了を検知して動くアニメーションの制御
   const loadingTransitionRef = useTransitionAnimation({
     trigger: intializedCompletedAtom,
-    duration: 3,
-    easing: 'easeInOutExpo',
+    duration: 2.4,
+    easing: 'linear',
+  });
+  const loadingTransitionEaseInRef = useTransitionAnimation({
+    trigger: intializedCompletedAtom,
+    duration: 0.8, //早入りする
+    easing: 'easeInExpo',
+  });
+  const loadingTransitionEaseOutRef = useTransitionAnimation({
+    trigger: intializedCompletedAtom,
+    duration: 4.0, //余韻を持たせる
+    easing: 'easeOutExpo',
   });
   //ページ状態の変化を検知して切り替わるアニメーションの制御
   const scrollStartTransitionef = useTransitionAnimation({
@@ -94,7 +103,7 @@ export const Experience = () => {
 
   //LEVAで決めた値、確定後はこっちに入れる
   const controls = {
-    position: { x: 0, y: 1.0, z: 10 },
+    position: { x: 0, y: 1.0, z: 10.5 },
     lookAt: { x: 0, y: 3.0, z: 0 },
     near: 0.1,
     far: 1000,
@@ -108,7 +117,7 @@ export const Experience = () => {
   useEffect(() => {
     const effectComposer = new EffectComposer(gl);
 
-    const coefficientResolution = 0.750; //解像度が必要なエフェクトに対して送信する解像度が高すぎると負荷がかかるため、解像度を下げる係数
+    const coefficientResolution = 0.75; //解像度が必要なエフェクトに対して送信する解像度が高すぎると負荷がかかるため、解像度を下げる係数
 
     //シーンをレンダリングするだけのパス
     const renderPass = new RenderPass(scene, camera);
@@ -190,6 +199,10 @@ export const Experience = () => {
         customPassRef.current.uniforms.uTransition.value = singleProgress.current;
 
         customPassRef.current.uniforms.uLoadingTransition.value = loadingTransitionRef.current;
+        customPassRef.current.uniforms.uLoadingTransitionEaseIn.value =
+          loadingTransitionEaseInRef.current;
+        customPassRef.current.uniforms.uLoadingTransitionEaseOut.value =
+          loadingTransitionEaseOutRef.current;
       }
 
       // console.log(

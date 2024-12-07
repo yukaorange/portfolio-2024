@@ -248,8 +248,8 @@ export const Model = ({ textures, ...props }: ModelProps) => {
     };
 
     const POSITIONS = {
-      mobile: [-0.55, 3.45, -1.8],
-      desktop: [-0.55, 3.15, 1.35],
+      mobile: [-0.55, 3.3, -1.2],
+      desktop: [-0.55, 3.15, 2.2],
     };
 
     //画面幅に応じて、0 - 1の範囲をとる

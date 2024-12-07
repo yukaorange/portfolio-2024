@@ -7,9 +7,11 @@ import * as THREE from 'three';
 // import { useScrollVelocity } from '@/app/ScrollVelocityProvider';
 import { useTransitionProgress } from '@/app/TransitionContextProvider';
 import { useFrameRate } from '@/hooks/useFrameRate';
+import { useIndexTransition } from '@/hooks/useIndexTransition';
 import { useTransitionAnimation } from '@/hooks/useTransitionAnimation';
 import panelFragment from '@/shaders/panel/fragment-panel.glsl';
 import panelVertex from '@/shaders/panel/vertex-panel.glsl';
+import { archiveTextureTransitionAtom } from '@/store/activeArchiveNumberAtom';
 import { fps } from '@/store/fpsAtom';
 import { intializedCompletedAtom } from '@/store/initializedAtom';
 import { currentPageState } from '@/store/pageTitleAtom';
@@ -38,11 +40,20 @@ export const Panels = ({ loadedTextures, noiseTexture, telopTexture }: PanelsPro
   //ページ状態の変化を検知して動くアニメーションの制御
 
   // const { velocityRef } = useScrollVelocity();
-
+  //フッター付近への到達判定
   const scrollendTransitionef = useTransitionAnimation({
     trigger: isScrollEndAtom,
     duration: 1.0,
+    easing: 'linear',
   });
+
+  //アーカイブの変更検知
+  const archiveTransitionRef = useIndexTransition({
+    trigger: archiveTextureTransitionAtom,
+    duration: 1,
+    easing: 'linear',
+  });
+  const activeIndex = useRecoilValue(archiveTextureTransitionAtom);
 
   //ページ遷移時のアニメーションに使用
   const { singleProgress, isTransitioning } = useTransitionProgress();
@@ -50,8 +61,8 @@ export const Panels = ({ loadedTextures, noiseTexture, telopTexture }: PanelsPro
   //ロード完了後のアニメーションに使用
   const loadingTransitionRef = useTransitionAnimation({
     trigger: intializedCompletedAtom,
-    duration: 3,
-    easing: 'easeInOutQuad',
+    duration: 2.4,
+    easing: 'linear',
   });
 
   //インスタンスマトリクスの更新（たぶんいらん）
@@ -122,6 +133,9 @@ export const Panels = ({ loadedTextures, noiseTexture, telopTexture }: PanelsPro
         uTextures: { value: [] },
         uDevice: { value: null },
         uActivePage: { value: null },
+        uIndexTransition: { value: null },
+        uNextIndex: { value: null },
+        uCurrentIndex: { value: null },
         uNoiseTexture: { value: noiseTexture },
         uTelopTexture: { value: telopTexture },
         uTextureAspectRatios: { value: [] },
@@ -206,8 +220,10 @@ export const Panels = ({ loadedTextures, noiseTexture, telopTexture }: PanelsPro
 
     if (currentPage.title == 'portfolio') {
       //galleryセクションへの0到達判定はtopページでのみ行う。
-      // console.log('gallery section : ' + indicatorOfGallerySection);
       shaderMaterial.uniforms.uIsGallerySection.value = isGallerySection == true ? 1 : 0;
+    } else {
+      //topぺージ以外は常にギャラリーセクションに到達していない状態にする
+      shaderMaterial.uniforms.uIsGallerySection.value = 0;
     }
 
     shaderMaterial.uniforms.uActivePage.value = activePage;
@@ -267,7 +283,26 @@ export const Panels = ({ loadedTextures, noiseTexture, telopTexture }: PanelsPro
 
         shaderMaterial.uniforms.uIsScrollEnd.value = scrollendTransitionef.current;
 
+        // console.log('archive change progress :', archiveTransitionRef.current, '\n');
+
         shaderMaterial.uniforms.uIsTransitioning.value = isTransitioning?.current == true ? 1 : 0;
+
+        shaderMaterial.uniforms.uIndexTransition.value = archiveTransitionRef.current;
+
+        shaderMaterial.uniforms.uNextIndex.value = activeIndex.targetIndex;
+
+        shaderMaterial.uniforms.uCurrentIndex.value = activeIndex.currentIndex;
+
+        // console.log(
+        //   'index transition:',
+        //   archiveTransitionRef.current,
+        //   '\n',
+        //   'current index : ',
+        //   activeIndex.currentIndex,
+        //   '\n',
+        //   'next index : ',
+        //   activeIndex.targetIndex
+        // );
 
         // shaderMaterial.uniforms.uVelocity.value = Math.abs(velocityRef.current);
 

@@ -103,7 +103,7 @@ export const useTransitionAnimation = ({
   useEffect(() => {
     let startTime: number | null = null;
     const startValue = observePageTransitionRef.current;
-    const targetValue = triggerValue ? 1 : 0;
+    const targetValue = triggerValue ? 1 : 0; //triggerValueがtrueなら1、falseなら0に向けて変化することができる
 
     const animate = (time: number) => {
       if (startTime === null) {

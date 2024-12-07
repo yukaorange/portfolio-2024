@@ -1,4 +1,4 @@
-import styles from '@/components/Top/TopProfile/Stats/stats.module.scss';
+import styles from './stats.module.scss';
 
 export const Stats = () => {
   const stats = [

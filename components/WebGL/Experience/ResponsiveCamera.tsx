@@ -50,12 +50,12 @@ export const ResponsiveCamera = ({ position, lookAt, near, far }: ResponsiveCame
   const minWidth = 360;
   const maxWidth = 1440;
   const standardWidth = maxWidth;
-  const minFov = 50; //@mobile
-  const maxFov = 40;
-  const minLookAtY = 2.0;
+  const minFov = 54; //@mobile
+  const maxFov = 48;
+  const minLookAtY = 2.4; //@pc 2.0
   const maxPositionY = 0.25;
-  const maxLookAtY = 2.25;
-  const minPositionY = 0.275;
+  const maxLookAtY = 2.52; //@mobile 2.25
+  const minPositionY = 0.18; //@mobile 0.275
   const maxMoveRange = 3.0;
 
   const getTransformValue = useCallback((windowInnerWidth: number) => {

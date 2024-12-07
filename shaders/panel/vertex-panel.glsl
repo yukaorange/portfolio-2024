@@ -1,12 +1,7 @@
-uniform float uAspect;
 uniform float uTime;
 uniform float uTotalWidth;
-uniform float uTotalHeight;
 varying float vIndex;
 varying float vInvert;
-varying float vBlightness;
-varying float vNoise;
-varying float vNoiseHigh;
 varying vec2 vUv;
 varying vec3 vNormal;
 varying vec3 vWorldPosition;

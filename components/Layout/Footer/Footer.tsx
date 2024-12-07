@@ -1,4 +1,4 @@
-import styles from '@/components/Layout/Footer/footer.module.scss';
+import styles from './footer.module.scss';
 import { Nav } from '@/components/Layout/Footer/Nav/Nav';
 
 export const Footer = () => {

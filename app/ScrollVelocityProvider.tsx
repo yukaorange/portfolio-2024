@@ -87,7 +87,7 @@ export const ScrollVelocityProvider = ({ children }: { children: React.ReactNode
       }
       lastTimeRef.current = currentTime;
 
-      velocityRef.current += diff * 0.07;
+      velocityRef.current += diff * 0.2;
 
       const decay = Math.exp(-decayRate * deltaTimeRef.current);
       velocityRef.current *= decay;

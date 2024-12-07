@@ -3,6 +3,7 @@ float quakeRandom(vec2 st) {
 }
 
 float calculateSliceOffset(float slice_y, float time, float intensity) {
+  
   float quakeRandomValue = quakeRandom(vec2(slice_y, time));
 
     // -1.0 から 1.0 の範囲に変換

@@ -2,15 +2,15 @@
 
 import { useEffect, useRef } from 'react';
 
-import styles from '@/components/Top/TopProfile/BgApplication/application.module.scss';
+import styles from './application.module.scss';
 
 export const BgApplication = () => {
   const backgroundRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(
-        (entry) => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
           if (entry.isIntersecting) {
             entry.target.classList.add(styles.active);
             entry.target.classList.remove(styles.inactive);
@@ -18,14 +18,14 @@ export const BgApplication = () => {
             entry.target.classList.remove(styles.active);
             entry.target.classList.add(styles.inactive);
           }
-        },
-        {
-          root: null,
-          rootMargin: '0px',
-          threshold: 1,
-        }
-      );
-    });
+        });
+      },
+      {
+        root: null,
+        rootMargin: '0% 0px -50% 0px',
+        threshold: 0,
+      }
+    );
 
     const currentRef = backgroundRef.current;
 

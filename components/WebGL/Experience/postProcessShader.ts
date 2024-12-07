@@ -25,6 +25,8 @@ export const postProcessShader = (width: number, height: number, device: string)
 
       //-------ローディング完了アニメーションにつかう-------
       uLoadingTransition: { value: 0 },
+      uLoadingTransitionEaseIn: { value: 0 },
+      uLoadingTransitionEaseOut: { value: 0 },
       uTime: { value: 0 },
       uIsMobile: { value: checkDevice },
 

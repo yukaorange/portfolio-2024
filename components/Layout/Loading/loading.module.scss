@@ -9,17 +9,20 @@
   width: 100%;
   height: 100%;
   display: grid;
+  justify-items: center;
 }
 
 .loading__inner {
   display: grid;
-  justify-content: center;
+  row-gap: 1rem;
   align-content: center;
+  width: cols(8);
+  opacity: 0;
 }
 
 //-------プログレスバー-------
 .progress {
-  width: 10rem;
+  width: 100%;
 }
 
 .progress__bar {
@@ -29,12 +32,14 @@
 
 //-------カウンター（ドラムロール）-------
 .counter {
-  --size: 3.2rem;
-  --font-size: calc(var(--size) * 0.75);
-  position: relative;
+  display: grid;
+  grid-template-columns: auto auto;
+  align-items: center;
 }
 
 .counter__wrap {
+  --size: 1.4rem;
+  --font-size: calc(var(--size) * 0.75);
   display: grid;
   grid-template-columns: repeat(4, auto);
   justify-items: start;
@@ -42,7 +47,7 @@
 }
 
 .counter__digit {
-  width: var(--size);
+  width: calc(var(--size) * 1);
   aspect-ratio: 1/1;
   font-size: var(--font-size);
   overflow: hidden;
@@ -57,6 +62,20 @@
   left: 0;
   transform: translateY(calc(-10% * var(--progress))); //--progress: 0~1と変化するので、10%としている。
 }
+.counter__roll.ones {
+  transition: 0.01s;
+}
+.counter__roll.tens {
+  transition: 0.25s;
+}
+.counter__roll.hundreds {
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  transition: 0.6s;
+  transform: translateY(calc(-50% * var(--progress))); //--progress: 0,1と変化するので、50%としている。
+}
 
 .counter__num {
   width: var(--size);
@@ -68,23 +87,49 @@
 }
 
 .counter__percent {
-  font-size: 2.4rem;
+  font-size: calc(var(--size) * 0.72);
+  margin-left: 0.2rem;
   line-height: 1;
   display: grid;
   align-items: center;
 }
 
+//--------カウンター（テキスト）-------
+.loading__text {
+  justify-self: end;
+  width: max-content;
+  font-size: text(12);
+  animation-duration: 0.01s;
+  animation-name: twincle;
+  animation-iteration-count: infinite;
+  text-shadow: var(--blue-shadow);
+}
+.loading__text.complete {
+  animation-name: complete;
+  animation-duration: 0.01s;
+  animation-iteration-count: 1;
+  animation-fill-mode: forwards;
+}
+
 //------ディスプレイ-------
 .display {
+  position: fixed;
+  z-index: 1;
+  bottom: 2rem;
+  left: 2rem;
   display: grid;
+  font-size: text(10);
   grid-template-columns: repeat(2, auto);
   justify-content: start;
 }
 
 //-------ローディングアイコン-------
 .lottie {
+  pointer-events: none;
   display: grid;
-  position: relative;
+  position: fixed;
+  bottom: 2.8rem;
+  left: 7.2rem;
   z-index: 0;
 }
 
@@ -94,9 +139,40 @@
   top: 50%;
   left: 50%;
   translate: -50% -50%;
-  width: 40rem;
+  width: 32rem;
 }
 
+@keyframes twincle {
+  0% {
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  40% {
+    opacity: 0;
+  }
+  60% {
+    opacity: 1;
+  }
+  80% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes complete {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+//--------オーバーレイ-------
 .overlay {
   overflow: hidden;
   position: fixed;

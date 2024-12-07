@@ -1,7 +1,7 @@
 'use client';
 
 import GSAP from 'gsap';
-import { useEffect, useState, useRef, useCallback, useMemo } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import Lottie from 'react-lottie-player';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 
@@ -26,6 +26,7 @@ export const Loading = () => {
     useRecoilValue(loadProgressAtom);
 
   //ui表示用の進捗
+  const loadingRef = useRef<HTMLDivElement>(null);
   const progressRef = useRef<number>(0);
   const progressBarRef = useRef<HTMLDivElement>(null);
   const loadingDisplayRef = useRef<HTMLDivElement>(null);
@@ -35,20 +36,28 @@ export const Loading = () => {
 
   const updateCounter = useCallback(
     (progress: number) => {
-      console.log(progress);
+      const digits = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0];
 
       const hundreds = Math.floor((progress / 100) % 100);
       const tens = Math.floor((progress / 10) % 10);
       const ones = Math.floor(progress % 10);
 
+      const getPosition = (num: number) => {
+        if (progress == 0) return digits.length - 1;
+
+        const index = digits.findIndex((d) => d === num);
+
+        return index === -1 ? 0 : index;
+      };
+
       if (hundredsRef.current) {
         hundredsRef.current.style.setProperty('--progress', hundreds.toString());
       }
       if (tensRef.current) {
-        tensRef.current.style.setProperty('--progress', tens.toString());
+        tensRef.current.style.setProperty('--progress', getPosition(tens).toString());
       }
       if (onesRef.current) {
-        onesRef.current.style.setProperty('--progress', ones.toString());
+        onesRef.current.style.setProperty('--progress', getPosition(ones).toString());
       }
     },
     [hundredsRef, tensRef, onesRef]
@@ -63,21 +72,21 @@ export const Loading = () => {
           fv?.classList.add('is_animating');
         },
         onComplete: () => {
-          // setShouldRender(false);
+          setShouldRender(false);
           initializedCompleted(true);
           // console.log('load end');
         },
       });
 
       Timeline.to('[data-ui="loading"]', {
-        duration: 1.4,
-        autoAlpha: 1,
+        duration: 1.0,
+        autoAlpha: 0,
       });
       Timeline.to(
         '[data-ui="loading-overlay"]',
         {
-          duration: 1.4,
-          autoAlpha: 1,
+          duration: 1.0,
+          autoAlpha: 0,
         },
         '<'
       );
@@ -85,16 +94,22 @@ export const Loading = () => {
   }, [modelLoaded, initialLoading, animationComplete, initializedCompleted]);
 
   useEffect(() => {
+    GSAP.to(loadingRef.current, {
+      duration: 0.5,
+      autoAlpha: 1,
+    });
+
     //モデルとテクスチャの読み込み進捗を計算
     const actualProgress = (modelProgress + texturesProgress) / (modelTotal + texturesTotal);
 
     //アニメーション用のダミー進捗
+    //真の進捗が100にならない間は50を上限ににカウントアップ。真の進捗が100になったら、durationに従って、GSAPアニメーションで100にカウントアップ
     const targetProgress = actualProgress >= 1 ? 100 : Math.min(actualProgress * 50, 50);
 
     GSAP.to(progressRef, {
-      duration: actualProgress >= 1 ? 2 : 0.5,
+      duration: actualProgress >= 1 ? 1 : 0.5,
       current: targetProgress,
-      ease: 'power2.inOut',
+      ease: 'power2.out',
       onUpdate: () => {
         if (loadingDisplayRef.current) {
           const currentProgress = Math.round(progressRef.current);
@@ -121,45 +136,48 @@ export const Loading = () => {
   return (
     <>
       <div data-ui="loading" className={styles.loading}>
-        <div className={styles.loading__inner}>
-          <div className={`${styles.display} _en`}>
-            <span ref={loadingDisplayRef}>0</span>
-            <span>%</span>
-          </div>
+        <div className={`${styles.display} _en`}>
+          <span ref={loadingDisplayRef}>0</span>
+          <span>%</span>
+        </div>
+        <div ref={loadingRef} className={styles.loading__inner}>
           <div className={styles.progress}>
             <div ref={progressBarRef} className={styles.progress__bar}></div>
           </div>
           <div className={`${styles.counter} _en`}>
             <div className={styles.counter__wrap}>
               <div className={styles.counter__digit} data-ui="counter-hundreds">
-                <div ref={hundredsRef} className={styles.counter__roll}>
-                  {[...Array(10)].map((_, i) => (
+                <div ref={hundredsRef} className={`${styles.counter__roll} ${styles.hundreds}`}>
+                  {[0, 1].map((digit, i) => (
                     <span key={i} className={styles.counter__num}>
-                      {i}
+                      {digit}
                     </span>
                   ))}
                 </div>
               </div>
               <div className={styles.counter__digit} data-ui="counter-tens">
-                <div ref={tensRef} className={styles.counter__roll}>
-                  {[...Array(10)].map((_, i) => (
+                <div ref={tensRef} className={`${styles.counter__roll} ${styles.tens}`}>
+                  {[1, 2, 3, 4, 5, 6, 7, 8, 9, 0].map((digit, i) => (
                     <span key={i} className={styles.counter__num}>
-                      {i}
+                      {digit}
                     </span>
                   ))}
                 </div>
               </div>
               <div className={styles.counter__digit} data-ui="counter-ones">
-                <div ref={onesRef} className={styles.counter__roll}>
-                  {[...Array(10)].map((_, i) => (
+                <div ref={onesRef} className={`${styles.counter__roll} ${styles.ones}`}>
+                  {[1, 2, 3, 4, 5, 6, 7, 8, 9, 0].map((digit, i) => (
                     <span key={i} className={styles.counter__num}>
-                      {i}
+                      {digit}
                     </span>
                   ))}
                 </div>
               </div>
               <span className={styles.counter__percent}>%</span>
             </div>
+            <p className={`${styles.loading__text} _en ${animationComplete && styles.complete}`}>
+              Loading
+            </p>
           </div>
           <div className={styles.lottie}>
             <div className={styles.lottie__icon}>

@@ -3,7 +3,7 @@
 .footer {
   // filter: url(#Analog_noise);
   height: calc(100svh * 1);
-  margin-top: calc(var(--section-space) * 1);
+  margin-top: calc(var(--section-space) * 0.25);
   padding-inline: calc(var(--col) * 1 + var(--gap) * 1 + var(--margin) * 1);
 
   display: grid;
@@ -58,7 +58,7 @@
 @include mq(sp) {
   .footer {
     height: calc(100svh * 1);
-    margin-top: calc(var(--section-space) * 1);
+    margin-top: calc(var(--section-space) * 0.25);
     padding-inline: calc(var(--margin) * 1);
 
     display: grid;

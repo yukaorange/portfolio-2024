@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useRecoilValue } from 'recoil';
+
 import { intializedCompletedAtom } from '@/store/initializedAtom';
 
 export const useInitializedNortification = () => {

@@ -1,4 +1,4 @@
-import styles from '@/components/Top/TopProfile/Tag/tag.module.scss';
+import styles from './tag.module.scss';
 
 export const Tag = () => {
   return (

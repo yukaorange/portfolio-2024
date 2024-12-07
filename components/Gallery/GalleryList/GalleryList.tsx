@@ -22,10 +22,10 @@ export const GalleryList = ({ contents, current, totalCount, pagepath }: Gallery
 
   return (
     <>
-      <ul className={styles.list}>
+      <ul data-ui="archive" className={`${styles.list}`}>
         {contents.map((item, key) => {
           return item.newTab ? (
-            <li key={key} className={styles.item}>
+            <li key={key} className={`${styles.item} item-key--${key}`}>
               <Link
                 href={item.newTab ? item.href : `/gallery/${item.id}`}
                 target="_blank"
@@ -72,9 +72,19 @@ export const GalleryList = ({ contents, current, totalCount, pagepath }: Gallery
                   {item.newTab ? <LinkIcon /> : null}
                 </Link>
               </div>
+              <div className={`${styles.item__bg} _en`}>
+                <div className={styles.item__marquee}>
+                  <span className={styles.item__marquee__text}>{item.title}</span>
+                  <span className={styles.item__marquee__text}>{item.title}</span>
+                  <span className={styles.item__marquee__text}>{item.title}</span>
+                  <span className={styles.item__marquee__text}>{item.title}</span>
+                  <span className={styles.item__marquee__text}>{item.title}</span>
+                  <span className={styles.item__marquee__text}>{item.title}</span>
+                </div>
+              </div>
             </li>
           ) : (
-            <li key={key} className={styles.item}>
+            <li key={key} className={`${styles.item} item-key--${key}`}>
               <TransitionLink
                 href={item.newTab ? item.href : `/gallery/${item.id}`}
                 target={item.newTab ? '_blank' : ''}
@@ -120,6 +130,16 @@ export const GalleryList = ({ contents, current, totalCount, pagepath }: Gallery
                 >
                   {item.newTab ? <LinkIcon /> : null}
                 </TransitionLink>
+              </div>
+              <div className={`${styles.item__bg} _en`}>
+                <div className={styles.item__marquee}>
+                  <span className={styles.item__marquee__text}>{item.title}</span>
+                  <span className={styles.item__marquee__text}>{item.title}</span>
+                  <span className={styles.item__marquee__text}>{item.title}</span>
+                  <span className={styles.item__marquee__text}>{item.title}</span>
+                  <span className={styles.item__marquee__text}>{item.title}</span>
+                  <span className={styles.item__marquee__text}>{item.title}</span>
+                </div>
               </div>
             </li>
           );
