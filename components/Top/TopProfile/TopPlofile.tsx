@@ -33,23 +33,7 @@ export const TopProfile = () => {
             </p>
           </div>
         </div>
-        {/* <div className={styles.profile__content}>
-          <div className={styles.profile__lead}>
-            <LeadTop text="person introduction" />
-          </div>
-          <div className={styles.profile__status}>
-            <div className={styles.profile__tag}>
-              <Tag />
-            </div>
-            <div className={styles.profile__stats}>
-              <Stats />
-            </div>
-            <div className={styles.profile__photo}>
-              <Image src="/images/top/id_photo.jpg" alt="profile image" width={900} height={900} />
-            </div>
-          </div>
-          <BgApplication />
-        </div> */}
+
         <div className={styles.profile__content}>
           <div className={styles.profile__lead}>
             <LeadTop text="detailed profile" />

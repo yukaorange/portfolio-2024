@@ -43,7 +43,7 @@ export const Panels = ({ loadedTextures, noiseTexture, telopTexture }: PanelsPro
   //フッター付近への到達判定
   const scrollendTransitionef = useTransitionAnimation({
     trigger: isScrollEndAtom,
-    duration: 1.0,
+    duration: 2.0,
     easing: 'linear',
   });
 

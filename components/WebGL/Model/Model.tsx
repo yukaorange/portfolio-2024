@@ -275,7 +275,7 @@ export const Model = ({ textures, ...props }: ModelProps) => {
 
       //線形補完の係数
       // const lerpFactor = 1.0 - Math.pow(0.001, delta);
-      const lerpFactor = 0.24; //スーツケースの移動は早くていい
+      const lerpFactor = 0.064; //スーツケースの移動は早くていい
 
       //スーツケースの初期位置
       const originalSuitcasePosition = {
@@ -295,7 +295,7 @@ export const Model = ({ textures, ...props }: ModelProps) => {
         suitcaseShaderMaterial.uniforms.uTransition.value = singleProgress.current;
 
         //----------スーツケースの位置決定----------
-        if (scrollendTransitionef.current >= 0.25) {
+        if (scrollendTransitionef.current >= 0.05) {
           //1だと遅く感じる。まあこの辺は微調整で
 
           //フッター付近でのふるまい
