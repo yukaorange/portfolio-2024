@@ -20,6 +20,8 @@ import { useNavigationAtomUpdater } from '@/hooks/useNavigationAtomUpdater';
 
 import { ScrollVelocityProvider } from './ScrollVelocityProvider';
 
+
+//動的に読み込むことでdocumentの参照エラーを回避したい
 const Loading = dynamic(() => import('@/components/Layout/Loading/Loading'), {
   ssr: false,
 });
