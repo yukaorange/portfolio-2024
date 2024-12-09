@@ -12,7 +12,7 @@ import { modelLoadedAtom, initialLoadingAtom } from '@/store/textureAtom';
 
 import styles from './loading.module.scss';
 
-export const Loading = () => {
+const Loading = () => {
   const [shouldRender, setShouldRender] = useState(true);
   const [animationComplete, setAnimationComplete] = useState(false);
 
@@ -192,5 +192,7 @@ export const Loading = () => {
     </>
   );
 };
+
+export default Loading;
 
 Loading.displayName = 'Loading';
