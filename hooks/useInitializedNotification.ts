@@ -9,6 +9,8 @@ export const useInitializedNortification = () => {
   const initializedCompleted = useRecoilValue(intializedCompletedAtom);
 
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+
     if (initializedCompleted) {
       setTimeout(() => {
         document.documentElement.classList.add('is_loaded');

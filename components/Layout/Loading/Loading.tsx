@@ -67,9 +67,11 @@ export const Loading = () => {
     if (modelLoaded && initialLoading && animationComplete) {
       const Timeline = GSAP.timeline({
         onStart: () => {
-          const fv = document.querySelector('.fv__maincopy__textbox') ?? null; //queryselectorは検索にヒットしなければnullを返すが、ここでは可読性のために明示的にnullを返すようにしています。
+          if (document) {
+            const fv = document.querySelector('.fv__maincopy__textbox') ?? null; //queryselectorは検索にヒットしなければnullを返すが、ここでは可読性のために明示的にnullを返すようにしています。
 
-          fv?.classList.add('is_animating');
+            fv?.classList.add('is_animating');
+          }
         },
         onComplete: () => {
           setShouldRender(false);
