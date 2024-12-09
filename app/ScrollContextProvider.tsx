@@ -86,6 +86,12 @@ export const ScrollProvider = ({ children }: ScrollProviderProps) => {
 
     if (!archive) {
       archiveItemsRef.current = [];
+
+      setTextureTransition({
+        currentIndex: -1,
+        targetIndex: -1,
+      });
+
       return;
     }
 
