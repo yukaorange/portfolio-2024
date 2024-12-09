@@ -14,7 +14,7 @@ export const useInitializedNortification = () => {
     if (initializedCompleted) {
       setTimeout(() => {
         document.documentElement.classList.add('is_loaded');
-      }, 10000); //アニメーションが終わるまでの十分な猶予を設ける
+      }, 6000); //アニメーションが終わるまでの十分な猶予を設ける
     }
   }, [initializedCompleted]);
 };

@@ -6,7 +6,7 @@ html.is_loaded .fv__maincopy__text span {
 
 @for $i from 0 through 30 {
   .fv__maincopy__textbox.is_animating .fv__maincopy__text span[data-index="#{$i}"] {
-    animation-delay: random() * 0.3s + 3.5s;
+    animation-delay: random() * 0.3s + 3.3s; //Experience.tsxのアニメーションたちとタイミングを合わせる
     animation-name: flicker;
     animation-duration: 0.64s;
     animation-timing-function: ease-out;
