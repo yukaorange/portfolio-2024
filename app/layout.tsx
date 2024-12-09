@@ -5,10 +5,35 @@ import { LayoutClient } from './LayoutClient';
 import type { Metadata, Viewport } from 'next';
 
 export const metadata: Metadata = {
-  title: 'portfolio2024',
-  description: 'created by takaoka',
+  title: 'takaoka-portfolio2024',
+  description:
+    'Next.js, R3F, microCMSを使用したポートフォリオサイトです。転職活動で自身の技術レベルをアピールする目的で作成しました。',
   icons: {
-    icon: '/favicon/logo.svg',
+    icon: '/images/icons/favicon.ico',
+  },
+  openGraph: {
+    title: 'takaoka-portfolio2024',
+    description:
+      'Next.js, R3F, microCMSを使用したポートフォリオサイトです。転職活動で自身の技術レベルをアピールする目的で作成しました。',
+    url: 'https://portfolio-2024-takaoka.vercel.app',
+    siteName: 'takaoka-portfolio2024',
+    images: [
+      {
+        url: 'https://portfolio-2024-takaoka.vercel.app/ogp.jpg',
+        width: 800,
+        height: 600,
+        alt: 'takaoka-portfolio2024',
+      },
+    ],
+    locale: 'ja_JP',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'takaoka-portfolio2024',
+    description:
+      'Next.js, R3F, microCMSを使用したポートフォリオサイトです。転職活動で自身の技術レベルをアピールする目的で作成しました。',
+    images: ['https://portfolio-2024-takaoka.vercel.app/ogp.jpg'],
   },
 };
 

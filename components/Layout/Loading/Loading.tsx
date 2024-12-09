@@ -1,7 +1,7 @@
 'use client';
 
 import GSAP from 'gsap';
-import { useEffect, useState, useRef, useCallback } from 'react';
+import { useEffect, useState, useRef, useCallback, Dispatch, SetStateAction } from 'react';
 import Lottie from 'react-lottie-player';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 
@@ -12,7 +12,11 @@ import { modelLoadedAtom, initialLoadingAtom } from '@/store/textureAtom';
 
 import styles from './loading.module.scss';
 
-const Loading = () => {
+interface LoadingProps {
+  setIsLoadingStart: Dispatch<SetStateAction<boolean>>;
+}
+
+const Loading = ({ setIsLoadingStart }: LoadingProps) => {
   const [shouldRender, setShouldRender] = useState(true);
   const [animationComplete, setAnimationComplete] = useState(false);
 
@@ -65,6 +69,8 @@ const Loading = () => {
 
   useEffect(() => {
     if (modelLoaded && initialLoading && animationComplete) {
+      setIsLoadingStart(true); //preparingが外れる(LayoutContent.tsxに存在)
+
       const Timeline = GSAP.timeline({
         onStart: () => {
           if (document) {
@@ -93,7 +99,7 @@ const Loading = () => {
         '<'
       );
     }
-  }, [modelLoaded, initialLoading, animationComplete, initializedCompleted]);
+  }, [modelLoaded, initialLoading, animationComplete, initializedCompleted, setIsLoadingStart]);
 
   useEffect(() => {
     GSAP.to(loadingRef.current, {

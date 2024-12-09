@@ -233,7 +233,12 @@ export const Drawer = () => {
           <div className={styles.toggle__bg}></div>
         </div>
         {/* drawer layer */}
-        <div ref={drawerRef} className={`${styles.drawer} ${isOpen && styles.is_open}`}>
+        <div
+          ref={drawerRef}
+          className={`${styles.drawer} ${isOpen && styles.is_open}`}
+          aria-expanded={isOpen}
+          aria-label="navigation drawer"
+        >
           <div className={styles.drawer__inner}>
             <div className={styles.drawer__content}>
               <div className={styles.drawer__nav}>

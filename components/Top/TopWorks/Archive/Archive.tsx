@@ -10,7 +10,7 @@ export const Archive = () => {
       description: '制作したWebサイト',
       amount: '02',
       available: false,
-      href: '',
+      href: '/',
     },
     {
       title: 'App',
@@ -33,7 +33,7 @@ export const Archive = () => {
       {archive.map((item, index) => {
         return (
           <TransitionLink
-            href={`/gallery/${item.href}`}
+            href={item.available ? `/gallery/${item.href}` : '/'}
             className={`${styles.item} ${item.available == false && styles.unavailable}`}
             key={index}
           >
