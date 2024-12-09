@@ -43,14 +43,14 @@ export const Panels = ({ loadedTextures, noiseTexture, telopTexture }: PanelsPro
   //フッター付近への到達判定
   const scrollendTransitionef = useTransitionAnimation({
     trigger: isScrollEndAtom,
-    duration: 3.0,
+    duration: device == 'mobile' ? 3.2 : 3.0,
     easing: 'linear',
   });
 
   //アーカイブの変更検知
   const archiveTransitionRef = useIndexTransition({
     trigger: archiveTextureTransitionAtom,
-    duration: 1,
+    duration: device == 'mobile' ? 2.8 : 1.4,
     easing: 'linear',
   });
   const activeIndex = useRecoilValue(archiveTextureTransitionAtom);

@@ -1,5 +1,4 @@
-vec4 gridTransition(vec4 current, vec4 next, float progress, vec2 uv, float noise) {
-  float squares = 8.0;
+vec4 gridTransition(vec4 current, vec4 next, float progress, vec2 uv, float squares) {
 
   vec2 cell = floor(uv * squares);//0.0,1.0,2.0,3.0,4.0,5.0,6.0,7.0....
 

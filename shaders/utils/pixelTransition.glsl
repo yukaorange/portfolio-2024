@@ -1,6 +1,4 @@
-float pixelTransition(vec2 fullScreenUv, float scrollEndProgress) {
-
-  float squares = 8.0;
+float pixelTransition(vec2 fullScreenUv, float scrollEndProgress, float squares) {
 
   vec2 cell = floor(fullScreenUv * squares); // 各セルの位置を特定
   vec2 cellCenter = (cell + 0.5) / squares; // 各セルの中心点を計算
@@ -15,7 +13,7 @@ float pixelTransition(vec2 fullScreenUv, float scrollEndProgress) {
 
   float mask = normalizedDist * scrollEndProgress;
 
-  float minIntensity =  clamp(scrollEndProgress, 0.0, 1.0);
+  float minIntensity = clamp(scrollEndProgress, 0.0, 1.0);
 
   mask = mask + minIntensity;
 

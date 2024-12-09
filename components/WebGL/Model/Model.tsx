@@ -302,7 +302,7 @@ export const Model = ({ textures, ...props }: ModelProps) => {
           //回転を加える
           suitcaseRef.current.rotation.x = (Math.PI * 1) / 16;
           if (device === 'mobile') {
-            suitcaseRef.current.rotation.y += (delta * Math.PI * 1) / 24;
+            suitcaseRef.current.rotation.y += (delta * Math.PI * 1) / 16;
           } else {
             suitcaseRef.current.rotation.y += (delta * Math.PI * 1) / 8;
           }

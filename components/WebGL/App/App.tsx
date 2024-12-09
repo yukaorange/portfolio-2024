@@ -82,7 +82,7 @@ export const App = () => {
   const device = useRecoilValue(deviceState);
 
   return (
-    <Canvas dpr={device === 'mobile' ? [0.75, 1] : [1, 2]} gl={{ antialias: true, alpha: false }}>
+    <Canvas dpr={device === 'mobile' ? [0.75, 1.5] : [1, 2]} gl={{ antialias: true, alpha: false }}>
       <Suspense fallback={null}>
         <TextureLoader />
         <Experience />

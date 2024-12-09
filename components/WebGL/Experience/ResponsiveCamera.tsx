@@ -128,11 +128,6 @@ export const ResponsiveCamera = ({ position, lookAt, near, far }: ResponsiveCame
 
       const lookAtY = targetLookAt.current.y;
       const lookAtZ = targetLookAt.current.z;
-      // const positionY = (1 - loadingTransitionRef.current) * 2 + targetPosition.current.y;
-      // const positionZ = (1 - loadingTransitionRef.current) * 1 + targetPosition.current.z;
-
-      // const lookAtY = (1 - loadingTransitionRef.current) * -1 + targetLookAt.current.y;
-      // const lookAtZ = (1 - loadingTransitionRef.current) * 1 + targetLookAt.current.z;
 
       cameraRef.current.position.lerp(
         new THREE.Vector3(targetPosition.current.x, positionY, positionZ),

@@ -136,6 +136,14 @@ void main() {
 
   float activepage = floor(uActivePage);//ページ判定 0:top 1:about 2:gallery系
 
+  float squares;//トランジション時のグリッド分割数
+
+  if(uDevice == 1.0) {//@mobile
+    squares = 18.0;
+  } else {
+    squares = 8.0;
+  }
+
   //hash値
   float hashValue = hash(singleScreenUv + mod(uTime, 1.0) + 214.0) * 0.7;
 
@@ -354,7 +362,7 @@ void main() {
       vec4 currentTexture;
       vec4 nextTexture;
 
-      vec2 transitionGlitchOffset = vec2(0.0, noise * 0.064) * (1.0 - uIndexTransition);
+      vec2 transitionGlitchOffset = vec2(0.0, noise * 0.01) * (1.0 - uIndexTransition);
 
       // if(uDevice == 0.0 || uDevice == 1.0) {
 
@@ -455,7 +463,7 @@ void main() {
         nextTexture = defaultDiffuse;
       }
 
-      checkerBoardDiffuseColor = gridTransition(currentTexture, nextTexture, uIndexTransition, fullScreenUv, noise);
+      checkerBoardDiffuseColor = gridTransition(currentTexture, nextTexture, uIndexTransition, fullScreenUv, squares);
     }
 
   }
@@ -509,7 +517,7 @@ void main() {
 
   float scrollEndProgress = easeInQuart(uIsScrollEnd);
 
-  float footerTransition = pixelTransition(fullScreenUv, scrollEndProgress);
+  float footerTransition = pixelTransition(fullScreenUv, scrollEndProgress, squares);
 
   finalDiffuse = mix(finalDiffuse, gridColor, footerTransition);
 
@@ -580,7 +588,7 @@ void main() {
   // colorIntensity = 0.9 + 0.1 * clamp(uVelocity, 0.0, 1.0);
 
   if(uDevice == 1.0) {//@mobile
-    colorIntensity *= 2.0;
+    colorIntensity *= 2.2;
   }
 
   //テスト用
