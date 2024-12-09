@@ -25,7 +25,6 @@ import { ScrollVelocityProvider } from './ScrollVelocityProvider';
 //動的に読み込むことでdocumentの参照エラーを回避したい(gsapのエラーが出るため)
 const Loading = dynamic(() => import('@/components/Layout/Loading/Loading'), {
   ssr: false,
-  loading: () => <></>,
 });
 
 export const LayoutClient = ({ children }: Readonly<{ children: React.ReactNode }>) => {
