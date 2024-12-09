@@ -94,12 +94,16 @@ export const getWorksContentsByCategory = async ({
 };
 
 export const getWorksDetail = async (slug: string) => {
-  const data = await client.get({
-    endpoint: 'works',
-    contentId: slug,
-  });
+  try {
+    const data = await client.get({
+      endpoint: 'works',
+      contentId: slug,
+    });
 
-  return data;
+    return data;
+  } catch (err) {
+    console.error(err);
+  }
 };
 
 export const getWorksCategories = async () => {
