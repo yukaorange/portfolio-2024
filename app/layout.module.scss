@@ -44,23 +44,23 @@
   z-index: var(--z-index-webgl);
 }
 
-.lottie {
-  pointer-events: none;
-  display: grid;
-  position: fixed;
-  bottom: 2.8rem;
-  left: 7.2rem;
-  z-index: 0;
-}
+// .lottie {
+//   pointer-events: none;
+//   display: grid;
+//   position: fixed;
+//   bottom: 2.8rem;
+//   left: 7.2rem;
+//   z-index: 0;
+// }
 
-.lottie__icon {
-  position: absolute;
-  z-index: 1;
-  top: 50%;
-  left: 50%;
-  translate: -50% -50%;
-  width: 32rem;
-}
+// .lottie__icon {
+//   position: absolute;
+//   z-index: 1;
+//   top: 50%;
+//   left: 50%;
+//   translate: -50% -50%;
+//   width: 32rem;
+// }
 
 @include mq(sp) {
 }

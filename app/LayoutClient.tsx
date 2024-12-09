@@ -1,7 +1,6 @@
 'use client';
 import dynamic from 'next/dynamic';
 import { useState, useEffect } from 'react';
-import Lottie from 'react-lottie-player';
 import { RecoilRoot } from 'recoil';
 
 import styles from '@/app/layout.module.scss';
@@ -18,7 +17,6 @@ import { UserAgent } from '@/components/Utility/UserAgent';
 import { ViewPortCalculator } from '@/components/Utility/ViewportCalculator';
 import { App } from '@/components/WebGL/App/App';
 import { useNavigationAtomUpdater } from '@/hooks/useNavigationAtomUpdater';
-import lottieJson from '@/public/json/data.json';
 
 import { ScrollVelocityProvider } from './ScrollVelocityProvider';
 
@@ -48,11 +46,6 @@ export const LayoutClient = ({ children }: Readonly<{ children: React.ReactNode 
       <RecoilRoot>
         <div className={styles.layout}>
           <div className={styles.layout__preparing} />
-          <div className={styles.lottie}>
-            <div className={styles.lottie__icon}>
-              <Lottie loop play animationData={lottieJson} />
-            </div>
-          </div>
         </div>
       </RecoilRoot>
     );
@@ -68,13 +61,7 @@ export const LayoutClient = ({ children }: Readonly<{ children: React.ReactNode 
               <div className={`${styles.layout}`}>
                 <div
                   className={`${styles.layout__preparing} ${isLoadingStart && styles.is_mounted}`}
-                >
-                  <div className={styles.lottie}>
-                    <div className={styles.lottie__icon}>
-                      <Lottie loop play animationData={lottieJson} />
-                    </div>
-                  </div>
-                </div>
+                ></div>
                 <UserAgent />
                 <InitializeNortification />
                 {typeof window !== 'undefined' && isMounted && (
