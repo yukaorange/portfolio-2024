@@ -1,5 +1,4 @@
 'use client';
-import dynamic from 'next/dynamic';
 import { useState, useEffect } from 'react';
 import { RecoilRoot } from 'recoil';
 
@@ -11,6 +10,7 @@ import { TransitionOverlay } from '@/components/Common/TransitionOverlay/Transit
 import { Drawer } from '@/components/Layout/Drawer/Drawer';
 import { Footer } from '@/components/Layout/Footer/Footer';
 import { Header } from '@/components/Layout/Header/Header';
+import Loading from '@/components/Layout/Loading/Loading';
 import { Filters } from '@/components/Layout/SVG/Filter/Filter';
 import { InitializeNortification } from '@/components/Utility/initializeNortification';
 import { UserAgent } from '@/components/Utility/UserAgent';
@@ -19,11 +19,6 @@ import { App } from '@/components/WebGL/App/App';
 import { useNavigationAtomUpdater } from '@/hooks/useNavigationAtomUpdater';
 
 import { ScrollVelocityProvider } from './ScrollVelocityProvider';
-
-//動的に読み込むことでdocumentの参照エラーを回避したい(gsapのエラーが出るため)
-const Loading = dynamic(() => import('@/components/Layout/Loading/Loading'), {
-  ssr: false,
-});
 
 export const LayoutClient = ({ children }: Readonly<{ children: React.ReactNode }>) => {
   const [isMounted, setIsMounted] = useState(false);
@@ -35,9 +30,7 @@ export const LayoutClient = ({ children }: Readonly<{ children: React.ReactNode 
   };
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      setIsMounted(true);
-    }
+    setIsMounted(true);
   }, []);
 
   // hydrationの不一致を防ぐため、マウント前は最小限のコンテンツのみレンダリング
@@ -64,12 +57,8 @@ export const LayoutClient = ({ children }: Readonly<{ children: React.ReactNode 
                 ></div>
                 <UserAgent />
                 <InitializeNortification />
-                {typeof window !== 'undefined' && isMounted && (
-                  <>
-                    <ViewPortCalculator />
-                    <Loading setIsLoadingStart={setIsLoadingStart} />
-                  </>
-                )}
+                <ViewPortCalculator />
+                <Loading setIsLoadingStart={setIsLoadingStart} />
                 <Header />
                 <Drawer />
                 <Filters />

@@ -1,9 +1,14 @@
 'use client';
 
 import GSAP from 'gsap';
+import dynamic from 'next/dynamic';
 import { useEffect, useState, useRef, useCallback, Dispatch, SetStateAction } from 'react';
-import Lottie from 'react-lottie-player';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
+
+const DynamicLottie = dynamic(() => import('react-lottie-player'), {
+  ssr: false,
+  loading: () => <></>,
+});
 
 import lottieJson from '@/public/json/data.json';
 import { intializedCompletedAtom } from '@/store/initializedAtom';
@@ -189,7 +194,7 @@ const Loading = ({ setIsLoadingStart }: LoadingProps) => {
           </div>
           <div className={styles.lottie}>
             <div className={styles.lottie__icon}>
-              <Lottie loop play animationData={lottieJson} />
+              <DynamicLottie loop play animationData={lottieJson} />
             </div>
           </div>
         </div>
