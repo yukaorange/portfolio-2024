@@ -43,7 +43,7 @@ export const Experience = () => {
   });
   const loadingTransitionEaseInRef = useTransitionAnimation({
     trigger: intializedCompletedAtom,
-    duration: 0.8, //早入りする
+    duration: 0.8, //早入りする(おもにヴィネット)
     easing: 'easeInExpo',
   });
   const loadingTransitionEaseOutRef = useTransitionAnimation({

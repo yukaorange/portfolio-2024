@@ -43,7 +43,7 @@ export const Panels = ({ loadedTextures, noiseTexture, telopTexture }: PanelsPro
   //フッター付近への到達判定
   const scrollendTransitionef = useTransitionAnimation({
     trigger: isScrollEndAtom,
-    duration: 2.0,
+    duration: 3.0,
     easing: 'linear',
   });
 
@@ -62,7 +62,7 @@ export const Panels = ({ loadedTextures, noiseTexture, telopTexture }: PanelsPro
   const loadingTransitionRef = useTransitionAnimation({
     trigger: intializedCompletedAtom,
     duration: 2.4,
-    easing: 'linear',
+    easing: 'easeInOutCubic',
   });
 
   //インスタンスマトリクスの更新（たぶんいらん）

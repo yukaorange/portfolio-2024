@@ -15,7 +15,7 @@ float pixelTransition(vec2 fullScreenUv, float scrollEndProgress) {
 
   float mask = normalizedDist * scrollEndProgress;
 
-  float minIntensity = 0.1 * clamp(scrollEndProgress, 0.0, 1.0);
+  float minIntensity =  clamp(scrollEndProgress, 0.0, 1.0);
 
   mask = mask + minIntensity;
 

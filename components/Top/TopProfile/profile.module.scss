@@ -38,6 +38,8 @@
 }
 
 .profile__text {
+  word-break: break-all;
+
   font-size: text(16);
   line-height: 1.5;
   text-align: justify;

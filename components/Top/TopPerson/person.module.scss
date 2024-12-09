@@ -30,6 +30,7 @@
   font-size: text(16);
   line-height: 1.5;
   text-align: justify;
+  word-break: break-all;
   text-shadow: var(--blue-shadow);
 }
 
@@ -40,11 +41,15 @@
 .person__status {
   align-items: end;
   display: grid;
+  row-gap: 2.4rem;
 
   // grid-template-columns: auto auto;
   grid-template-areas: "tag tag" "stats photo";
-  row-gap: 2.4rem;
   width: cols(10);
+}
+
+.person__textbox {
+  margin-top: 2.4rem;
 }
 
 .person__tag {

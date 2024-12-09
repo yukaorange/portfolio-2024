@@ -356,105 +356,103 @@ void main() {
 
       vec2 transitionGlitchOffset = vec2(0.0, noise * 0.064) * (1.0 - uIndexTransition);
 
-      if(uDevice == 1.0) {
+      // if(uDevice == 0.0 || uDevice == 1.0) {
 
-        if(uCurrentIndex == 0.0) {
-          currentTexture = texture2D(uTextures[0], singleOptimizedUv0 + transitionGlitchOffset);
-        } else if(uCurrentIndex == 1.0) {
-          currentTexture = texture2D(uTextures[1], singleOptimizedUv1 + transitionGlitchOffset);
-        } else if(uCurrentIndex == 2.0) {
-          currentTexture = texture2D(uTextures[2], singleOptimizedUv2 + transitionGlitchOffset);
-        } else if(uCurrentIndex == 3.0) {
-          currentTexture = texture2D(uTextures[3], singleOptimizedUv3 + transitionGlitchOffset);
-        } else if(uCurrentIndex == 4.0) {
-          currentTexture = texture2D(uTextures[4], singleOptimizedUv4 + transitionGlitchOffset);
-        } else if(uCurrentIndex == 5.0) {
-          currentTexture = texture2D(uTextures[5], singleOptimizedUv5 + transitionGlitchOffset);
-        } else if(uCurrentIndex == 6.0) {
-          currentTexture = texture2D(uTextures[6], singleOptimizedUv6 + transitionGlitchOffset);
-        } else if(uCurrentIndex == 7.0) {
-          currentTexture = texture2D(uTextures[7], singleOptimizedUv7 + transitionGlitchOffset);
-        } else if(uCurrentIndex == 8.0) {
-          currentTexture = texture2D(uTextures[8], singleOptimizedUv8 + transitionGlitchOffset);
-        } else if(uCurrentIndex == 9.0) {
-          currentTexture = texture2D(uTextures[9], singleOptimizedUv9 + transitionGlitchOffset);
-        } else {
-          currentTexture = defaultDiffuse;
-        }
+      //   if(uCurrentIndex == 0.0) {
+      //     currentTexture = texture2D(uTextures[0], singleOptimizedUv0 + transitionGlitchOffset);
+      //   } else if(uCurrentIndex == 1.0) {
+      //     currentTexture = texture2D(uTextures[1], singleOptimizedUv1 + transitionGlitchOffset);
+      //   } else if(uCurrentIndex == 2.0) {
+      //     currentTexture = texture2D(uTextures[2], singleOptimizedUv2 + transitionGlitchOffset);
+      //   } else if(uCurrentIndex == 3.0) {
+      //     currentTexture = texture2D(uTextures[3], singleOptimizedUv3 + transitionGlitchOffset);
+      //   } else if(uCurrentIndex == 4.0) {
+      //     currentTexture = texture2D(uTextures[4], singleOptimizedUv4 + transitionGlitchOffset);
+      //   } else if(uCurrentIndex == 5.0) {
+      //     currentTexture = texture2D(uTextures[5], singleOptimizedUv5 + transitionGlitchOffset);
+      //   } else if(uCurrentIndex == 6.0) {
+      //     currentTexture = texture2D(uTextures[6], singleOptimizedUv6 + transitionGlitchOffset);
+      //   } else if(uCurrentIndex == 7.0) {
+      //     currentTexture = texture2D(uTextures[7], singleOptimizedUv7 + transitionGlitchOffset);
+      //   } else if(uCurrentIndex == 8.0) {
+      //     currentTexture = texture2D(uTextures[8], singleOptimizedUv8 + transitionGlitchOffset);
+      //   } else if(uCurrentIndex == 9.0) {
+      //     currentTexture = texture2D(uTextures[9], singleOptimizedUv9 + transitionGlitchOffset);
+      //   } else {
+      //     currentTexture = defaultDiffuse;
+      //   }
 
-        if(uNextIndex == 0.0) {
-          nextTexture = texture2D(uTextures[0], singleOptimizedUv0 + transitionGlitchOffset);
-        } else if(uNextIndex == 1.0) {
-          nextTexture = texture2D(uTextures[1], singleOptimizedUv1 + transitionGlitchOffset);
-        } else if(uNextIndex == 2.0) {
-          nextTexture = texture2D(uTextures[2], singleOptimizedUv2 + transitionGlitchOffset);
-        } else if(uNextIndex == 3.0) {
-          nextTexture = texture2D(uTextures[3], singleOptimizedUv3 + transitionGlitchOffset);
-        } else if(uNextIndex == 4.0) {
-          nextTexture = texture2D(uTextures[4], singleOptimizedUv4 + transitionGlitchOffset);
-        } else if(uNextIndex == 5.0) {
-          nextTexture = texture2D(uTextures[5], singleOptimizedUv5 + transitionGlitchOffset);
-        } else if(uNextIndex == 6.0) {
-          nextTexture = texture2D(uTextures[6], singleOptimizedUv6 + transitionGlitchOffset);
-        } else if(uNextIndex == 7.0) {
-          nextTexture = texture2D(uTextures[7], singleOptimizedUv7 + transitionGlitchOffset);
-        } else if(uNextIndex == 8.0) {
-          nextTexture = texture2D(uTextures[8], singleOptimizedUv8 + transitionGlitchOffset);
-        } else if(uNextIndex == 9.0) {
-          nextTexture = texture2D(uTextures[9], singleOptimizedUv9 + transitionGlitchOffset);
-        } else {
-          nextTexture = defaultDiffuse;
-        }
-
+      //   if(uNextIndex == 0.0) {
+      //     nextTexture = texture2D(uTextures[0], singleOptimizedUv0 + transitionGlitchOffset);
+      //   } else if(uNextIndex == 1.0) {
+      //     nextTexture = texture2D(uTextures[1], singleOptimizedUv1 + transitionGlitchOffset);
+      //   } else if(uNextIndex == 2.0) {
+      //     nextTexture = texture2D(uTextures[2], singleOptimizedUv2 + transitionGlitchOffset);
+      //   } else if(uNextIndex == 3.0) {
+      //     nextTexture = texture2D(uTextures[3], singleOptimizedUv3 + transitionGlitchOffset);
+      //   } else if(uNextIndex == 4.0) {
+      //     nextTexture = texture2D(uTextures[4], singleOptimizedUv4 + transitionGlitchOffset);
+      //   } else if(uNextIndex == 5.0) {
+      //     nextTexture = texture2D(uTextures[5], singleOptimizedUv5 + transitionGlitchOffset);
+      //   } else if(uNextIndex == 6.0) {
+      //     nextTexture = texture2D(uTextures[6], singleOptimizedUv6 + transitionGlitchOffset);
+      //   } else if(uNextIndex == 7.0) {
+      //     nextTexture = texture2D(uTextures[7], singleOptimizedUv7 + transitionGlitchOffset);
+      //   } else if(uNextIndex == 8.0) {
+      //     nextTexture = texture2D(uTextures[8], singleOptimizedUv8 + transitionGlitchOffset);
+      //   } else if(uNextIndex == 9.0) {
+      //     nextTexture = texture2D(uTextures[9], singleOptimizedUv9 + transitionGlitchOffset);
+      //   } else {
+      //     nextTexture = defaultDiffuse;
+      //   }
+      // } else {
+      // }
+      if(uCurrentIndex == 0.0) {
+        currentTexture = texture2D(uTextures[0], fullScreenOptimizedUv0 + transitionGlitchOffset);
+      } else if(uCurrentIndex == 1.0) {
+        currentTexture = texture2D(uTextures[1], fullScreenOptimizedUv1 + transitionGlitchOffset);
+      } else if(uCurrentIndex == 2.0) {
+        currentTexture = texture2D(uTextures[2], fullScreenOptimizedUv2 + transitionGlitchOffset);
+      } else if(uCurrentIndex == 3.0) {
+        currentTexture = texture2D(uTextures[3], fullScreenOptimizedUv3 + transitionGlitchOffset);
+      } else if(uCurrentIndex == 4.0) {
+        currentTexture = texture2D(uTextures[4], fullScreenOptimizedUv4 + transitionGlitchOffset);
+      } else if(uCurrentIndex == 5.0) {
+        currentTexture = texture2D(uTextures[5], fullScreenOptimizedUv5 + transitionGlitchOffset);
+      } else if(uCurrentIndex == 6.0) {
+        currentTexture = texture2D(uTextures[6], fullScreenOptimizedUv6 + transitionGlitchOffset);
+      } else if(uCurrentIndex == 7.0) {
+        currentTexture = texture2D(uTextures[7], fullScreenOptimizedUv7 + transitionGlitchOffset);
+      } else if(uCurrentIndex == 8.0) {
+        currentTexture = texture2D(uTextures[8], fullScreenOptimizedUv8 + transitionGlitchOffset);
+      } else if(uCurrentIndex == 9.0) {
+        currentTexture = texture2D(uTextures[9], fullScreenOptimizedUv9 + transitionGlitchOffset);
       } else {
+        currentTexture = defaultDiffuse;
+      }
 
-        if(uCurrentIndex == 0.0) {
-          currentTexture = texture2D(uTextures[0], fullScreenOptimizedUv0 + transitionGlitchOffset);
-        } else if(uCurrentIndex == 1.0) {
-          currentTexture = texture2D(uTextures[1], fullScreenOptimizedUv1 + transitionGlitchOffset);
-        } else if(uCurrentIndex == 2.0) {
-          currentTexture = texture2D(uTextures[2], fullScreenOptimizedUv2 + transitionGlitchOffset);
-        } else if(uCurrentIndex == 3.0) {
-          currentTexture = texture2D(uTextures[3], fullScreenOptimizedUv3 + transitionGlitchOffset);
-        } else if(uCurrentIndex == 4.0) {
-          currentTexture = texture2D(uTextures[4], fullScreenOptimizedUv4 + transitionGlitchOffset);
-        } else if(uCurrentIndex == 5.0) {
-          currentTexture = texture2D(uTextures[5], fullScreenOptimizedUv5 + transitionGlitchOffset);
-        } else if(uCurrentIndex == 6.0) {
-          currentTexture = texture2D(uTextures[6], fullScreenOptimizedUv6 + transitionGlitchOffset);
-        } else if(uCurrentIndex == 7.0) {
-          currentTexture = texture2D(uTextures[7], fullScreenOptimizedUv7 + transitionGlitchOffset);
-        } else if(uCurrentIndex == 8.0) {
-          currentTexture = texture2D(uTextures[8], fullScreenOptimizedUv8 + transitionGlitchOffset);
-        } else if(uCurrentIndex == 9.0) {
-          currentTexture = texture2D(uTextures[9], fullScreenOptimizedUv9 + transitionGlitchOffset);
-        } else {
-          currentTexture = defaultDiffuse;
-        }
-
-        if(uNextIndex == 0.0) {
-          nextTexture = texture2D(uTextures[0], fullScreenOptimizedUv0 + transitionGlitchOffset);
-        } else if(uNextIndex == 1.0) {
-          nextTexture = texture2D(uTextures[1], fullScreenOptimizedUv1 + transitionGlitchOffset);
-        } else if(uNextIndex == 2.0) {
-          nextTexture = texture2D(uTextures[2], fullScreenOptimizedUv2 + transitionGlitchOffset);
-        } else if(uNextIndex == 3.0) {
-          nextTexture = texture2D(uTextures[3], fullScreenOptimizedUv3 + transitionGlitchOffset);
-        } else if(uNextIndex == 4.0) {
-          nextTexture = texture2D(uTextures[4], fullScreenOptimizedUv4 + transitionGlitchOffset);
-        } else if(uNextIndex == 5.0) {
-          nextTexture = texture2D(uTextures[5], fullScreenOptimizedUv5 + transitionGlitchOffset);
-        } else if(uNextIndex == 6.0) {
-          nextTexture = texture2D(uTextures[6], fullScreenOptimizedUv6 + transitionGlitchOffset);
-        } else if(uNextIndex == 7.0) {
-          nextTexture = texture2D(uTextures[7], fullScreenOptimizedUv7 + transitionGlitchOffset);
-        } else if(uNextIndex == 8.0) {
-          nextTexture = texture2D(uTextures[8], fullScreenOptimizedUv8 + transitionGlitchOffset);
-        } else if(uNextIndex == 9.0) {
-          nextTexture = texture2D(uTextures[9], fullScreenOptimizedUv9 + transitionGlitchOffset);
-        } else {
-          nextTexture = defaultDiffuse;
-        }
+      if(uNextIndex == 0.0) {
+        nextTexture = texture2D(uTextures[0], fullScreenOptimizedUv0 + transitionGlitchOffset);
+      } else if(uNextIndex == 1.0) {
+        nextTexture = texture2D(uTextures[1], fullScreenOptimizedUv1 + transitionGlitchOffset);
+      } else if(uNextIndex == 2.0) {
+        nextTexture = texture2D(uTextures[2], fullScreenOptimizedUv2 + transitionGlitchOffset);
+      } else if(uNextIndex == 3.0) {
+        nextTexture = texture2D(uTextures[3], fullScreenOptimizedUv3 + transitionGlitchOffset);
+      } else if(uNextIndex == 4.0) {
+        nextTexture = texture2D(uTextures[4], fullScreenOptimizedUv4 + transitionGlitchOffset);
+      } else if(uNextIndex == 5.0) {
+        nextTexture = texture2D(uTextures[5], fullScreenOptimizedUv5 + transitionGlitchOffset);
+      } else if(uNextIndex == 6.0) {
+        nextTexture = texture2D(uTextures[6], fullScreenOptimizedUv6 + transitionGlitchOffset);
+      } else if(uNextIndex == 7.0) {
+        nextTexture = texture2D(uTextures[7], fullScreenOptimizedUv7 + transitionGlitchOffset);
+      } else if(uNextIndex == 8.0) {
+        nextTexture = texture2D(uTextures[8], fullScreenOptimizedUv8 + transitionGlitchOffset);
+      } else if(uNextIndex == 9.0) {
+        nextTexture = texture2D(uTextures[9], fullScreenOptimizedUv9 + transitionGlitchOffset);
+      } else {
+        nextTexture = defaultDiffuse;
       }
 
       checkerBoardDiffuseColor = gridTransition(currentTexture, nextTexture, uIndexTransition, fullScreenUv, noise);
@@ -577,12 +575,12 @@ void main() {
   color = mix(waitingColor, color, loadedTransition);
 
   //----------最終的な明度調整----------
-  //(スクロール速度による明度強化も含む)・・・あってもなくてもいい
+  //(スクロール速度による明度強化も含めるかな？？)・・・あってもなくてもいい
   colorIntensity = 0.80;
   // colorIntensity = 0.9 + 0.1 * clamp(uVelocity, 0.0, 1.0);
 
   if(uDevice == 1.0) {//@mobile
-    colorIntensity *= 1.18;
+    colorIntensity *= 2.0;
   }
 
   //テスト用

@@ -152,8 +152,10 @@ void main() {
   endPositionColor = edgeColor;
 
   endPositionColor += fresnelValue;
+  textureColor += fresnelValue * 0.1;
+  textureColor += noiseColor * 0.084;
 
-  endPositionColor += speclarValue * 0.16;
+  endPositionColor += speclarValue * 0.24;
 
   endPositionColor += vec3(insideColor);
 

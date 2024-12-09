@@ -16,6 +16,11 @@ vec3 rgb2hsv(vec3 tex) {
   return vec3(abs(q.z + (q.w - q.y) / (6.0 * d + e)), d / (q.x + e), q.x);
 }
 
+vec3 toSepia(vec3 color) {
+  vec3 sepia = vec3(color.r * 0.393 + color.g * 0.769 + color.b * 0.189, color.r * 0.349 + color.g * 0.686 + color.b * 0.168, color.r * 0.272 + color.g * 0.534 + color.b * 0.131);
+  return sepia;
+}
+
 // tDiffuse: 入力テクスチャ
 // uv: テクスチャ座標
 // resolution: テクスチャの解像度（幅、高さ）
@@ -57,7 +62,9 @@ vec4 halftone(sampler2D tDiffuse, vec2 uv, vec2 resolution, float size, float do
   // これにより、異常な値による表示の乱れを防ぐ
   dots = clamp(dots, 0.0, 1.0);
 
-  return vec4(vec3(dots), texture2D(tDiffuse, uv).a);
+  vec3 sepiaColor = toSepia(vec3(dots));
+
+  return vec4(sepiaColor, texture2D(tDiffuse, uv).a);
 }
 
 #pragma glslify: export(halftone);

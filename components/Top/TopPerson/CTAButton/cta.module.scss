@@ -1,0 +1,52 @@
+@use "@/styles/mixin/mixins" as *;
+
+.cta {
+  display: block;
+  width: cols(10);
+  text-transform: uppercase;
+  font-size: text(24);
+  text-align: center;
+  border: 0.1rem solid var(--white-1);
+  padding-block: 2.4rem;
+  padding-inline: 2.4rem;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .cta:hover {
+    color: var(--black-1);
+    background-color: var(--gray-1);
+    border: 0.1rem solid var(--gray-1);
+
+    animation-name: twincle;
+    animation-duration: 0.01s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+  }
+}
+
+@keyframes twincle {
+  0% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+@include mq(sp) {
+  .cta {
+    display: block;
+    width: cols(8);
+    text-transform: uppercase;
+    font-size: text(16);
+    text-align: center;
+    border: 0.1rem solid var(--white-1);
+    padding-block: 1.4rem;
+    padding-inline: 2.4rem;
+  }
+}

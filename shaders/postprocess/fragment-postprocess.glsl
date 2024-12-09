@@ -67,9 +67,9 @@ void main() {
   //----------shivering -------
   float shiveringProgress;
 
-  float shiveringProgress1 = map(uLoadingTransition, 0.0, 0.64, 0.0, 1.0, true);
-  float shiveringProgress2 = map(uLoadingTransition, 0.8, 0.82, 0.0, 1.0, true);
-  float shiveringProgress3 = map(uLoadingTransitionEaseOut, 0.0, 0.98, 0.0, 1.0, true);
+  float shiveringProgress1 = map(uLoadingTransition, 0.0, 0.14, 0.0, 1.0, true);
+  float shiveringProgress2 = map(uLoadingTransition, 0.3, 0.34, 0.0, 1.0, true);
+  float shiveringProgress3 = map(uLoadingTransitionEaseOut, 0.9, 0.99, 0.0, 1.0, true);
 
   shiveringProgress = shiveringProgress1 + shiveringProgress2 + shiveringProgress3;
 
@@ -83,7 +83,7 @@ void main() {
   float shiveringIntensity;
 
   if(uIsMobile == 1.0) {//@mobile
-    shiveringIntensity = 0.012;
+    shiveringIntensity = 0.003;
   } else {
     shiveringIntensity = 0.001;
   }
@@ -97,8 +97,8 @@ void main() {
   //-------deform line--------
   float deformProgress;
 
-  float deformProgress1 = map(uLoadingTransition, 0.0, 0.4, 0.0, 1.0, true);
-  float deformProgress2 = map(uLoadingTransition, 0.72, 0.96, 0.0, 1.0, true);
+  float deformProgress1 = map(uLoadingTransition, 0.0, 0.24, 0.0, 1.0, true);
+  float deformProgress2 = map(uLoadingTransition, 0.26, 0.6, 0.0, 1.0, true);
 
   deformProgress = deformProgress1 + deformProgress2;
 
@@ -132,7 +132,7 @@ void main() {
 
   float quakeProgress1 = map(uLoadingTransition, 0.0, 0.24, 0.0, 1.0, true);
   float quakeProgress2 = map(uLoadingTransition, 0.30, 0.34, 0.0, 1.0, true);
-  float quakeProgress3 = map(uLoadingTransition, 0.4, 0.44, 0.0, 1.0, true);
+  float quakeProgress3 = map(uLoadingTransition, 0.345, 0.4, 0.0, 1.0, true);
 
   quakeProgress = quakeProgress1 + quakeProgress2 + quakeProgress3;
 
@@ -213,35 +213,6 @@ void main() {
     colorOffsetIntensity = 5.0;
   }
 
-  //----------リップル波（不採用）--------
-  // float rippleProgress = map(uLoadingTransition, 0.0, 1.0, 0.0, 1.0, true);
-
-  // float rippleKeepEdge = 1.0;
-
-  // rippleProgress = smoothstep(0.0, rippleKeepEdge, abs(sin(rippleProgress * PI)));
-
-  // vec3 rippleDiffuse = ripple(adjustedUv, rippleProgress, uAspect);
-
-  // vec2 rippleBaseOffset = normalize(rippleDiffuse.xy) * rippleDiffuse.b + vec2(0.001);
-
-  // vec2 rippleRedOffset = rippleBaseOffset * 0.12 * colorOffsetIntensity;
-  // vec2 rippleGreenOffset = rippleBaseOffset * -0.12 * colorOffsetIntensity;
-  // vec2 rippleBlueOffset = rippleBaseOffset * 0.08 * colorOffsetIntensity;
-
-  // float rippleAlpha = rippleDiffuse.b * 0.0025;
-
-  // vec3 rippleRed = texture2D(tDiffuse, uv + rippleRedOffset).rgb;
-  // vec3 rippleGreen = texture2D(tDiffuse, uv + rippleGreenOffset).rgb;
-  // vec3 rippleBlue = texture2D(tDiffuse, uv + rippleBlueOffset).rgb;
-
-  // rippleRed += rippleAlpha;
-  // rippleGreen += rippleAlpha;
-  // rippleBlue += rippleAlpha;
-
-  // vec3 rippleColor = vec3(rippleRed.r, rippleGreen.g, rippleBlue.b);
-
-  // color = blendOverlay(color, rippleColor, rippleProgress);
-
   //---------放射ディストーション-------
   float distortionProgress;
 
@@ -257,7 +228,7 @@ void main() {
 
   float distortionStrength = radialStrength(adjustedUv, 1.0, 0.03, 1.0);
 
-  vec2 baseOffset = normalize(uv.xy) * distortionStrength;
+  vec2 baseOffset = normalize(uv.xy) * distortionStrength * distortionProgress;
 
   vec2 redOffset = baseOffset * -0.07 * colorOffsetIntensity;
   vec2 greenOffset = baseOffset * 0.08 * colorOffsetIntensity;
@@ -289,7 +260,7 @@ void main() {
 
   float blurProgress1 = map(uLoadingTransition, 0.0, 0.4, 0.0, 1.0, true);
   float blurProgress2 = map(uLoadingTransition, 0.42, 0.48, 0.0, 1.0, true);
-  float blurProgress3 = map(uLoadingTransition, 0.5, 0.8, 0.0, 1.0, true);
+  float blurProgress3 = map(uLoadingTransition, 0.64, 0.74, 0.0, 1.0, true);
   float blurProgress4 = map(uLoadingTransitionEaseOut, 0.0, 1.0, 0.0, 1.0, true);
 
   blurProgress = blurProgress1 + blurProgress2 + blurProgress3 + blurProgress4;
@@ -324,8 +295,8 @@ void main() {
 
   float halftoneProgress;
 
-  float halftoneProgress1 = map(uLoadingTransition, 0.4, 0.44, 0.0, 1.0, true);
-  float halftoneProgress2 = map(uLoadingTransition, 0.6, 0.64, 0.0, 1.0, true);
+  float halftoneProgress1 = map(uLoadingTransition, 0.5, 0.6, 0.0, 1.0, true);
+  float halftoneProgress2 = map(uLoadingTransition, 0.64, 0.7, 0.0, 1.0, true);
 
   halftoneProgress = halftoneProgress1 + halftoneProgress2;
 
@@ -344,9 +315,9 @@ void main() {
   //-------------グレースケール-------
   float grayProgress;
 
-  float grayProgress1 = map(uLoadingTransition, 0.0, 0.8, 0.0, 1.0, true);
-  float grayProgress2 = map(uLoadingTransition, 0.84, 0.86, 0.0, 1.0, true);
-  float grayProgress3 = map(uLoadingTransition, 0.9, 0.98, 0.0, 1.0, true);
+  float grayProgress1 = map(uLoadingTransition, 0.0, 0.64, 0.0, 1.0, true);
+  float grayProgress2 = map(uLoadingTransition, 0.65, 0.66, 0.0, 1.0, true);
+  float grayProgress3 = map(uLoadingTransition, 0.68, 0.70, 0.0, 1.0, true);
 
   grayProgress = grayProgress1 + grayProgress2 + grayProgress3;
 

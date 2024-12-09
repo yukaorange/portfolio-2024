@@ -15,9 +15,10 @@ export const postProcessShader = (width: number, height: number, device: string)
       uDarkness: { value: 0.8 },
 
       //-------自作bloomエフェクトに使う-------
+      //1.0 for mobile, 0.0 for desktopです
       uThreshold: { value: checkDevice == 1.0 ? 0.1 : 0.1 }, //閾値(現在、ほぼ全域)
-      uStrength: { value: checkDevice == 1.0 ? 0.6 : 0.45 }, //bloom強度
-      uRadius: { value: checkDevice == 1.0 ? 0.4 : 1.25 }, //bloom範囲
+      uStrength: { value: checkDevice == 1.0 ? 0.08 : 0.45 }, //bloom強度
+      uRadius: { value: checkDevice == 1.0 ? .7 : 1.25 }, //bloom範囲
 
       //-------なんだかんだいつも必要なやつ--------
       uAspect: { value: width / height },

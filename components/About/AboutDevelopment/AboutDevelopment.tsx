@@ -17,12 +17,12 @@ export const AboutDevelopment = () => {
     {
       title: 'JavaScpit, TypeScript',
       content:
-        '各種基本的なUIはスクラッチで実装可能です。\nTypeScriptを使用し、型安全で点検しやすいコーディングを行います。また、SOLID原則に則った読みやすく再利用可能な記述を心がけます。\n当サイトのgalleryページに、過去に挑戦したUIを掲載しています。\nまた、Webアプリケーションの個人制作を通して、非同期処理によるBaasとのデータ交換や、CRUD操作におけるJavaScriptの配列操作の実践的な使用方法を習得しました。',
+        '基本的なUIはスクラッチで実装可能です。\nTypeScriptを使用し、型安全で点検しやすいコーディングを行います。また、SOLID原則に則った読みやすく再利用可能な記述を心がけます。\n当サイトのgalleryページに、過去に挑戦したUIを掲載しています。\nまた、Webアプリケーションの個人制作を通して、非同期処理によるBaasとのデータ交換や、CRUD操作におけるJavaScriptの配列操作の実践的な使用方法を習得しました。',
     },
     {
       title: 'Canvas2D, SVG',
       content:
-        'Canvas2Dにおける基本的な画像描画や、テキスト描画、矩形アニメーションは使えるように訓練しています。SVGにあってはフィルターの作成や、After Effectsを使用して簡易なLottieアニメーションの作成を行えます。',
+        'Canvas2Dにおける基本的な図形描画や、テキスト描画、簡易なアニメーションは使えるように訓練しています。SVGにあってはフィルターの作成や、After Effectsを使用した簡易なLottieアニメーションの作成を行えます。',
     },
     {
       title: 'WebGL, Three.js, r3f',
