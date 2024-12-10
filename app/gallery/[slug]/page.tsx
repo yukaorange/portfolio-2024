@@ -2,7 +2,7 @@ import { ClientWrapper } from '@/app/ClientWrapper';
 import { ArticleContent } from '@/components/Article/ArticleContent/ArticleContent';
 import { ArticlePageview } from '@/components/Article/ArticlePageview/ArticlePageview';
 import { GalleryLayout } from '@/components/Gallery/GalleryLayout/GalleryLayout';
-import { getWorksDetail } from '@/lib/microcms';
+import { getWorksDetail, getWorksContents, Content } from '@/lib/microcms';
 
 import styles from './article.module.scss';
 
@@ -10,7 +10,14 @@ interface ArticleProps {
   params: { slug: string };
 }
 
-export default async function article({ params }: ArticleProps) {
+export async function generateStaticParams() {
+  const { contents } = await getWorksContents({ offset: 0, limit: 100 });
+  return contents.map((content: Content) => ({
+    slug: content.id,
+  }));
+}
+
+export default async function Article({ params }: ArticleProps) {
   const { slug } = params;
 
   const data = await getWorksDetail(slug);

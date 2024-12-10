@@ -65,10 +65,11 @@ export const getWorksContents = async (
     queries: {
       offset: offset,
       limit: limit,
+      // orders: '-updatedAt',
     },
   });
 
-  return data;
+  return { contents: data.contents, totalCount: data.totalCount };
 };
 
 interface getWorksContentsByCategoryParams {
@@ -87,10 +88,14 @@ export const getWorksContentsByCategory = async ({
       filters: `category[contains]${categoryId}`,
       offset: offset,
       limit: limit,
+      orders: '-updatedAt',
     },
   });
 
-  return data;
+  return {
+    contents: data.contents,
+    totalCount: data.totalCount,
+  };
 };
 
 export const getWorksDetail = async (slug: string) => {
@@ -103,6 +108,7 @@ export const getWorksDetail = async (slug: string) => {
     return data;
   } catch (err) {
     console.error(err);
+    throw new Error(`Failed to fetch work detail for slug: ${slug}`);
   }
 };
 

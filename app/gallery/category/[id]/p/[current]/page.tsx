@@ -13,34 +13,59 @@ import {
 import styles from './category.module.scss';
 
 interface CategoryProps {
-  params: { id: string; current: number };
+  params: { id: string; current: string };
 }
 
-export default async function gallery({ params }: CategoryProps) {
-  const { current } = params;
-  const offset = (Number(current) - 1) * GALLERY_LIST_LIMIT;
+export async function generateStaticParams() {
+  const categories = await getWorksCategories();
+  const paths = [];
+
+  for (const category of categories) {
+    const { totalCount } = await getWorksContentsByCategory({
+      categoryId: category.id,
+      limit: 1,
+    });
+
+    const pageCount = Math.ceil(totalCount / GALLERY_LIST_LIMIT);
+
+    for (let i = 1; i <= pageCount; i++) {
+      paths.push({ id: category.id, current: `p${i}` });
+    }
+  }
+
+  return paths;
+}
+
+export default async function Gallery({ params }: CategoryProps) {
+  const { current, id } = params;
+  // const offset = (Number(current) - 1) * GALLERY_LIST_LIMIT;
+  const offset = (Number(current.replace('p', '')) - 1) * GALLERY_LIST_LIMIT;
 
   const categories = await getWorksCategories();
 
-  const currentCategory = categories.find((category: Category) => category.id === params.id);
+  const currentCategory = categories.find((category: Category) => category.id === id);
+
+  if (!currentCategory) {
+    throw new Error(`Category with id ${id} not found`);
+  }
 
   const { contents, totalCount } = await getWorksContentsByCategory({
     limit: GALLERY_LIST_LIMIT,
     offset: offset,
-    categoryId: params.id,
+    categoryId: id,
   });
 
   return (
     <ClientWrapper galleryContents={contents}>
       <div className={styles.category}>
         {/* fv */}
-        <GalleryPageview heading="filtered by category" lead={`表示中:${currentCategory.name}`} />
+        <GalleryPageview heading="Filtered by category" lead={`表示中:${currentCategory.name}`} />
         {/* content */}
         <GalleryLayout
           content={
             <GalleryList
               contents={contents}
-              current={current}
+              current={Number(current)}
               totalCount={totalCount}
               pagepath={`/gallery/category/${params.id}/p`}
             />
