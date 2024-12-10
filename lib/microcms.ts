@@ -65,7 +65,7 @@ export const getWorksContents = async (
     queries: {
       offset: offset,
       limit: limit,
-      // orders: '-updatedAt',
+      orders: '-updatedAt',
     },
   });
 
