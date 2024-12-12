@@ -515,11 +515,11 @@ void main() {
 
   //----------フッター付近に到達----------
 
-  float scrollEndProgress = easeInQuart(uIsScrollEnd);
+  float scrollEndProgress = uIsScrollEnd;
 
-  float footerTransition = pixelTransition(fullScreenUv, scrollEndProgress, squares);
+  // float footerTransition = pixelTransition(fullScreenUv, scrollEndProgress, squares);
 
-  finalDiffuse = mix(finalDiffuse, gridColor, footerTransition);
+  finalDiffuse = mix(finalDiffuse, gridColor, scrollEndProgress);
 
   //----------エフェクト----------
 

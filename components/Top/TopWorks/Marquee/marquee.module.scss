@@ -48,7 +48,7 @@
 }
 
 .marquee__inner {
-  animation-duration: 60s;
+  animation-duration: 48s;
   animation-iteration-count: infinite;
   animation-name: marquee-move;
   animation-timing-function: linear;
@@ -119,7 +119,7 @@
   }
 
   .marquee__inner {
-    animation-duration: 120s;
+    animation-duration: 60s;
     animation-iteration-count: infinite;
     animation-name: marquee-move;
     animation-timing-function: linear;
