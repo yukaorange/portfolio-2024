@@ -143,13 +143,13 @@ class ExtendedMaterial extends THREE.MeshStandardMaterial {
       //----------ユーティリティ---------
 
       //横方向のストライプ(ホログラム)
-      float vertical = gl_FragCoord.y / uResolution.y * 1000.0;
+      float vertical = gl_FragCoord.y / uResolution.y * 5.0;
 
       float stripes = sin(vertical) * 0.5 + 0.5;//0 - 1
 
       stripes = stripes * (1.0 - 0.5) + 0.5;// 0.5 - 1
 
-      stripes = pow(stripes, 10.0);//立方関数で急激に変化
+      stripes = pow(stripes, 2.50);//立方関数で急激に変化
 
       float holographic = stripes; 
       

@@ -49,6 +49,8 @@
 
 .marquee__inner {
   animation-duration: 48s;
+
+  
   animation-iteration-count: infinite;
   animation-name: marquee-move;
   animation-timing-function: linear;
