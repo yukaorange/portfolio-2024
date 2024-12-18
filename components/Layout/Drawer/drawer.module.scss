@@ -88,7 +88,7 @@
 .toggle__bg {
   width: var(--gap);
   background-color: var(--yellow-1);
-  height: 100vh;
+  height: 100dvh;
   position: absolute;
   top: 0;
   left: 0;
@@ -102,7 +102,7 @@
   right: 0;
   z-index: var(--z-index-drawer);
   background-color: var(--yellow-1);
-  height: 100vh;
+  height: 100dvh;
   overflow-y: auto;
   overscroll-behavior-y: contain;
   display: grid;
@@ -123,8 +123,8 @@
 
 .drawer__inner {
   width: calc(var(--col) * 12 + var(--gap) * 11 + var(--margin) * 1);
-  min-height: calc(100vh + 1px); //overscroll omits
-  height: calc(100vh + 1px);
+  min-height: calc(100dvh + 1px); //overscroll omits
+  height: calc(100dvh + 1px);
   padding-left: calc(var(--col) * 1 + var(--gap) * 1);
   display: grid;
   align-items: center;
@@ -295,7 +295,7 @@
   .toggle__bg {
     width: calc(var(--gap) * 1);
     background-color: var(--yellow-1);
-    height: 100vh;
+    height: 100dvh;
     position: absolute;
     top: 0;
     left: 0;
@@ -309,7 +309,7 @@
     right: 0;
     z-index: var(--z-index-drawer);
     background-color: var(--yellow-1);
-    height: 100vh;
+    height: 100dvh;
     overflow-y: auto;
     overscroll-behavior-y: contain;
     display: grid;
@@ -330,8 +330,8 @@
 
   .drawer__inner {
     width: calc(var(--col) * 7 + var(--gap) * 6 + var(--margin) * 1);
-    min-height: calc(100vh + 1px); //overscroll omits
-    height: calc(100vh + 1px);
+    min-height: calc(100dvh + 1px); //overscroll omits
+    height: calc(100dvh + 1px);
     padding-left: calc(var(--col) * 1 + var(--gap) * 0);
     display: grid;
     align-items: start;
