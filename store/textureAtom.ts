@@ -35,11 +35,16 @@ const NO_ITEM_TEXTURE: TextureInfo = {
   aspectRatio: 4 / 3,
 };
 
+// 現在のページを管理するatom
+// これはWebGLコンテキストでのページ状態を管理し、DOMのページ状態とは独立して動作
+//WebGL/App.tsxにおけるcurrentPageであり、DOMのそれとは別の世界線で管理（変更のタイミングが違うため）。
 const currentPageAtom = atom<string>({
   key: 'currentPageAtom',
   default: '/',
-}); //WebGL/App.tsxにおけるcurrentPageであり、DOMのそれとは別の世界線で管理（変更のタイミングが違うため）。
+});
 
+// トップページのギャラリーテクスチャを管理するatom
+// デフォルトで10枚のテクスチャ情報を保持
 const topPageGalleryTexturesAtom = atom<TextureInfo[]>({
   key: 'topPageGalleryTexturesAtom',
   default: [
@@ -86,16 +91,22 @@ const topPageGalleryTexturesAtom = atom<TextureInfo[]>({
   ],
 });
 
+// ギャラリーのコンテンツを管理するatom
+// microCMSから取得したコンテンツを保持
 export const galleryContentsAtom = atom<Content[]>({
   key: 'galleryContentsAtom',
   default: [],
 });
 
+// ロード済みテクスチャを管理するatom
+// Three.jsのテクスチャオブジェクトとアスペクト比の配列を保持
 const loadedTexturesAtom = atom<LoadedTextureInfo[]>({
   key: 'loadedTexturesAtom',
   default: [],
 });
 
+// 以下、特殊な用途のテクスチャを管理するatom群
+// キャラクター用テクスチャ
 const characterTextureAtom = atom<THREE.Texture | null>({
   key: 'characterTextureAtom',
   default: null,
@@ -126,16 +137,19 @@ const telopTextureAtom = atom<THREE.Texture | null>({
   default: null,
 });
 
+// 3Dモデルのロード状態を管理するatom
 export const modelLoadedAtom = atom<boolean>({
   key: 'modelLoadedAtom',
   default: false,
 });
 
+// 初期ローディング状態を管理するatom
 export const initialLoadingAtom = atom<boolean>({
   key: 'initialLoadingAtom',
   default: false,
 });
 
+// 現在のページに応じて表示すべきテクスチャを選択するセレクター
 const currentTexturesSelector = selector<TextureInfo[]>({
   key: 'currentTexturesSelector',
   get: ({ get }) => {
@@ -176,6 +190,7 @@ const currentTexturesSelector = selector<TextureInfo[]>({
         ];
       }
 
+      // 不足分をNO_ITEM_TEXTUREで埋める
       while (galleryTextures.length < TOTAL_TEXTURES) {
         galleryTextures.push(NO_ITEM_TEXTURE);
       }
@@ -231,21 +246,41 @@ const currentTexturesSelector = selector<TextureInfo[]>({
 //   },
 // });
 
-export const useCurrentPage = () => useRecoilValue(currentPageAtom);
-export const useCurrentTextures = () => useRecoilValue(currentTexturesSelector);
-export const useLoadedTextures = () => useRecoilValue(loadedTexturesAtom);
-export const useCharacterTexture = () => useRecoilValue(characterTextureAtom);
-export const useSuitcaseTexture = () => useRecoilValue(suitcaseTextureAtom);
-export const useFloorNormalTexture = () => useRecoilValue(floorNormalTextureAtom);
-export const useNoiseTexture = () => useRecoilValue(noiseTextureAtom);
-export const useTelopTexture = () => useRecoilValue(telopTextureAtom);
-export const useFloorRoughnessTexture = () => useRecoilValue(floorRoughnessTextureAtom);
-export const useSetCurrentPage = () => useSetRecoilState(currentPageAtom); //WebGLにおける現在のページをセット
-export const useInitialLoading = () => useRecoilValue(initialLoadingAtom);
-export const useSetInitialLoading = () => useSetRecoilState(initialLoadingAtom);
-export const useSetModelLoaded = () => useSetRecoilState(modelLoadedAtom);
-const useSetProgress = () => useSetRecoilState(loadProgressAtom);
+// 以下、各種フックのエクスポート
+// これらのフックは、コンポーネントでRecoilの状態を簡単に利用するためのもの
+//Recoilの状態管理ロジックをカプセル化することで、コンポーネントは単純にuseCharacterTexture()のようなフックを呼び出すだけで済む
+//状態管理の実装詳細をコンポーネントから隠蔽でき、関心の分離ができる。=>テクスチャの管理をこのファイルに集約できる
+// これにより、コンポーネントは状態管理の実装詳細を気にせず、状態を利用するだけに専念できる
 
+// 現在のページを取得するフック
+export const useCurrentPage = () => useRecoilValue(currentPageAtom);
+// 現在のテクスチャ情報を取得するフック
+export const useCurrentTextures = () => useRecoilValue(currentTexturesSelector);
+// ロード済みテクスチャを取得するフック
+export const useLoadedTextures = () => useRecoilValue(loadedTexturesAtom);
+// キャラクターテクスチャを取得するフック
+export const useCharacterTexture = () => useRecoilValue(characterTextureAtom);
+// スーツケーステクスチャを取得するフック
+export const useSuitcaseTexture = () => useRecoilValue(suitcaseTextureAtom);
+// 床のノーマルマップテクスチャを取得するフック
+export const useFloorNormalTexture = () => useRecoilValue(floorNormalTextureAtom);
+// ノイズテクスチャを取得するフック
+export const useNoiseTexture = () => useRecoilValue(noiseTextureAtom);
+// テロップテクスチャを取得するフック
+export const useTelopTexture = () => useRecoilValue(telopTextureAtom);
+// 床のラフネステクスチャを取得するフック
+export const useFloorRoughnessTexture = () => useRecoilValue(floorRoughnessTextureAtom);
+// 現在のページを設定するフック
+export const useSetCurrentPage = () => useSetRecoilState(currentPageAtom); //WebGLにおける現在のページをセット
+// 初期ローディング状態を取得するフック
+export const useInitialLoading = () => useRecoilValue(initialLoadingAtom);
+// 初期ローディング状態を設定するフック
+export const useSetInitialLoading = () => useSetRecoilState(initialLoadingAtom);
+// モデルロード状態を設定するフック
+export const useSetModelLoaded = () => useSetRecoilState(modelLoadedAtom);
+// ローディング進捗を設定するフック
+const useSetProgress = () => useSetRecoilState(loadProgressAtom);
+// テクスチャをロードするためのカスタムフック
 export const useLoadTextures = () => {
   const setLoadedTextures = useSetRecoilState(loadedTexturesAtom);
 
@@ -256,6 +291,7 @@ export const useLoadTextures = () => {
   const textures = useTexture(currentTextures.map((t) => t.url));
 
   useEffect(() => {
+    // テクスチャがロードされたら、アスペクト比と共にatomに保存
     const texturesWithAspectRatio = currentTextures.map((textureInfo, index) => ({
       texture: textures[index],
       aspectRatio: textureInfo.aspectRatio,
@@ -270,6 +306,7 @@ export const useLoadTextures = () => {
   }));
 };
 
+// キャラクターとスーツケースのテクスチャをロードするカスタムフック
 export const useLoadCharacterAndSuitcaseTextures = () => {
   const setCharacterTexture = useSetRecoilState(characterTextureAtom);
   const setSuitcaseTexture = useSetRecoilState(suitcaseTextureAtom);
@@ -287,6 +324,7 @@ export const useLoadCharacterAndSuitcaseTextures = () => {
   return [characterTexture, suitcaseTexture];
 };
 
+// ノイズテクスチャをロードするカスタムフック
 export const useLoadNoiseTexture = () => {
   const setNoiseTexture = useSetRecoilState(noiseTextureAtom);
   const [noiseTexture] = useTexture(['/images/textures/noise.png']);
@@ -298,6 +336,7 @@ export const useLoadNoiseTexture = () => {
   return noiseTexture;
 };
 
+// テロップテクスチャをロードするカスタムフック
 export const useLoadTelopTexture = () => {
   const setTelopTexture = useSetRecoilState(telopTextureAtom);
   const [telopTexture] = useTexture(['/images/textures/message-on-board-mid.jpg']);
@@ -309,6 +348,7 @@ export const useLoadTelopTexture = () => {
   return telopTexture;
 };
 
+// 床のテクスチャをロードするカスタムフック
 export const useLoadFloorTextures = () => {
   const setFloorNormalTexture = useSetRecoilState(floorNormalTextureAtom);
   const setFloorRoughnessTexture = useSetRecoilState(floorRoughnessTextureAtom);
@@ -326,15 +366,20 @@ export const useLoadFloorTextures = () => {
   return [floorNormalTexture, floorRoughnessTexture];
 };
 
+// ギャラリーコンテンツを更新するためのフック
+// microCMSから取得したコンテンツをRecoilステートに反映するために使用
 export const useSetGalleryContents = () => {
   return useSetRecoilState(galleryContentsAtom);
 };
 
+// 初期ページ状態を設定するためのカスタムフック
+// WebGLシーンのページ状態とNext.jsのルーティング状態を同期させる
 export const useInitializeCurrentPage = () => {
   const setCurrentPage = useSetCurrentPage(); //currentPageAtomを更新するメソッド
   const pathname = usePathname();
 
   //初回アクセス時に、そのページにふさわしいテクスチャをセットする。また、余計な再発火は防ぐ。
+  // この処理により、URLに応じた適切なテクスチャがWebGLシーンに反映される
   useEffect(() => {
     setCurrentPage((prevPage) => {
       if (prevPage !== pathname) {
@@ -345,16 +390,22 @@ export const useInitializeCurrentPage = () => {
   }, [pathname, setCurrentPage]);
 };
 
+// WebGLシーン全体の状態を管理する中核となるカスタムフック
+// テクスチャのロード、ページ遷移、ローディング状態など、
+// 3Dシーンに必要な全ての状態とその更新ロジックを提供
 export const useScene = () => {
   //----------初回アクセス時に発火する処理 ----------
   useInitializeCurrentPage(); //初回アクセス時currentPageを更新しする。いかなるページであっても、そのページにふさわしいテクスチャをセットする
 
   //----------ページの変更を検知 ----------
+  // WebGLシーンのページ状態を管理し、
+  // ページ遷移時にテクスチャの更新をトリガーする
   const currentPage = useCurrentPage();
   const setCurrentPage = useSetCurrentPage();
 
   //----------テクスチャの用意 ----------
-  //基本的にはcurrentPageの変更を契機に後続処理が発火する
+  // currentPageの変更を検知して、必要なテクスチャを動的にロード
+  // 現在のページに応じて適切なテクスチャセットを準備する
   const currentTextures = useCurrentTextures();
   const loadedTextures = useLoadTextures();
 
@@ -363,6 +414,8 @@ export const useScene = () => {
   const setProgress = useSetProgress();
 
   //----------固定で使用するテクスチャの用意(6枚) ----------
+  // ページに依存しない、アプリケーション共通のテクスチャをロード
+  // これらは3Dシーンの基本的な見た目を構成する要素
   const [characterTexture, suitcaseTexture] = useLoadCharacterAndSuitcaseTextures();
   const [floorNormalTexture, floorRoughnessTexture] = useLoadFloorTextures();
   const noiseTexture = useLoadNoiseTexture();
@@ -373,6 +426,8 @@ export const useScene = () => {
   const setGalleryContents = useSetGalleryContents() as SetterOrUpdater<Content[]>;
 
   //----------ローディングアニメーションの契機 ----------
+  // すべてのテクスチャのロード状態を監視し、
+  // ローディング画面の表示/非表示を制御する
   useEffect(() => {
     //全てのテクスチャがロードされたら、initialLoadingAtomがtrueとなる。ローディングアニメーションのコンポーネントはこのatomを監視している。
     const loadedTexturesCount =
@@ -388,6 +443,8 @@ export const useScene = () => {
 
     // console.log('loadedTexturesCount :', loadedTexturesCount);
 
+    // ローディング進捗状態を更新
+    // ユーザーに現在のロード状況をフィードバック
     setProgress((prev) => {
       return {
         ...prev,
@@ -405,6 +462,7 @@ export const useScene = () => {
     //   noiseTexture !== null &&
     //   telopTexture !== null;
 
+    // すべてのテクスチャがロードされたかチェック
     const allTextureLoaded = loadedTexturesCount === totalTextures;
 
     if (allTextureLoaded) {
