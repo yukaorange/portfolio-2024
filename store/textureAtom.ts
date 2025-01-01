@@ -174,6 +174,7 @@ const currentTexturesSelector = selector<TextureInfo[]>({
         // console.log(`contents lenght:`, contents.length);
 
         galleryTextures = contents.map((content) => {
+          console.log(content.images[0]);
           let imageUrl = content.images[0].url || '';
 
           if (imageUrl == '') {
