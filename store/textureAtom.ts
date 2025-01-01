@@ -174,8 +174,14 @@ const currentTexturesSelector = selector<TextureInfo[]>({
         // console.log(`contents lenght:`, contents.length);
 
         galleryTextures = contents.map((content) => {
+          let imageUrl = content.images[0].url || '';
+
+          if (imageUrl == '') {
+            imageUrl = '/images/textures/no-item.jpg';
+          }
+
           return {
-            url: content.images[0].url,
+            url: imageUrl,
             aspectRatio: content.images[0].width / content.images[0].height,
           };
         });
